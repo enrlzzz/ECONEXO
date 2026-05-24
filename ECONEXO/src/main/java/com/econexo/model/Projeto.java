@@ -1,31 +1,50 @@
-package model;
+package com.econexo.model;
 
+import jakarta.persistence.*;
 import java.time.LocalDate;
 
 /**
  * Classe que representa a entidade Projeto.
  * Mapeia a tabela PROJETO do MER.
  */
+@Entity
+@Table(name = "projeto")
 public class Projeto {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id_projeto")
     private Integer idProjeto;
-    private Integer fkCriador;       // ID do usuário que publicou
+
+    @ManyToOne
+    @JoinColumn(name = "fk_criador")
+    private Usuario criador;
+
+    @Column(nullable = false, length = 150)
     private String titulo;
+
+    @Column(columnDefinition = "TEXT")
     private String descricao;
-    private String tipoProjeto;      // Portfólio ou Atual/Vaga
-    private String status;           // Aberto/Em Andamento/Concluído
+
+    @Column(name = "tipo_projeto", length = 50)
+    private String tipoProjeto;
+
+    @Column(length = 50)
+    private String status;
+
+    @Column(name = "data_inicio")
     private LocalDate dataInicio;
+
+    @Column(name = "data_fim")
     private LocalDate dataFim;
 
-    // Construtor vazio
     public Projeto() {
     }
 
-    // Construtor completo
-    public Projeto(Integer idProjeto, Integer fkCriador, String titulo, String descricao,
+    public Projeto(Integer idProjeto, Usuario criador, String titulo, String descricao,
                    String tipoProjeto, String status, LocalDate dataInicio, LocalDate dataFim) {
         this.idProjeto = idProjeto;
-        this.fkCriador = fkCriador;
+        this.criador = criador;
         this.titulo = titulo;
         this.descricao = descricao;
         this.tipoProjeto = tipoProjeto;
@@ -33,18 +52,6 @@ public class Projeto {
         this.dataInicio = dataInicio;
         this.dataFim = dataFim;
     }
-
-    // Construtor para criação (sem ID, status default "Aberto")
-    public Projeto(Integer fkCriador, String titulo, String descricao, String tipoProjeto) {
-        this.fkCriador = fkCriador;
-        this.titulo = titulo;
-        this.descricao = descricao;
-        this.tipoProjeto = tipoProjeto;
-        this.status = "Aberto";
-        this.dataInicio = LocalDate.now();
-    }
-
-    // --- Getters e Setters ---
 
     public Integer getIdProjeto() {
         return idProjeto;
@@ -54,12 +61,12 @@ public class Projeto {
         this.idProjeto = idProjeto;
     }
 
-    public Integer getFkCriador() {
-        return fkCriador;
+    public Usuario getCriador() {
+        return criador;
     }
 
-    public void setFkCriador(Integer fkCriador) {
-        this.fkCriador = fkCriador;
+    public void setCriador(Usuario criador) {
+        this.criador = criador;
     }
 
     public String getTitulo() {

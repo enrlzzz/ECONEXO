@@ -1,33 +1,39 @@
-package model;
+package com.econexo.model;
+
+import jakarta.persistence.*;
 
 /**
  * Classe que representa a entidade Skill (habilidade).
  * Mapeia a tabela SKILL do MER.
  */
+@Entity
+@Table(name = "skill")
 public class Skill {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id_skill")
     private Integer idSkill;
+
+    @Column(name = "nome_skill", nullable = false, length = 100)
     private String nomeSkill;
+
+    @Column(length = 100)
     private String categoria;
 
-    // Construtor vazio
     public Skill() {
     }
 
-    // Construtor completo
     public Skill(Integer idSkill, String nomeSkill, String categoria) {
         this.idSkill = idSkill;
         this.nomeSkill = nomeSkill;
         this.categoria = categoria;
     }
 
-    // Construtor sem ID
     public Skill(String nomeSkill, String categoria) {
         this.nomeSkill = nomeSkill;
         this.categoria = categoria;
     }
-
-    // --- Getters e Setters ---
 
     public Integer getIdSkill() {
         return idSkill;

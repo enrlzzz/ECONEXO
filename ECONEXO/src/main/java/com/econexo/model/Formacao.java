@@ -1,46 +1,49 @@
-package model;
+package com.econexo.model;
 
+import jakarta.persistence.*;
 import java.time.LocalDate;
 
 /**
  * Classe que representa a entidade Formacao (educação).
  * Mapeia a tabela FORMACAO do MER.
  */
+@Entity
+@Table(name = "formacao")
 public class Formacao {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id_formacao")
     private Integer idFormacao;
-    private Integer fkUsuario;
+
+    @ManyToOne
+    @JoinColumn(name = "fk_usuario")
+    private Usuario usuario;
+
+    @Column(length = 150)
     private String instituicao;
+
+    @Column(length = 100)
     private String diploma;
+
+    @Column(name = "data_inicio")
     private LocalDate dataInicio;
+
+    @Column(name = "data_fim")
     private LocalDate dataFim;
 
-    // Construtor vazio
     public Formacao() {
     }
 
-    // Construtor completo
-    public Formacao(Integer idFormacao, Integer fkUsuario, String instituicao,
+    public Formacao(Integer idFormacao, Usuario usuario, String instituicao,
                     String diploma, LocalDate dataInicio, LocalDate dataFim) {
         this.idFormacao = idFormacao;
-        this.fkUsuario = fkUsuario;
+        this.usuario = usuario;
         this.instituicao = instituicao;
         this.diploma = diploma;
         this.dataInicio = dataInicio;
         this.dataFim = dataFim;
     }
-
-    // Construtor sem ID
-    public Formacao(Integer fkUsuario, String instituicao, String diploma,
-                    LocalDate dataInicio, LocalDate dataFim) {
-        this.fkUsuario = fkUsuario;
-        this.instituicao = instituicao;
-        this.diploma = diploma;
-        this.dataInicio = dataInicio;
-        this.dataFim = dataFim;
-    }
-
-    // --- Getters e Setters ---
 
     public Integer getIdFormacao() {
         return idFormacao;
@@ -50,12 +53,12 @@ public class Formacao {
         this.idFormacao = idFormacao;
     }
 
-    public Integer getFkUsuario() {
-        return fkUsuario;
+    public Usuario getUsuario() {
+        return usuario;
     }
 
-    public void setFkUsuario(Integer fkUsuario) {
-        this.fkUsuario = fkUsuario;
+    public void setUsuario(Usuario usuario) {
+        this.usuario = usuario;
     }
 
     public String getInstituicao() {
@@ -94,7 +97,6 @@ public class Formacao {
     public String toString() {
         return "Formacao{" +
                 "idFormacao=" + idFormacao +
-                ", fkUsuario=" + fkUsuario +
                 ", instituicao='" + instituicao + '\'' +
                 ", diploma='" + diploma + '\'' +
                 ", dataInicio=" + dataInicio +

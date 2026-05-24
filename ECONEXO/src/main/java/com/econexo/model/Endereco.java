@@ -1,31 +1,50 @@
-package model;
+package com.econexo.model;
+
+import jakarta.persistence.*;
 
 /**
  * Classe que representa a entidade Endereco.
  * Mapeia a tabela ENDERECO do MER.
  */
+@Entity
+@Table(name = "endereco")
 public class Endereco {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id_endereco")
     private Integer idEndereco;
-    private Integer fkUsuario;
+
+    @ManyToOne
+    @JoinColumn(name = "fk_usuario")
+    private Usuario usuario;
+
+    @Column(length = 10)
     private String cep;
+
+    @Column(length = 100)
     private String cidade;
+
+    @Column(length = 50)
     private String estado;
+
+    @Column(length = 150)
     private String logradouro;
+
+    @Column(length = 10)
     private String numero;
+
     private Float latitude;
     private Float longitude;
 
-    // Construtor vazio
     public Endereco() {
     }
 
-    // Construtor completo
-    public Endereco(Integer idEndereco, Integer fkUsuario, String cep, String cidade,
+    public Endereco(Integer idEndereco, Usuario usuario, String cep, String cidade,
                     String estado, String logradouro, String numero,
                     Float latitude, Float longitude) {
         this.idEndereco = idEndereco;
-        this.fkUsuario = fkUsuario;
+        this.usuario = usuario;
         this.cep = cep;
         this.cidade = cidade;
         this.estado = estado;
@@ -35,19 +54,6 @@ public class Endereco {
         this.longitude = longitude;
     }
 
-    // Construtor sem ID e sem coordenadas
-    public Endereco(Integer fkUsuario, String cep, String cidade, String estado,
-                    String logradouro, String numero) {
-        this.fkUsuario = fkUsuario;
-        this.cep = cep;
-        this.cidade = cidade;
-        this.estado = estado;
-        this.logradouro = logradouro;
-        this.numero = numero;
-    }
-
-    // --- Getters e Setters ---
-
     public Integer getIdEndereco() {
         return idEndereco;
     }
@@ -56,12 +62,12 @@ public class Endereco {
         this.idEndereco = idEndereco;
     }
 
-    public Integer getFkUsuario() {
-        return fkUsuario;
+    public Usuario getUsuario() {
+        return usuario;
     }
 
-    public void setFkUsuario(Integer fkUsuario) {
-        this.fkUsuario = fkUsuario;
+    public void setUsuario(Usuario usuario) {
+        this.usuario = usuario;
     }
 
     public String getCep() {
@@ -124,7 +130,6 @@ public class Endereco {
     public String toString() {
         return "Endereco{" +
                 "idEndereco=" + idEndereco +
-                ", fkUsuario=" + fkUsuario +
                 ", cep='" + cep + '\'' +
                 ", cidade='" + cidade + '\'' +
                 ", estado='" + estado + '\'' +

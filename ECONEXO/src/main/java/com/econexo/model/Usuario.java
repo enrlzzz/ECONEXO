@@ -1,26 +1,42 @@
-package model;
+package com.econexo.model;
 
+import jakarta.persistence.*;
 import java.time.LocalDate;
 
 /**
  * Classe que representa a entidade Usuário.
  * Mapeia a tabela USUARIO do MER.
  */
+@Entity
+@Table(name = "usuario")
 public class Usuario {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id_usuario")
     private Integer idUsuario;
+
+    @Column(nullable = false, length = 100)
     private String nome;
+
+    @Column(nullable = false, unique = true, length = 150)
     private String email;
+
+    @Column(nullable = false)
     private String senha;
+
+    @Column(unique = true, length = 14)
     private String cpf;
+
+    @Column(length = 20)
     private String telefone;
+
+    @Column(name = "data_nascimento")
     private LocalDate dataNascimento;
 
-    // Construtor vazio (obrigatório para JPA futuramente)
     public Usuario() {
     }
 
-    // Construtor completo seguindo o MER
     public Usuario(Integer idUsuario, String nome, String email, String senha, 
                    String cpf, String telefone, LocalDate dataNascimento) {
         this.idUsuario = idUsuario;
@@ -32,7 +48,6 @@ public class Usuario {
         this.dataNascimento = dataNascimento;
     }
 
-    // Construtor sem ID (para criação - ID gerado pelo banco)
     public Usuario(String nome, String email, String senha, String cpf, 
                    String telefone, LocalDate dataNascimento) {
         this.nome = nome;
@@ -42,8 +57,6 @@ public class Usuario {
         this.telefone = telefone;
         this.dataNascimento = dataNascimento;
     }
-
-    // --- Getters e Setters ---
 
     public Integer getIdUsuario() {
         return idUsuario;
