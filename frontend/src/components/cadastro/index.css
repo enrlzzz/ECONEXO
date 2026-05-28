@@ -1,0 +1,333 @@
+body {
+    background: var(--darkblue);
+    overflow-x: hidden;
+}
+
+/* ===================================== */
+/* LOGO */
+/* ===================================== */
+
+.logos-menu {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    gap: 1rem;
+
+    padding: 1rem;
+    margin-top: 3rem;
+}
+
+.logo-title-menu,
+.title-menu {
+    font-size: 3rem;
+    font-weight: 700;
+}
+
+.title-menu {
+    color: var(--white);
+}
+
+.logo-title-menu {
+    margin-top: 0.25rem;
+
+    color: var(--black);
+    background: var(--white);
+
+    width: 3.5rem;
+    height: 3.5rem;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 50%;
+}
+
+/* ===================================== */
+/* CARD */
+/* ===================================== */
+
+.register-user {
+    border: none;
+    border-radius: 20px;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    padding: 4rem;
+
+    margin: 0 auto;
+    margin-top: 3rem;
+    margin-bottom: 5rem;
+
+    gap: 2rem;
+
+    background: var(--white);
+
+    width: 100%;
+    max-width: 50rem;
+
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.15);
+}
+
+.register-user h3 {
+    font-size: 2rem;
+    font-weight: 600;
+    color: var(--black);
+}
+
+.register-user p {
+    font-size: 1.5rem;
+    color: var(--gray);
+    text-align: center;
+}
+
+/* ===================================== */
+/* BUTTON SWITCH */
+/* ===================================== */
+
+.buttons-preference {
+    display: flex;
+
+    width: 100%;
+
+    background-color: #f0f0f0;
+
+    border-radius: 50px;
+
+    padding: 4px;
+    gap: 4px;
+}
+
+.buttons-preference button {
+    flex: 1;
+
+    padding: 1rem;
+
+    border: none;
+    border-radius: 50px;
+
+    cursor: pointer;
+
+    background-color: transparent;
+
+    color: var(--black);
+
+    font-size: 1.5rem;
+
+    transition: all 0.2s ease;
+}
+
+.buttons-preference button.ativo {
+    background: var(--white);
+    color: var(--black);
+
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.15);
+}
+
+/* ===================================== */
+/* FORM */
+/* ===================================== */
+
+.register-user form {
+    display: flex;
+    flex-direction: column;
+
+    width: 100%;
+
+    gap: 1rem;
+}
+
+label {
+    font-size: 1.5rem;
+    color: var(--black);
+    font-weight: 500;
+}
+
+.register-user form input,
+.register-user form select {
+    border: 1px solid var(--graybutton);
+    border-radius: 10px;
+
+    padding: 1.2rem;
+
+    font-size: 1.5rem;
+
+    color: var(--black);
+
+    font-family: montserrat, sans-serif;
+
+    outline: none;
+
+    transition: 0.2s ease;
+}
+
+.register-user form input:focus,
+.register-user form select:focus {
+    border-color: var(--blue);
+    box-shadow: 0 0 0 3px rgba(71, 77, 255, 0.15);
+}
+
+.register-user form input[type="file"] {
+    border: 1px dashed var(--graybutton);
+
+    border-radius: 10px;
+
+    padding: 2rem;
+
+    font-size: 1.4rem;
+
+    color: var(--gray);
+
+    cursor: pointer;
+
+    background: var(--whitesmoke);
+}
+
+.register-user form .info-certificado {
+    font-size: 1.2rem;
+    margin-top: 0.5rem;
+    color: var(--gray);
+    line-height: 1.5;
+}
+
+/* ===================================== */
+/* BUTTON */
+/* ===================================== */
+
+.button-register {
+    border: none;
+
+    padding: 1.2rem 5rem;
+
+    font-size: 1.7rem;
+    font-weight: 500;
+
+    border-radius: 15px;
+
+    background: var(--blue);
+    color: var(--white);
+
+    transition: 0.2s ease;
+
+    margin-top: 2rem;
+}
+
+.button-register:hover {
+    background: #3b40d0;
+    cursor: pointer;
+}
+
+/* ===================================== */
+/* LOGIN REDIRECT */
+/* ===================================== */
+
+.register-user span {
+    font-size: 1.5rem;
+    color: var(--gray);
+
+    font-weight: 500;
+
+    text-align: center;
+
+    margin-top: 2rem;
+}
+
+.register-user .redirect-login {
+    color: var(--blue);
+    cursor: pointer;
+    font-weight: 600;
+}
+
+/* ===================================== */
+/* MOBILE */
+/* ===================================== */
+
+@media (max-width: 500px) {
+
+    .register-container {
+        padding: 0 1.5rem;
+    }
+
+    .logos-menu {
+        margin-top: 2rem;
+    }
+
+    .logo-title-menu,
+    .title-menu {
+        font-size: 2.4rem;
+    }
+
+    .logo-title-menu {
+        width: 3rem;
+        height: 3rem;
+    }
+
+    .register-user {
+        width: 100%;
+
+        padding: 2.5rem 2rem;
+
+        margin-top: 2rem;
+        margin-bottom: 3rem;
+    }
+
+    .register-user h3 {
+        font-size: 2rem;
+        text-align: center;
+    }
+
+    .register-user p {
+        font-size: 1.4rem;
+        line-height: 1.6;
+    }
+
+    .buttons-preference {
+        flex-direction: column;
+        border-radius: 20px;
+    }
+
+    .buttons-preference button {
+        width: 100%;
+        border-radius: 15px;
+    }
+
+    .register-user form input,
+    .register-user form select {
+        font-size: 1.4rem;
+        padding: 1rem;
+    }
+
+    .button-register {
+        width: 100%;
+        padding: 1.2rem;
+        font-size: 1.5rem;
+    }
+
+    .register-user span {
+        font-size: 1.4rem;
+        line-height: 1.5;
+    }
+}
+
+/* ===================================== */
+/* TABLET */
+/* ===================================== */
+
+@media (min-width: 501px) and (max-width: 1279px) {
+
+    .register-container {
+        padding: 0 2rem;
+    }
+
+    .register-user {
+        width: 100%;
+        max-width: 60rem;
+    }
+
+    .buttons-preference button {
+        font-size: 1.4rem;
+    }
+}

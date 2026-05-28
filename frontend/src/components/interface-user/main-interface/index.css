@@ -1,0 +1,533 @@
+.main-interface {
+    display: flex;
+    flex-direction: column;
+
+    width: 100%;
+    min-height: 100vh;
+
+    background: var(--whitesmoke);
+
+    padding: 10rem 4rem 4rem 4rem;
+}
+
+/* ===================================== */
+/* WELCOME */
+/* ===================================== */
+
+.start-welcome {
+    display: flex;
+    flex-direction: column;
+
+    gap: 1rem;
+
+    margin-bottom: 3rem;
+    margin-top: 2rem;
+}
+
+.start-welcome h1 {
+    font-size: 3.2rem;
+    color: var(--black);
+    font-weight: 700;
+}
+
+.start-welcome p {
+    font-size: 1.6rem;
+    color: var(--gray);
+}
+
+/* ===================================== */
+/* CARDS PROFILE */
+/* ===================================== */
+
+.sections-profile {
+    display: grid;
+
+    grid-template-columns: repeat(4, 1fr);
+
+    gap: 2rem;
+
+    width: 100%;
+}
+
+.card-profile {
+    display: flex;
+    flex-direction: column;
+
+    gap: 1rem;
+
+    border: 1px solid var(--graybutton);
+
+    padding: 2rem;
+
+    background: var(--white);
+
+    border-radius: 16px;
+
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.08);
+
+    transition: 0.2s ease;
+}
+
+.card-profile:hover {
+    transform: translateY(-3px);
+}
+
+.card-title {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    margin-bottom: 1.5rem;
+}
+
+.card-title h3 {
+    font-size: 1.4rem;
+    color: var(--gray);
+    font-weight: 500;
+}
+
+.card-icon {
+    font-size: 1.8rem;
+    color: var(--blue);
+}
+
+.card-value {
+    font-size: 2.2rem;
+    color: var(--black);
+    font-weight: 700;
+}
+
+.card-profile .card-footer {
+    font-size: 1.2rem;
+    color: var(--gray);
+}
+
+/* ===================================== */
+/* PROGRESS */
+/* ===================================== */
+
+.progress-profile {
+    display: flex;
+    flex-direction: column;
+
+    gap: 1rem;
+
+    margin-top: 4rem;
+
+    padding: 2rem;
+
+    border: 1px solid var(--graybutton);
+
+    border-radius: 16px;
+
+    background: var(--white);
+
+    width: 100%;
+
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.08);
+}
+
+.progress-header {
+    display: flex;
+    align-items: center;
+
+    gap: 1rem;
+}
+
+.progress-header span {
+    font-size: 1.8rem;
+    color: rgb(255, 174, 23);
+}
+
+.progress-header h3 {
+    font-size: 1.7rem;
+    color: var(--black);
+    font-weight: 600;
+}
+
+.progress-profile .progress-p {
+    font-size: 1.4rem;
+    color: var(--gray);
+}
+
+.progress-bar-container {
+    width: 100%;
+    margin: 1rem 0;
+}
+
+.progress-bar-labels {
+    display: flex;
+    justify-content: space-between;
+
+    margin-bottom: 0.8rem;
+}
+
+.progress-bar-labels span {
+    font-size: 1.3rem;
+    font-weight: 500;
+    color: var(--black);
+}
+
+.progress-bar-track {
+    width: 100%;
+    height: 8px;
+
+    background: #d9d9d9;
+
+    border-radius: 99px;
+
+    overflow: hidden;
+}
+
+.progress-bar-fill {
+    height: 100%;
+
+    background: var(--blue);
+
+    border-radius: 99px;
+
+    transition: width 0.3s ease;
+}
+
+.progress-btn {
+    width: fit-content;
+
+    padding: 1rem 2rem;
+
+    background: var(--blue);
+    color: var(--white);
+
+    border: none;
+    border-radius: 10px;
+
+    font-size: 1.4rem;
+    font-weight: 600;
+
+    cursor: pointer;
+
+    transition: 0.3s ease;
+
+    font-family: montserrat, sans-serif;
+}
+
+.progress-btn:hover {
+    background: #3b40d0;
+}
+
+/* ===================================== */
+/* PROJECTS SECTION */
+/* ===================================== */
+
+.projects-section {
+    display: flex;
+
+    gap: 2rem;
+
+    margin-top: 4rem;
+
+    width: 100%;
+}
+
+/* ===================================== */
+/* RECENT PROJECTS */
+/* ===================================== */
+
+.recent-projects {
+    flex: 1;
+
+    background: var(--white);
+
+    border: 1px solid var(--graybutton);
+
+    border-radius: 16px;
+
+    padding: 2rem;
+
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.08);
+}
+
+.recent-projects-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    gap: 1rem;
+
+    margin-bottom: 0.5rem;
+}
+
+.recent-projects-h2 {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: var(--black);
+}
+
+.recent-projects-p {
+    font-size: 1.3rem;
+    color: var(--gray);
+
+    margin-bottom: 2rem;
+}
+
+.recent-projects-btn {
+    background: var(--blue);
+    color: var(--white);
+
+    border: none;
+    border-radius: 10px;
+
+    padding: 1rem 1.5rem;
+
+    display: flex;
+    align-items: center;
+
+    gap: 0.5rem;
+
+    font-size: 1.3rem;
+    font-weight: 600;
+
+    cursor: pointer;
+
+    transition: 0.3s ease;
+
+    font-family: montserrat, sans-serif;
+}
+
+.recent-projects-btn span {
+    font-size: 1.4rem;
+    color: var(--white);
+}
+
+.recent-projects-btn:hover {
+    background: #3b40d0;
+}
+
+/* ===================================== */
+/* CARD PROJECT */
+/* ===================================== */
+
+.card-project {
+    display: grid;
+
+    grid-template-columns: auto 1fr;
+
+    gap: 1rem;
+
+    border: 1px solid var(--graybutton);
+
+    border-radius: 12px;
+
+    padding: 1.5rem;
+
+    transition: 0.2s ease;
+}
+
+.card-project:hover {
+    background: var(--whitesmoke);
+}
+
+.card-project-icon {
+    font-size: 2rem;
+
+    color: var(--blue);
+
+    background: #e8f0fe;
+
+    border-radius: 50%;
+
+    padding: 0.8rem;
+
+    width: 50px;
+    height: 50px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.card-project-h3 {
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: var(--black);
+}
+
+.card-project-p {
+    font-size: 1.2rem;
+    color: var(--gray);
+}
+
+.card-project-span {
+    width: fit-content;
+
+    margin-top: 0.5rem;
+
+    background: #f0f0f0;
+
+    border-radius: 20px;
+
+    padding: 0.4rem 1rem;
+
+    font-size: 1rem;
+
+    color: var(--black);
+}
+
+/* ===================================== */
+/* QUICK ACTIONS */
+/* ===================================== */
+
+.quick-actions {
+    flex: 1;
+
+    background: var(--white);
+
+    border: 1px solid var(--graybutton);
+
+    border-radius: 16px;
+
+    padding: 2rem;
+
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.08);
+}
+
+.quick-actions h2 {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: var(--black);
+}
+
+.quick-actions p {
+    font-size: 1.3rem;
+    color: var(--gray);
+
+    margin-top: 0.5rem;
+    margin-bottom: 2rem;
+}
+
+.actions {
+    display: flex;
+    flex-direction: column;
+
+    gap: 1rem;
+}
+
+.actions button {
+    display: flex;
+    align-items: center;
+
+    gap: 0.75rem;
+
+    background: var(--white);
+
+    border: 1px solid var(--graybutton);
+
+    border-radius: 10px;
+
+    padding: 1.2rem 1.5rem;
+
+    font-size: 1.4rem;
+    font-weight: 500;
+
+    color: var(--black);
+
+    cursor: pointer;
+
+    width: 100%;
+
+    text-align: left;
+
+    transition: 0.2s ease;
+
+    font-family: montserrat, sans-serif;
+}
+
+.actions button:hover {
+    background: var(--whitesmoke);
+}
+
+.actions button span {
+    font-size: 1.5rem;
+    color: var(--gray);
+}
+
+/* ===================================== */
+/* MOBILE */
+/* ===================================== */
+
+@media (max-width: 500px) {
+
+    .main-interface {
+        padding: 10rem 1.5rem 3rem 1.5rem;
+    }
+
+    .start-welcome {
+        align-items: center;
+        text-align: center;
+    }
+
+    .start-welcome h1 {
+        font-size: 2.5rem;
+    }
+
+    .start-welcome p {
+        font-size: 1.4rem;
+        line-height: 1.6;
+    }
+
+    .sections-profile {
+        grid-template-columns: 1fr;
+    }
+
+    .projects-section {
+        flex-direction: column;
+    }
+
+    .recent-projects-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .recent-projects-btn {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .progress-btn {
+        width: 100%;
+    }
+
+    .card-project {
+        grid-template-columns: 1fr;
+    }
+
+    .card-project-icon {
+        margin-bottom: 0.5rem;
+    }
+
+    .actions button {
+        font-size: 1.3rem;
+    }
+}
+
+/* ===================================== */
+/* TABLET */
+/* ===================================== */
+
+@media (min-width: 501px) and (max-width: 1279px) {
+
+    .main-interface {
+        padding: 12rem 2rem 4rem 2rem;
+    }
+
+    .sections-profile {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .projects-section {
+        flex-direction: column;
+    }
+
+    .start-welcome h1 {
+        font-size: 2.8rem;
+    }
+}

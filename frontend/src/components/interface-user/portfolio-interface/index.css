@@ -1,0 +1,354 @@
+.portfolio-interface {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 2rem;
+    align-items: start;
+
+}
+
+.portfolio-header {
+    display: flex;
+    flex-direction: column;
+    padding: 5rem;
+    gap: 1rem;
+    margin-top: 3rem;
+    margin-left: 3rem;
+}
+
+.portfolio-header h2 {
+    font-size: 3rem;
+    color: var(--black);
+    margin-left: 4rem;
+    margin-top: 2rem;
+}
+
+.portfolio-header p {
+    font-size: 1.5rem;
+    color: var(--gray);
+    margin-left: 4rem;
+}
+
+.cards-portfolio {
+    display: flex;
+    justify-content: center;
+    margin: 0 auto;
+    gap: 2rem;
+    padding: 1rem;
+    margin-bottom: 2rem;
+}
+
+.card-total-projects, .card-projects-checked, .card-verification-fee {
+    border: 1px solid var(--graybutton);
+    border-radius: 12px;
+    background: var(--white);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between; 
+    padding: 1.5rem;
+    gap: 2rem;
+    width: 40rem;  
+    height: 15rem;   
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.card-title-portfolio {
+    font-size: 1.5rem;
+    font-weight: 500;
+    color: var(--gray);
+    align-self: flex-start;  
+}
+
+.card-number-portfolio {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: var(--gray);
+    align-self: flex-start;
+}
+
+.portfolio-list {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+    width: 83%;
+    align-items: center;
+    margin: 0 auto;
+    border: 1px solid var(--graybutton);
+    border-radius: 12px;
+    background: var(--white);
+    padding: 5rem;
+}
+
+.span-item {
+    font-size: 5rem;
+    color: var(--graybutton);
+}
+
+.title-1 {
+    font-size: 1.7rem;
+    color: var(--gray);
+    font-weight: 600;
+}
+
+.title-2 {
+    font-size: 1.5rem;
+    color: var(--gray);
+}
+
+.btn-add-project {
+    background: var(--blue);
+    color: var(--white);
+    border: none;
+    border-radius: 8px;
+    padding: 0.75rem 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 1.3rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.3s ease;
+    font-family: montserrat, sans-serif;
+}
+
+.btn-add-project span {
+    font-size: 1.4rem;
+    color: var(--white);
+}
+
+.btn-add-project:hover {
+    background: #3b40d0;
+}
+
+.modal-portfolio-overlay {
+    position: fixed;
+    inset: 0;                              /* cobre toda a tela */
+    background: rgba(0, 0, 0, 0.5);       /* fundo escurecido */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;                         /* fica acima de tudo */
+}
+
+.modal-portfolio {
+    background: var(--white);
+    border-radius: 16px;
+    padding: 3.5rem;
+    width: 50rem;
+    max-height: 90vh;             
+    display: flex;
+    flex-direction: column;
+    gap: 3rem;
+    position: relative;
+}
+
+.modal-portfolio h3 {
+    font-size: 2rem;
+    text-align: center;
+    font-weight: 700;
+    color: var(--black);
+}
+
+.modal-portfolio p {
+    font-size: 1.4rem;
+    font-weight: 500;
+    color: var(--gray);
+    text-align: center;
+}
+
+.modal-portfolio form {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    margin-top: 1rem;
+}
+
+.modal-portfolio form label {
+    font-size: 1.4rem;
+    font-weight: 600;
+    color: var(--black);
+}
+
+.modal-portfolio form input {
+    padding: 0.75rem 1rem;
+    border: 1px solid var(--graybutton);
+    border-radius: 8px;
+    font-size: 1.4rem;
+    font-family: montserrat, sans-serif;
+    outline: none;
+}
+
+.modal-portfolio form input:focus {
+    border-color: var(--blue);
+}
+
+.close-modal {
+    position: absolute;
+    top: 1.5rem;
+    right: 1.5rem;
+    font-size: 1.5rem;
+    cursor: pointer;
+    color: var(--gray);
+}
+
+.close-modal:hover {
+    color: var(--black);
+}
+
+.modal-portfolio button {
+    background: var(--blue);
+    color: var(--white);
+    border: none;
+    border-radius: 8px;
+    padding: 0.75rem 1.5rem;
+    font-size: 1.3rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.3s ease;
+    font-family: montserrat, sans-serif;
+    margin-top: 3rem;
+}
+
+.modal-portfolio button:hover {
+    background: #3b40d0;
+}
+
+/* ===================================== */
+/* PROJETOS DO PORTFÓLIO */
+/* ===================================== */
+
+.portfolio-projects {
+    width: 100%;
+
+    display: grid;
+
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+
+    gap: 2rem;
+}
+
+.portfolio-card {
+    background: var(--white);
+
+    border: 1px solid var(--graybutton);
+
+    border-radius: 14px;
+
+    overflow: hidden;
+
+    display: flex;
+    flex-direction: column;
+
+    transition: 0.2s ease;
+
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.08);
+}
+
+.portfolio-card:hover {
+    transform: translateY(-3px);
+}
+
+.portfolio-card img {
+    width: 100%;
+    height: 240px;
+
+    object-fit: cover;
+
+    border-bottom: 1px solid var(--graybutton);
+}
+
+.portfolio-card h3 {
+    font-size: 1.7rem;
+
+    color: var(--black);
+
+    font-weight: 700;
+
+    padding: 1.5rem 1.5rem 0 1.5rem;
+}
+
+.portfolio-card p {
+    font-size: 1.3rem;
+
+    color: var(--gray);
+
+    line-height: 1.6;
+
+    padding: 0 1.5rem 1.5rem 1.5rem;
+}
+
+/* ===================================== */
+/* RESPONSIVIDADE */
+/* ===================================== */
+
+@media (max-width: 500px) {
+
+    .portfolio-interface {
+        padding: 1rem;
+    }
+
+    .portfolio-header {
+        padding: 2rem 1rem;
+        margin-left: 0;
+    }
+
+    .portfolio-header h2,
+    .portfolio-header p {
+        margin-left: 0;
+    }
+    
+    .portfolio-header h2 {
+        font-size: 2.4rem;
+        margin-top: 8rem;
+    }
+
+    .portfolio-header p {
+        font-size: 1.3rem;
+    }
+
+    .cards-portfolio {
+        flex-direction: column;
+
+        width: 100%;
+    }
+
+    .card-total-projects,
+    .card-projects-checked,
+    .card-verification-fee {
+        width: 100%;
+    }
+
+    .portfolio-list {
+        width: 100%;
+
+        padding: 2rem;
+    }
+
+    .portfolio-projects {
+        grid-template-columns: 1fr;
+    }
+
+    .modal-portfolio {
+        width: 95%;
+
+        padding: 2rem;
+    }
+}
+
+@media (min-width: 501px) and (max-width: 1279px) {
+
+    .cards-portfolio {
+        flex-wrap: wrap;
+    }
+
+    .card-total-projects,
+    .card-projects-checked,
+    .card-verification-fee {
+        width: 30rem;
+    }
+
+    .portfolio-list {
+        width: 95%;
+    }
+}
+

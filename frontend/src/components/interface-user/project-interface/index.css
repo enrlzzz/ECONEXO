@@ -1,0 +1,369 @@
+.project-content {
+    padding-top: 10rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    padding-inline: 4rem;
+    margin-top: 2rem;
+    margin-bottom: 2rem;
+}
+
+.content-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 2rem;
+    flex-wrap: wrap;
+}
+
+.content-header h2 {
+    font-size: 3rem;
+    color: var(--black);
+    margin-left: 0;
+}
+
+.projects-btn {
+    background: var(--blue);
+    color: var(--white);
+    border: none;
+    border-radius: 8px;
+    padding: 0.75rem 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 1.3rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.3s ease;
+    font-family: montserrat, sans-serif;
+    margin-right: 6rem;
+}
+
+.projects-btn span {
+    font-size: 1.4rem;
+    color: var(--white);
+}
+
+.projects-btn:hover {
+    background: #3b40d0;
+}
+
+.modal-overlay {
+    position: fixed;
+    inset: 0;                              /* cobre toda a tela */
+    background: rgba(0, 0, 0, 0.5);       /* fundo escurecido */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;                         /* fica acima de tudo */
+}
+
+.modal {
+    background: var(--white);
+    border-radius: 16px;
+    padding: 3.5rem;
+    width: 50rem;
+    max-height: 90vh;             
+    display: flex;
+    flex-direction: column;
+    gap: 3rem;
+    position: relative;
+}
+
+.modal h3 {
+    font-size: 2rem;
+    text-align: center;
+    font-weight: 700;
+    color: var(--black);
+}
+
+.span-modal {
+    font-size: 1.4rem;
+    font-weight: 500;
+    color: var(--gray);
+    text-align: center;
+}
+
+.modal form {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    margin-top: 1rem;
+}
+
+.modal form label {
+    font-size: 1.4rem;
+    font-weight: 600;
+    color: var(--black);
+}
+
+.modal form input,
+.modal form select {
+    padding: 0.75rem 1rem;
+    border: 1px solid var(--graybutton);
+    border-radius: 8px;
+    font-size: 1.4rem;
+    font-family: montserrat, sans-serif;
+    outline: none;
+}
+
+.modal form input:focus,
+.modal form select:focus {
+    border-color: var(--blue);
+}
+
+.close {
+    position: absolute;
+    top: 1.5rem;
+    right: 1.5rem;
+    font-size: 1.5rem;
+    cursor: pointer;
+    color: var(--gray);
+}
+
+.close:hover {
+    color: var(--black);
+}
+
+.modal button {
+    background: var(--blue);
+    color: var(--white);
+    border: none;
+    border-radius: 8px;
+    padding: 0.75rem 1.5rem;
+    font-size: 1.3rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.3s ease;
+    font-family: montserrat, sans-serif;
+    margin-top: 3rem;
+}
+
+.modal button:hover {
+    background: #3b40d0;
+}
+
+.project-content p {
+    font-size: 1.5rem;
+    color: var(--gray);
+    margin-left: 0;
+}
+
+.cards-content {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 2rem;
+    padding-inline: 4rem;
+}
+
+.card {
+    border: 1px solid var(--graybutton);
+    border-radius: 12px;
+    background: var(--white);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 1.5rem;
+    gap: 2rem;
+    min-height: 15rem;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.card-content-title {
+    font-size: 1.5rem;
+    font-weight: 500;
+    color: var(--gray);
+    align-self: flex-start;         /* garante que fica à esquerda */
+}
+
+.card-number {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: var(--gray);
+    align-self: flex-start;         /* garante que fica à esquerda */
+}
+
+.bar-process {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    background: var(--white);
+    border: 1px solid var(--graybutton);
+    border-radius: 30px;
+    padding: 1rem 1.5rem;
+    width: fit-content;
+    margin: 3rem 4rem;
+}
+
+.bar-process p {
+    font-size: 1.3rem;
+    font-weight: 500;
+    color: var(--gray);
+    cursor: pointer;
+    padding: 0.30rem 0.80rem;
+    border-radius: 20px;
+    white-space: nowrap;     /* evita quebra de linha */
+}
+
+.bar-process p:hover {
+    background: var(--whitesmoke);
+    color: var(--black);
+}
+
+.box-project {
+    background: var(--white);
+    border: 1px solid var(--graybutton);
+    border-radius: 12px;
+    padding: 2rem;
+    width: calc(100% - 8rem);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    margin: 0 auto;
+    margin-top: 2rem;
+
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+}
+
+.box-title {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 0;
+}
+
+.box-title h3 {
+    font-size: 1.7rem;
+    color: var(--black);
+}
+
+.box-title p {
+    font-size: 1.5rem;
+    color: var(--gray);
+}
+
+.box-description {
+    font-size: 1.5rem;
+    color: var(--gray);
+}
+
+.box-information {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+
+    gap: 2rem;
+
+    font-size: 1.3rem;
+    color: var(--gray);
+}
+.box-information .location {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.box-information .icon-location {
+    font-size: 1.5rem;
+    color: var(--gray);
+}
+
+.box-information .power {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.box-information .icon-power {
+    font-size: 1.5rem;
+    color: var(--gray);
+}
+
+/* ===================================== */
+/* TABLET */
+/* ===================================== */
+
+@media (max-width: 1279px) {
+
+    .cards-content {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .project-content {
+        padding-inline: 2rem;
+    }
+
+    .box-project {
+        width: calc(100% - 4rem);
+    }
+
+    .bar-process {
+        margin-left: 2rem;
+        margin-right: 2rem;
+    }
+}
+
+/* ===================================== */
+/* MOBILE */
+/* ===================================== */
+
+@media (max-width: 500px) {
+
+    .project-content {
+        padding-top: 10rem;
+        padding-inline: 1.5rem;
+    }
+
+    .content-header {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .content-header h2 {
+        font-size: 2.5rem;
+    }
+
+    .projects-btn {
+        width: 100%;
+        justify-content: center;
+        margin-right: 0;
+    }
+
+    .cards-content {
+        grid-template-columns: 1fr;
+        padding-inline: 1.5rem;
+    }
+
+    .bar-process {
+        width: calc(100% - 3rem);
+        overflow-x: auto;
+        border-radius: 16px;
+        margin: 2rem auto;
+    }
+
+    .box-project {
+        width: calc(100% - 3rem);
+        padding: 1.5rem;
+    }
+
+    .box-title {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
+    }
+
+    .box-title h3 {
+        font-size: 1.5rem;
+    }
+
+    .box-information {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .modal {
+        width: 95%;
+        padding: 2rem;
+    }
+}

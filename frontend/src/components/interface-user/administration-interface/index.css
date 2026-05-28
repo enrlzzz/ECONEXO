@@ -1,0 +1,766 @@
+.admin-panel {
+    display: flex;
+    flex-direction: column;
+}
+
+.admin-content {
+    width: 82%;
+    margin: 0 auto;
+    padding-top: 8rem;
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+    padding-bottom: 4rem;
+}
+
+.admin-title-row {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+}
+
+.admin-shield-icon {
+    font-size: 4rem;
+    color: var(--blue);
+    padding: 1rem;
+    border-radius: 12px;
+    margin-top: 4rem;
+}
+
+.admin-title-row h2 {
+    font-size: 3rem;
+    font-weight: 700;
+    color: var(--black);
+    margin-top: 4rem;
+}
+
+.admin-title-row p {
+    font-size: 1.5rem;
+    color: var(--gray);
+}
+
+/* cards */
+.admin-cards {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 2rem;
+}
+
+.admin-card {
+    background: var(--white);
+    border: 1px solid var(--graybutton);
+    border-radius: 12px;
+    padding: 2rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.admin-card-title {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    font-size: 1.3rem;
+    color: var(--gray);
+}
+
+.admin-card-number {
+    font-size: 3rem;
+    font-weight: 700;
+}
+
+.admin-card-number.pendente { color: var(--gray); }
+.admin-card-number.aprovado { color: var(--gray); }
+.admin-card-number.rejeitado { color: var(--gray); }
+.admin-card-number.total { color: var(--gray); }
+
+/* alerta */
+.admin-alert {
+    background: var(--white);
+    border: 1px solid var(--graybutton);
+    border-radius: 12px;
+    padding: 2rem;
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+}
+
+.alert-icon {
+    font-size: 2rem;
+    color: orange;
+    flex-shrink: 0;
+    margin-top: 0.2rem;
+}
+
+.admin-alert h3 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--black);
+}
+
+.admin-alert p {
+    font-size: 1.2rem;
+    color: var(--gray);
+    margin-top: 0.25rem;
+}
+
+/* filtros */
+.admin-filters {
+    display: flex;
+    gap: 0.75rem;
+}
+
+.filter-btn {
+    padding: 0.6rem 1.5rem;
+    border: 1px solid var(--graybutton);
+    border-radius: 20px;
+    background: var(--white);
+    font-size: 1.2rem;
+    cursor: pointer;
+    font-family: montserrat, sans-serif;
+    color: var(--gray);
+}
+
+.filter-btn.ativo {
+    background: var(--blue);
+    color: var(--white);
+    border-color: var(--blue);
+    font-weight: 600;
+}
+
+/* cards de certificação */
+.admin-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.cert-card {
+    background: var(--white);
+    border: 1px solid var(--graybutton);
+    border-radius: 12px;
+    padding: 2rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+}
+
+.cert-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+}
+
+.cert-user-info {
+    display: flex;
+    align-items: flex-start;
+    gap: 1.5rem;
+}
+
+.cert-avatar {
+    background: var(--blue);
+    color: var(--white);
+    font-size: 1.8rem;
+    font-weight: 700;
+    width: 5rem;
+    height: 5rem;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.cert-user-info h3 {
+    font-size: 1.6rem;
+    font-weight: 700;
+    color: var(--black);
+}
+
+.cert-user-info p {
+    font-size: 1.2rem;
+    color: var(--gray);
+}
+
+.cert-location {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+}
+
+.cert-status {
+    padding: 0.4rem 1.2rem;
+    border-radius: 20px;
+    font-size: 1.2rem;
+    font-weight: 600;
+    border: 1px solid var(--graybutton);
+}
+
+.status-pendente { color: orange; border-color: #ffe082; background: #fff8e1; }
+.status-aprovado { color: green; border-color: #a5d6a7; background: #e8f5e9; }
+.status-rejeitado { color: red; border-color: #ef9a9a; background: #ffebee; }
+
+.cert-docs-title {
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: var(--black);
+    margin-bottom: 0.5rem;
+}
+
+.cert-doc-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem;
+    border: 1px solid var(--graybutton);
+    border-radius: 8px;
+    font-size: 1.3rem;
+    color: var(--gray);
+    margin-bottom: 0.5rem;
+}
+
+.cert-docs span {
+    font-size: 1.5rem;
+    font-weight: 500;
+}
+
+.btn-visualizar {
+    background: none;
+    border: none;
+    font-size: 1.2rem;
+    font-weight: 600;
+    cursor: pointer;
+    color: var(--gray);
+    font-family: montserrat, sans-serif;
+}
+
+.cert-data {
+    font-size: 1.2rem;
+    color: var(--gray);
+}
+
+.cert-actions {
+    display: flex;
+    gap: 1rem;
+}
+
+.btn-revisar {
+    flex: 1;
+    padding: 0.75rem;
+    border: 1px solid var(--graybutton);
+    border-radius: 8px;
+    background: var(--white);
+    font-size: 1.2rem;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: montserrat, sans-serif;
+}
+
+.btn-aprovar {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1.5rem;
+    border: none;
+    border-radius: 8px;
+    background: green;
+    color: var(--white);
+    font-size: 1.2rem;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: montserrat, sans-serif;
+}
+
+.btn-rejeitar {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1.5rem;
+    border: none;
+    border-radius: 8px;
+    background: #e53935;
+    color: var(--white);
+    font-size: 1.2rem;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: montserrat, sans-serif;
+}
+
+/* modal revisar */
+.modal-revisar {
+    background: var(--white);
+    border-radius: 16px;
+    padding: 3rem;
+    width: 60rem;
+    max-height: 90vh;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+    position: relative;
+}
+
+.modal-revisar-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+}
+
+.modal-revisar-header h3 {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--black);
+}
+
+.modal-revisar-header p {
+    font-size: 1.2rem;
+    color: var(--gray);
+}
+
+.modal-user-card {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    background: var(--whitesmoke);
+    border-radius: 12px;
+    padding: 1.5rem;
+}
+
+.modal-user-card h3 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--black);
+}
+
+.modal-user-card p {
+    font-size: 1.2rem;
+    color: var(--gray);
+}
+
+.modal-revisar h4 {
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: var(--black);
+}
+
+.modal-doc-row {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    border: 1px solid var(--graybutton);
+    border-radius: 12px;
+    padding: 1.5rem;
+}
+
+.modal-doc-icon {
+    font-size: 2.5rem;
+    color: var(--blue);
+    background: #e8f0fe;
+    padding: 0.75rem;
+    border-radius: 8px;
+}
+
+.modal-doc-row > div {
+    flex: 1;
+}
+
+.modal-doc-row p {
+    font-size: 1.3rem;
+    font-weight: 600;
+    color: var(--black);
+}
+
+.doc-filename {
+    font-size: 1.1rem !important;
+    font-weight: 400 !important;
+    color: var(--gray) !important;
+}
+
+.btn-visualizar-pdf {
+    padding: 0.6rem 1.2rem;
+    border: 1px solid var(--graybutton);
+    border-radius: 8px;
+    background: var(--white);
+    font-size: 1.2rem;
+    cursor: pointer;
+    font-family: montserrat, sans-serif;
+}
+
+.checklist {
+    background: #f0f4ff;
+    border-radius: 12px;
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.checklist h4 {
+    margin-bottom: 0.5rem;
+}
+
+.checklist p {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    font-size: 1.2rem;
+    color: var(--black);
+}
+
+.check-icon {
+    color: green;
+    font-size: 1.5rem;
+    flex-shrink: 0;
+}
+
+.modal-revisar-actions {
+    display: flex;
+    gap: 1rem;
+    justify-content: flex-end;
+    border-top: 1px solid var(--graybutton);
+    padding-top: 1.5rem;
+}
+
+.btn-fechar {
+    padding: 0.75rem 2rem;
+    border: 1px solid var(--graybutton);
+    border-radius: 8px;
+    background: var(--white);
+    font-size: 1.2rem;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: montserrat, sans-serif;
+}
+
+/* overlay modal */
+.modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.45);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 999;
+    padding: 2rem;
+}
+
+.close {
+    font-size: 2rem;
+    cursor: pointer;
+    color: var(--gray);
+    transition: 0.2s ease;
+}
+
+.close:hover {
+    color: var(--black);
+}
+
+/* hover effects */
+.admin-card,
+.cert-card,
+.filter-btn,
+.btn-revisar,
+.btn-aprovar,
+.btn-rejeitar,
+.btn-fechar,
+.btn-visualizar,
+.btn-visualizar-pdf {
+    transition: all 0.2s ease;
+}
+
+.admin-card:hover,
+.cert-card:hover {
+    transform: translateY(-2px);
+}
+
+.filter-btn:hover {
+    background: var(--whitesmoke);
+}
+
+.btn-revisar:hover,
+.btn-fechar:hover,
+.btn-visualizar-pdf:hover {
+    background: var(--whitesmoke);
+}
+
+.btn-aprovar:hover {
+    opacity: 0.9;
+}
+
+.btn-rejeitar:hover {
+    opacity: 0.9;
+}
+
+
+/* =========================
+   RESPONSIVIDADE
+========================= */
+
+/* Tablets */
+@media (max-width: 1279px) {
+
+    .admin-content {
+        width: 92%;
+    }
+
+    .admin-cards {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .admin-title-row h2 {
+        font-size: 2.5rem;
+    }
+
+    .modal-revisar {
+        width: 90%;
+    }
+}
+
+
+/* Mobile */
+@media (max-width: 768px) {
+
+    .admin-content {
+        width: 95%;
+        padding-top: 7rem;
+        gap: 1.5rem;
+    }
+
+    .admin-title-row {
+        align-items: flex-start;
+        gap: 1rem;
+    }
+
+    .admin-shield-icon {
+        font-size: 3rem;
+        padding: 0.8rem;
+        margin-top: 2rem;
+    }
+
+    .admin-title-row h2 {
+        font-size: 2rem;
+        margin-top: 2rem;
+    }
+
+    .admin-title-row p {
+        font-size: 1.2rem;
+    }
+
+    /* cards dashboard */
+    .admin-cards {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+
+    .admin-card {
+        padding: 1.5rem;
+    }
+
+    .admin-card-number {
+        font-size: 2.5rem;
+    }
+
+    /* alerta */
+    .admin-alert {
+        flex-direction: column;
+        padding: 1.5rem;
+    }
+
+    .admin-alert h3 {
+        font-size: 1.3rem;
+    }
+
+    .admin-alert p {
+        font-size: 1.1rem;
+    }
+
+    /* filtros */
+    .admin-filters {
+        overflow-x: auto;
+        padding-bottom: 0.5rem;
+    }
+
+    .filter-btn {
+        white-space: nowrap;
+        font-size: 1.1rem;
+    }
+
+    /* certificações */
+    .cert-card {
+        padding: 1.5rem;
+    }
+
+    .cert-card-header {
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .cert-user-info {
+        gap: 1rem;
+    }
+
+    .cert-avatar {
+        width: 4.5rem;
+        height: 4.5rem;
+        font-size: 1.5rem;
+    }
+
+    .cert-user-info h3 {
+        font-size: 1.4rem;
+    }
+
+    .cert-user-info p {
+        font-size: 1.1rem;
+    }
+
+    .cert-status {
+        align-self: flex-start;
+    }
+
+    .cert-doc-row {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
+    }
+
+    .btn-visualizar {
+        padding: 0;
+    }
+
+    .cert-actions {
+        flex-direction: column;
+    }
+
+    .btn-revisar,
+    .btn-aprovar,
+    .btn-rejeitar {
+        width: 100%;
+        justify-content: center;
+    }
+
+    /* modal */
+    .modal-overlay {
+        padding: 1rem;
+    }
+
+    .modal-revisar {
+        width: 100%;
+        padding: 1.5rem;
+        gap: 1.5rem;
+        border-radius: 12px;
+    }
+
+    .modal-revisar-header {
+        gap: 1rem;
+    }
+
+    .modal-revisar-header h3 {
+        font-size: 1.6rem;
+    }
+
+    .modal-revisar-header p {
+        font-size: 1.1rem;
+    }
+
+    .modal-user-card {
+        padding: 1rem;
+        gap: 1rem;
+    }
+
+    .modal-doc-row {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
+        padding: 1rem;
+    }
+
+    .modal-doc-icon {
+        font-size: 2rem;
+    }
+
+    .modal-doc-row p {
+        font-size: 1.2rem;
+    }
+
+    .btn-visualizar-pdf {
+        width: 100%;
+    }
+
+    .checklist {
+        padding: 1rem;
+    }
+
+    .checklist p {
+        font-size: 1.1rem;
+        align-items: flex-start;
+    }
+
+    .modal-revisar-actions {
+        flex-direction: column;
+    }
+
+    .btn-fechar,
+    .modal-revisar-actions .btn-aprovar,
+    .modal-revisar-actions .btn-rejeitar {
+        width: 100%;
+        justify-content: center;
+    }
+}
+
+
+/* Mobile Pequeno */
+@media (max-width: 500px) {
+
+    .admin-shield-icon {
+        margin-top: 4rem;
+    }
+
+    .admin-title-row h2 {
+        font-size: 1.8rem;
+        margin-top: 5rem;
+    }
+
+    .admin-title-row p {
+        font-size: 1.1rem;
+    }
+
+    .admin-card-title {
+        font-size: 1.1rem;
+    }
+
+    .admin-card-number {
+        font-size: 2rem;
+    }
+
+    .cert-card {
+        padding: 1.2rem;
+    }
+
+    .cert-user-info h3 {
+        font-size: 1.3rem;
+    }
+
+    .cert-user-info p,
+    .cert-data,
+    .cert-docs-title,
+    .cert-doc-row {
+        font-size: 1rem;
+    }
+
+    .btn-revisar,
+    .btn-aprovar,
+    .btn-rejeitar,
+    .btn-fechar,
+    .btn-visualizar-pdf {
+        font-size: 1rem;
+        padding: 0.9rem;
+    }
+
+    .modal-revisar {
+        padding: 1.2rem;
+    }
+
+    .modal-revisar-header h3 {
+        font-size: 1.4rem;
+    }
+}

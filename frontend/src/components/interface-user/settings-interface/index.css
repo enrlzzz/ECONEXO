@@ -1,0 +1,498 @@
+.container-settings {
+    display: flex;
+    flex-direction: column;
+    padding-top: 8rem;
+}
+
+.settings-header {
+    width: 82%;
+    margin: 2rem auto;
+}
+
+.settings-header h2 {
+    font-size: 3rem;
+    font-weight: 700;
+    color: var(--black);
+    margin-top: 2rem;
+}
+
+.settings-header p {
+    font-size: 1.5rem;
+    color: var(--gray);
+    margin-top: 0.5rem;
+    margin-bottom: 2rem;
+}
+
+.buttons-config-preference {
+    display: flex;
+    background: var(--whitesmoke);
+    border: 1px solid var(--graybutton);
+    border-radius: 12px;
+    padding: 4px;
+    gap: 4px;
+    width: 100%;
+}
+
+.buttons-config-preference button {
+    flex: 1;
+    padding: 1rem;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    background: transparent;
+    color: var(--gray);
+    font-size: 1.5rem;
+    font-family: montserrat, sans-serif;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    transition: all 0.2s ease;
+}
+
+.buttons-config-preference button.ativo {
+    background: var(--white);
+    color: var(--black);
+    font-weight: 500;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+}
+
+.settings-content {
+    width: 82%;
+    margin: 0 auto 4rem;
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+}
+
+.settings-card {
+    background: var(--white);
+    border: 1px solid var(--graybutton);
+    border-radius: 12px;
+    padding: 2.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.settings-card h3 {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: var(--black);
+}
+
+.settings-card > p {
+    font-size: 1.3rem;
+    color: var(--gray);
+    margin-top: -1rem;
+}
+
+.foto-section {
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+}
+
+.avatar-settings {
+    background: var(--blue);
+    color: var(--white);
+    font-size: 2.5rem;
+    font-weight: 700;
+    width: 7rem;
+    height: 7rem;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.btn-alterar-foto {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1.5rem;
+    border: 1px solid var(--graybutton);
+    border-radius: 8px;
+    font-size: 1.3rem;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: montserrat, sans-serif;
+    color: var(--black);
+    background: var(--white);
+}
+
+.btn-alterar-foto:hover {
+    background: var(--whitesmoke);
+}
+
+.foto-hint {
+    font-size: 1.2rem;
+    color: var(--gray);
+    margin-top: 0.5rem;
+}
+
+.settings-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    border-top: 1px solid var(--graybutton);
+    padding-top: 1.5rem;
+}
+
+.form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.form-group.full-width {
+    grid-column: 1 / -1;
+}
+
+.form-group label {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: var(--black);
+}
+
+.form-group input,
+.form-group textarea,
+.form-group select {
+    padding: 0.75rem 1rem;
+    border: 1px solid var(--graybutton);
+    border-radius: 8px;
+    font-size: 1.5rem;
+    font-family: montserrat, sans-serif;
+    background: var(--whitesmoke);
+    outline: none;
+    color: var(--black);
+}
+
+.form-group input:disabled {
+    color: var(--gray);
+    cursor: not-allowed;
+}
+
+.form-group textarea {
+    resize: vertical;
+    min-height: 8rem;
+}
+
+.input-icon {
+    display: flex;
+    align-items: center;
+    background: var(--whitesmoke);
+    border: 1px solid var(--graybutton);
+    border-radius: 8px;
+    padding: 0 1rem;
+}
+
+.input-icon input {
+    border: none;
+    background: transparent;
+    padding: 0.75rem 0.5rem;
+    flex: 1;
+}
+
+.input-icon-symbol {
+    font-size: 1.5rem;
+    color: var(--gray);
+    flex-shrink: 0;
+}
+
+.form-actions {
+    display: flex;
+    justify-content: flex-end;
+    border-top: 1px solid var(--graybutton);
+    padding-top: 1.5rem;
+}
+
+.btn-salvar {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 1rem 2rem;
+    background: var(--blue);
+    color: var(--white);
+    border: none;
+    border-radius: 8px;
+    font-size: 1.3rem;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: montserrat, sans-serif;
+    transition: all 0.2s ease;
+}
+
+.btn-salvar:hover {
+     background: #3b40d0;
+}
+
+.notificacao-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.5rem 0;
+    border-bottom: 1px solid var(--graybutton);
+}
+
+.notificacao-item h4 {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: var(--black);
+}
+
+.notificacao-item p {
+    font-size: 1.3rem;
+    color: var(--gray);
+}
+
+.notificacao-item input[type="checkbox"] {
+    width: 2rem;
+    height: 2rem;
+    cursor: pointer;
+    accent-color: var(--blue);
+}
+
+.settings-card {
+    transition: all 0.2s ease;
+}
+
+.settings-card:hover {
+    transform: translateY(-2px);
+}
+
+.form-group input:focus,
+.form-group textarea:focus,
+.form-group select:focus {
+    border-color: var(--blue);
+    box-shadow: 0 0 0 3px rgba(72, 78, 255, 0.15);
+}
+
+.input-icon:focus-within {
+    border-color: var(--blue);
+    box-shadow: 0 0 0 3px rgba(72, 78, 255, 0.15);
+}
+
+/* =========================
+   RESPONSIVIDADE
+========================= */
+
+/* Tablets */
+@media (max-width: 1279px) {
+
+    .settings-header,
+    .settings-content {
+        width: 92%;
+    }
+
+    .buttons-config-preference {
+        flex-wrap: wrap;
+    }
+
+    .buttons-config-preference button {
+        font-size: 1.3rem;
+        padding: 0.9rem;
+    }
+
+    .form-row {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+    }
+
+    .settings-card {
+        padding: 2rem;
+    }
+
+    .settings-header h2 {
+        font-size: 2.5rem;
+    }
+
+    .settings-header p {
+        font-size: 1.3rem;
+    }
+
+    .form-group label,
+    .form-group input,
+    .form-group textarea,
+    .form-group select {
+        font-size: 1.4rem;
+    }
+}
+
+
+/* Mobile */
+@media (max-width: 768px) {
+
+    .container-settings {
+        padding-top: 7rem;
+    }
+
+    .settings-header,
+    .settings-content {
+        width: 95%;
+    }
+
+    .settings-header {
+        margin: 1.5rem auto;
+    }
+
+    .settings-header h2 {
+        font-size: 2.2rem;
+    }
+
+    .settings-header p {
+        font-size: 1.2rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .buttons-config-preference {
+        flex-direction: column;
+        width: 100%;
+    }
+
+    .buttons-config-preference button {
+        width: 100%;
+        justify-content: flex-start;
+        padding: 1rem 1.2rem;
+        font-size: 1.3rem;
+    }
+
+    .settings-card {
+        padding: 1.5rem;
+        gap: 1.2rem;
+    }
+
+    .settings-card h3 {
+        font-size: 1.6rem;
+    }
+
+    .settings-card > p {
+        font-size: 1.2rem;
+    }
+
+    .foto-section {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .avatar-settings {
+        width: 6rem;
+        height: 6rem;
+        font-size: 2rem;
+    }
+
+    .btn-alterar-foto {
+        width: 100%;
+        justify-content: center;
+        font-size: 1.2rem;
+    }
+
+    .settings-form {
+        gap: 1.2rem;
+    }
+
+    .form-row {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+
+    .form-group label {
+        font-size: 1.3rem;
+    }
+
+    .form-group input,
+    .form-group textarea,
+    .form-group select {
+        font-size: 1.3rem;
+        padding: 0.9rem 1rem;
+    }
+
+    .input-icon {
+        padding: 0 0.8rem;
+    }
+
+    .input-icon-symbol {
+        font-size: 1.3rem;
+    }
+
+    .form-actions {
+        justify-content: center;
+    }
+
+    .btn-salvar {
+        width: 100%;
+        justify-content: center;
+        padding: 1rem;
+        font-size: 1.2rem;
+    }
+
+    .notificacao-item {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
+    }
+
+    .notificacao-item h4 {
+        font-size: 1.3rem;
+    }
+
+    .notificacao-item p {
+        font-size: 1.2rem;
+    }
+
+    .notificacao-item input[type="checkbox"] {
+        width: 1.8rem;
+        height: 1.8rem;
+    }
+}
+
+
+/* Mobile Pequeno */
+@media (max-width: 500px) {
+
+    .settings-header h2 {
+        font-size: 2rem;
+        margin-top: 3rem;
+    }
+
+    .settings-header p {
+        font-size: 1.1rem;
+    }
+
+    .settings-card {
+        padding: 1.2rem;
+        border-radius: 10px;
+    }
+
+    .settings-card h3 {
+        font-size: 1.4rem;
+    }
+
+    .form-group label {
+        font-size: 1.2rem;
+    }
+
+    .form-group input,
+    .form-group textarea,
+    .form-group select {
+        font-size: 1.2rem;
+    }
+
+    .btn-alterar-foto,
+    .btn-salvar {
+        font-size: 1.1rem;
+    }
+
+    .avatar-settings {
+        width: 5.5rem;
+        height: 5.5rem;
+        font-size: 1.8rem;
+    }
+}

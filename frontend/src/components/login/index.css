@@ -1,0 +1,212 @@
+body {
+    background: var(--darkblue);
+    overflow-x: hidden;
+}
+
+/* ===================================== */
+/* CONTAINER */
+/* ===================================== */
+
+.login-container {
+    padding: 0 2rem;
+}
+
+/* ===================================== */
+/* CARD LOGIN */
+/* ===================================== */
+
+.login-user {
+    border: none;
+    border-radius: 20px;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    padding: 4rem;
+
+    margin: 0 auto;
+    margin-top: 5rem;
+    margin-bottom: 5rem;
+
+    gap: 2rem;
+
+    background: var(--white);
+
+    width: 100%;
+    max-width: 50rem;
+
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.15);
+}
+
+.login-user h3 {
+    font-size: 2rem;
+    font-weight: 600;
+    color: var(--black);
+    text-align: center;
+}
+
+/* ===================================== */
+/* FORM */
+/* ===================================== */
+
+.login-user form {
+    display: flex;
+    flex-direction: column;
+
+    width: 100%;
+
+    gap: 1rem;
+}
+
+label {
+    font-size: 1.5rem;
+    color: var(--black);
+    font-weight: 500;
+}
+
+.login-user form input {
+    border: 1px solid var(--graybutton);
+    border-radius: 10px;
+
+    padding: 1.2rem;
+
+    font-size: 1.5rem;
+
+    color: var(--black);
+
+    font-family: montserrat, sans-serif;
+
+    outline: none;
+
+    transition: 0.2s ease;
+}
+
+.login-user form input:focus {
+    border-color: var(--blue);
+    box-shadow: 0 0 0 3px rgba(71, 77, 255, 0.15);
+}
+
+/* ===================================== */
+/* TEXTS */
+/* ===================================== */
+
+.login-user span {
+    font-size: 1.5rem;
+    color: var(--gray);
+
+    font-weight: 500;
+
+    text-align: center;
+
+    margin-top: 1rem;
+}
+
+.login-user .no-password {
+    color: var(--blue);
+    cursor: pointer;
+    transition: 0.2s ease;
+}
+
+.login-user .no-password:hover {
+    opacity: 0.8;
+}
+
+.login-user .register-account {
+    color: var(--blue);
+    cursor: pointer;
+    font-weight: 600;
+}
+
+/* ===================================== */
+/* SUBMIT */
+/* ===================================== */
+
+.submit-container {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+
+    margin-top: 1rem;
+}
+
+.login-submit {
+    border: none;
+
+    padding: 1.2rem 3rem;
+
+    font-size: 1.7rem;
+    font-weight: 500;
+
+    border-radius: 15px;
+
+    background: var(--blue);
+    color: var(--white);
+
+    transition: 0.2s ease;
+
+    margin-top: 1rem;
+}
+
+.login-submit:hover {
+    background: #3b40d0;
+    cursor: pointer;
+}
+
+/* ===================================== */
+/* MOBILE */
+/* ===================================== */
+
+@media (max-width: 500px) {
+
+    .login-container {
+        padding: 0 1.5rem;
+    }
+
+    .login-user {
+        width: 100%;
+
+        padding: 3rem 2rem;
+
+        margin-top: 3rem;
+        margin-bottom: 3rem;
+    }
+
+    .login-user h3 {
+        font-size: 2rem;
+    }
+
+    .login-user form input {
+        font-size: 1.4rem;
+        padding: 1rem;
+    }
+
+    .login-submit {
+        width: 100%;
+
+        padding: 1.2rem;
+
+        font-size: 1.5rem;
+    }
+
+    .login-user span {
+        font-size: 1.4rem;
+        line-height: 1.5;
+    }
+
+    .submit-container {
+        gap: 1rem;
+    }
+}
+
+/* ===================================== */
+/* TABLET */
+/* ===================================== */
+
+@media (min-width: 501px) and (max-width: 1279px) {
+
+    .login-user {
+        width: 100%;
+        max-width: 60rem;
+    }
+}

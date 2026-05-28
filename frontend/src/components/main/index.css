@@ -1,0 +1,442 @@
+main {
+    background: var(--lightblue);
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    overflow-x: hidden;
+}
+
+/* ===================================== */
+/* HERO SECTION */
+/* ===================================== */
+
+.introduction {
+    margin-top: 20rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    padding: 0 2rem;
+}
+
+.introduction h1,
+.introduction span {
+    font-size: 6rem;
+    font-weight: 700;
+    color: var(--black);
+    line-height: 1.2;
+}
+
+.introduction span {
+    color: var(--blue);
+}
+
+.introduction p {
+    font-size: 1.9rem;
+    font-weight: 500;
+    text-align: center;
+    color: var(--black);
+    margin-top: 3rem;
+    line-height: 1.6;
+}
+
+.introduction .buttons {
+    display: flex;
+    gap: 1rem;
+    margin-top: 5rem;
+    margin-bottom: 10rem;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.introduction .buttonStart {
+    border: none;
+    padding: 1rem 3rem;
+    font-size: 1.7rem;
+    font-weight: 500;
+    border-radius: 15px;
+    background: var(--blue);
+    color: var(--whitesmoke);
+    transition: 0.2s ease;
+}
+
+.buttonStart:hover {
+    background: #3b40d0;
+    cursor: pointer;
+}
+
+.introduction .buttonSearch {
+    border: 1px solid var(--graybutton);
+    padding: 1rem 3rem;
+    font-size: 1.7rem;
+    font-weight: 500;
+    border-radius: 15px;
+    background: var(--whitesmoke);
+    color: var(--black);
+    transition: 0.2s ease;
+}
+
+.introduction .buttonSearch:hover {
+    background: var(--graybutton);
+    cursor: pointer;
+}
+
+/* ===================================== */
+/* OPERATION */
+/* ===================================== */
+
+#operation {
+    width: 100%;
+    background: var(--white);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.introduction-operation {
+    margin-top: 3rem;
+    padding: 5rem;
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+    gap: 2rem;
+}
+
+.introduction-operation h2 {
+    font-size: 3.5rem;
+    color: var(--black);
+}
+
+.introduction-operation p {
+    font-size: 1.7rem;
+    color: var(--gray);
+    text-align: center;
+}
+
+.steps-operation {
+    display: flex;
+    justify-content: center;
+    gap: 2rem;
+    margin-bottom: 8rem;
+    width: 100%;
+    padding: 0 2rem;
+    flex-wrap: wrap;
+}
+
+.steps1,
+.steps2,
+.steps3 {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.8rem;
+    padding: 5rem 3rem;
+    border-radius: 20px;
+    max-width: 40rem;
+}
+
+.steps1 span,
+.steps2 span,
+.steps3 span {
+    font-size: 5rem;
+    color: var(--blue);
+    border-radius: 50%;
+    background: var(--lightblue);
+
+    width: 90px;
+    height: 90px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.steps1 h3,
+.steps2 h3,
+.steps3 h3 {
+    font-size: 1.8rem;
+    color: var(--black);
+    font-weight: 600;
+    text-align: center;
+}
+
+.steps1 p,
+.steps2 p,
+.steps3 p {
+    font-size: 1.5rem;
+    color: var(--gray);
+    text-align: center;
+    line-height: 1.6;
+}
+
+/* ===================================== */
+/* POINTS */
+/* ===================================== */
+
+#points {
+    background: var(--whitesmoke);
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 5rem 2rem;
+}
+
+.introduction-points {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2rem;
+}
+
+.introduction-points h2 {
+    font-size: 3.5rem;
+    margin-top: 3rem;
+    color: var(--black);
+    text-align: center;
+}
+
+.introduction-points p {
+    font-size: 1.7rem;
+    color: var(--gray);
+    text-align: center;
+    margin-bottom: 3rem;
+}
+
+.points-list {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2rem;
+
+    width: 100%;
+    max-width: 1400px;
+
+    margin-bottom: 3rem;
+    padding: 2rem;
+}
+
+.box-point1,
+.box-point2 {
+    display: contents;
+}
+
+.point1,
+.point2,
+.point3,
+.point4,
+.point5,
+.point6 {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2rem;
+
+    padding: 3rem 2rem;
+
+    border: 1px solid var(--graybutton);
+    border-radius: 16px;
+
+    background: var(--white);
+
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+
+    transition: 0.2s ease;
+}
+
+.point1:hover,
+.point2:hover,
+.point3:hover,
+.point4:hover,
+.point5:hover,
+.point6:hover {
+    transform: translateY(-5px);
+}
+
+.point1 span,
+.point2 span,
+.point3 span,
+.point4 span,
+.point5 span,
+.point6 span {
+    font-size: 7rem;
+    color: var(--blue);
+}
+
+.point1 h3,
+.point2 h3,
+.point3 h3,
+.point4 h3,
+.point5 h3,
+.point6 h3 {
+    font-size: 1.8rem;
+    color: var(--black);
+    font-weight: 600;
+    text-align: center;
+}
+
+.point1 p,
+.point2 p,
+.point3 p,
+.point4 p,
+.point5 p,
+.point6 p {
+    font-size: 1.5rem;
+    color: var(--gray);
+    text-align: center;
+    line-height: 1.6;
+}
+
+/* ===================================== */
+/* FINAL SECTION */
+/* ===================================== */
+
+.final-main {
+    background: var(--blue);
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 6rem 2rem;
+}
+
+.final-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 3rem;
+    text-align: center;
+}
+
+.final-content h2 {
+    font-size: 3.5rem;
+    color: var(--whitesmoke);
+}
+
+.final-content p {
+    font-size: 1.7rem;
+    color: var(--graybutton);
+    text-align: center;
+    line-height: 1.6;
+    max-width: 70rem;
+}
+
+.btn-primary {
+    border: none;
+    padding: 1rem 3rem;
+    font-size: 1.7rem;
+    font-weight: 500;
+    border-radius: 15px;
+    background: var(--whitesmoke);
+    color: var(--black);
+    transition: 0.2s ease;
+    margin-bottom: 3rem;
+}
+
+.btn-primary:hover {
+    background: var(--graybutton);
+    cursor: pointer;
+}
+
+/* ===================================== */
+/* MOBILE */
+/* ===================================== */
+
+@media (max-width: 500px) {
+
+    .introduction {
+        margin-top: 22rem;
+    }
+
+    .introduction h1,
+    .introduction span {
+        font-size: 3.5rem;
+    }
+
+    .introduction p {
+        font-size: 1.5rem;
+    }
+
+    .introduction .buttons {
+        flex-direction: column;
+        width: 100%;
+    }
+
+    .introduction .buttonStart,
+    .introduction .buttonSearch {
+        width: 100%;
+        font-size: 1.5rem;
+        padding: 1.2rem;
+    }
+
+    .introduction-operation {
+        padding: 2rem;
+    }
+
+    .introduction-operation h2,
+    .introduction-points h2,
+    .final-content h2 {
+        font-size: 2.8rem;
+    }
+
+    .introduction-operation p,
+    .introduction-points p,
+    .final-content p {
+        font-size: 1.5rem;
+    }
+
+    .steps1,
+    .steps2,
+    .steps3 {
+        width: 100%;
+        padding: 3rem 2rem;
+    }
+
+    .steps1 span,
+    .steps2 span,
+    .steps3 span {
+        width: 75px;
+        height: 75px;
+        font-size: 4rem;
+    }
+
+    .points-list {
+        grid-template-columns: 1fr;
+        padding: 1rem;
+    }
+
+    .point1 span,
+    .point2 span,
+    .point3 span,
+    .point4 span,
+    .point5 span,
+    .point6 span {
+        font-size: 5rem;
+    }
+
+    .btn-primary {
+        width: 100%;
+    }
+}
+
+/* ===================================== */
+/* TABLET */
+/* ===================================== */
+
+@media (min-width: 501px) and (max-width: 1279px) {
+
+    .introduction h1,
+    .introduction span {
+        font-size: 5rem;
+    }
+
+    .points-list {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .steps1,
+    .steps2,
+    .steps3 {
+        width: 45%;
+    }
+}

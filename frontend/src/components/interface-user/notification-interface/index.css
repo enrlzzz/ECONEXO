@@ -1,0 +1,145 @@
+.notifications-container {
+    display: flex;
+    flex-direction: column;
+
+    gap: 2rem;
+
+    padding-top: 10rem;
+    padding-inline: 4rem;
+
+    background: var(--whitesmoke);
+
+    min-height: 100vh;
+}
+
+.notifications-container h2 {
+    font-size: 3rem;
+    color: var(--black);
+    margin-top: 2rem;
+}
+
+.bar-process-notifications {
+    display: flex;
+    flex-wrap: wrap;
+
+    gap: 1rem;
+
+    background: var(--white);
+
+    border: 1px solid var(--graybutton);
+    border-radius: 30px;
+
+    padding: 0.75rem 1.5rem;
+
+    width: fit-content;
+}
+
+.bar-process-notifications p {
+    font-size: 1.3rem;
+    font-weight: 500;
+    color: var(--gray);
+    cursor: pointer;
+    padding: 0.30rem 0.80rem;
+    border-radius: 20px;
+    white-space: nowrap;     /* evita quebra de linha */
+}
+
+.bar-process-notifications p:hover {
+   background: var(--whitesmoke);
+    color: var(--black);
+}
+
+.notifications-list {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+
+    gap: 1rem;
+
+    width: 100%;
+
+    min-height: 55vh;
+
+    border: 1px solid var(--graybutton);
+    border-radius: 12px;
+
+    background: var(--white);
+
+    padding: 4rem;
+}
+
+.notifications-item {
+    width: 90px;
+    height: 90px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 50%;
+
+    background: var(--whitesmoke);
+
+    font-size: 4rem;
+
+    color: var(--gray);
+}
+
+.notifications-list p {
+    font-size: 1.5rem;
+    color: var(--gray);
+}
+
+/* ===================================== */
+/* TABLET */
+/* ===================================== */
+
+@media (max-width: 1279px) {
+
+    .notifications-container {
+        padding-inline: 2rem;
+    }
+}
+
+/* ===================================== */
+/* MOBILE */
+/* ===================================== */
+
+@media (max-width: 500px) {
+
+    .notifications-container {
+        padding-top: 13rem;
+        padding-inline: 1.5rem;
+    }
+
+    .notifications-container h2 {
+        font-size: 2.5rem;
+    }
+
+    .bar-process-notifications {
+        width: 100%;
+
+        justify-content: center;
+
+        border-radius: 16px;
+    }
+
+    .notifications-list {
+        padding: 3rem 2rem;
+
+        min-height: 45vh;
+    }
+
+    .notifications-item {
+        width: 75px;
+        height: 75px;
+
+        font-size: 3rem;
+    }
+
+    .notifications-list p {
+        text-align: center;
+        font-size: 1.3rem;
+    }
+}

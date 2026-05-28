@@ -1,0 +1,320 @@
+.header-interface {
+    min-height: 10rem;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    position: fixed;
+
+    top: 0;
+    left: 0;
+
+    width: 100%;
+
+    padding: 0 2rem;
+
+    z-index: 100;
+
+    border-bottom: 1px solid var(--graybutton);
+
+    background: rgba(255, 255, 255, 0.75);
+
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+
+    overflow: hidden;
+}
+
+/* ===================================== */
+/* LOGO */
+/* ===================================== */
+
+.logos-menu-interface {
+    display: flex;
+    align-items: center;
+    padding-top: 1rem;
+}
+
+.logos-menu-interface a {
+    display: flex;
+    align-items: center;
+
+    gap: 1rem;
+
+    text-decoration: none;
+
+    color: inherit;
+}
+
+.logo-title-menu-interface,
+.title-menu-interface {
+    font-size: 2.5rem;
+    font-weight: 700;
+}
+
+.logo-title-menu-interface {
+    margin-top: 0.25rem;
+    color: var(--blue);
+}
+
+.title-menu-interface {
+    margin-bottom: 0.25rem;
+}
+
+/* ===================================== */
+/* DESKTOP NAV */
+/* ===================================== */
+
+.links-menu-interface {
+    display: flex;
+    align-items: center;
+    gap: 2.5rem;
+}
+
+.links-menu-interface a {
+    text-decoration: none;
+}
+
+.links-menu-interface span {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+
+    font-size: 1.5rem;
+    font-weight: 500;
+
+    color: var(--black);
+
+    transition: 0.2s ease;
+}
+
+.links-menu-interface span:hover {
+    color: var(--gray);
+}
+
+/* ===================================== */
+/* RIGHT */
+/* ===================================== */
+
+.header-right {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+
+    flex-shrink: 0;
+}
+
+/* USER */
+
+.user-simbol {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    font-size: 1.6rem;
+    font-weight: 600;
+
+    width: 45px;
+    height: 45px;
+
+    border-radius: 50%;
+
+    background: var(--lightblue);
+    color: var(--black);
+
+    cursor: pointer;
+
+    transition: 0.2s ease;
+
+    flex-shrink: 0;
+
+    margin-bottom: 1rem;
+    margin-left: 1rem;
+}
+
+.user-simbol:hover {
+    transform: scale(1.05);
+}
+
+/* ===================================== */
+/* MENU BUTTON */
+/* ===================================== */
+
+.mobile-menu-btn {
+    display: none;
+
+    align-items: center;
+    justify-content: center;
+
+    border: none;
+    background: transparent;
+
+    width: 42px;
+    height: 42px;
+
+    font-size: 2.8rem;
+
+    cursor: pointer;
+
+    color: var(--black);
+
+    flex-shrink: 0;
+}
+
+/* ===================================== */
+/* MOBILE MENU */
+/* ===================================== */
+
+.mobile-menu {
+    position: fixed;
+
+    top: 0;
+    right: -100%;
+
+    width: 280px;
+    height: 100vh;
+
+    background: var(--white);
+
+    z-index: 200;
+
+    display: flex;
+    flex-direction: column;
+
+    gap: 1rem;
+
+    padding: 10rem 2rem 2rem 2rem;
+
+    transition: 0.3s ease;
+
+    box-shadow: -5px 0 20px rgba(0,0,0,0.1);
+}
+
+.mobile-menu.open {
+    right: 0;
+}
+
+.mobile-menu a {
+    display: flex;
+    align-items: center;
+
+    gap: 1rem;
+
+    text-decoration: none;
+
+    padding: 1.2rem;
+
+    border-radius: 12px;
+
+    font-size: 1.5rem;
+    font-weight: 500;
+
+    color: var(--black);
+
+    transition: 0.2s ease;
+}
+
+.mobile-menu a:hover {
+    background: var(--whitesmoke);
+}
+
+/* OVERLAY */
+
+.menu-overlay {
+    position: fixed;
+
+    inset: 0;
+
+    background: rgba(0,0,0,0.35);
+
+    z-index: 150;
+}
+
+/* ===================================== */
+/* MAIN */
+/* ===================================== */
+
+.main-user {
+    height: 100%;
+}
+
+.start-main {
+    display: flex;
+    flex-direction: column;
+
+    align-items: center;
+    justify-content: center;
+
+    height: 100%;
+}
+
+.start-main h1 {
+    font-size: 6rem;
+    font-weight: 700;
+    color: var(--black);
+
+    text-align: center;
+}
+
+/* ===================================== */
+/* MOBILE */
+/* ===================================== */
+
+@media (max-width: 1279px) {
+
+    .header-interface {
+        padding: 0 2rem;
+    }
+
+    /* ESCONDE NAV DESKTOP */
+
+    .links-menu-interface {
+        display: none;
+    }
+
+    /* MOSTRA BOTÃO */
+
+    .mobile-menu-btn {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .logo-title-menu-interface,
+    .title-menu-interface {
+        font-size: 2.2rem;
+    }
+}
+
+/* ===================================== */
+/* MOBILE PEQUENO */
+/* ===================================== */
+
+@media (max-width: 500px) {
+
+    .header-interface {
+        height: 6.5rem;
+        padding: 0 1.5rem;
+    }
+
+    .logo-title-menu-interface,
+    .title-menu-interface {
+        font-size: 1.9rem;
+    }
+
+    .user-simbol {
+        width: 42px;
+        height: 42px;
+
+        font-size: 1.5rem;
+    }
+
+    .mobile-menu {
+        width: 100%;
+    }
+
+    .start-main h1 {
+        font-size: 3.2rem;
+    }
+}
