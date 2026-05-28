@@ -1,4 +1,9 @@
-const BASE_URL = "/api";
+// Em dev: proxy do Vite encaminha /api para localhost:8080
+// Em prod: nginx do VPS encaminha /api para o Spring Boot no mesmo domínio
+// Se um dia o frontend for hospedado em domínio separado do backend,
+// defina VITE_API_URL=https://api.seudominio.com e os requests viram absolutos.
+const API_HOST = (import.meta.env.VITE_API_URL || "").replace(/\/$/, "");
+const BASE_URL = `${API_HOST}/api`;
 
 async function request(path, { method = "GET", body, params, headers } = {}) {
   const url = new URL(`${BASE_URL}${path}`, window.location.origin);
@@ -8,7 +13,9 @@ async function request(path, { method = "GET", body, params, headers } = {}) {
     });
   }
 
-  const response = await fetch(url.pathname + url.search, {
+  const fetchUrl = API_HOST ? url.toString() : url.pathname + url.search;
+
+  const response = await fetch(fetchUrl, {
     method,
     headers: {
       "Content-Type": "application/json",

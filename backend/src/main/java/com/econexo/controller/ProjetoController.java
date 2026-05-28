@@ -8,7 +8,6 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/projetos")
-@CrossOrigin(origins = "*")
 public class ProjetoController {
     @Autowired
     private ProjetoService service;

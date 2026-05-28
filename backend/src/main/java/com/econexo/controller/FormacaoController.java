@@ -8,7 +8,6 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/formacoes")
-@CrossOrigin(origins = "*")
 public class FormacaoController {
     @Autowired
     private FormacaoService service;

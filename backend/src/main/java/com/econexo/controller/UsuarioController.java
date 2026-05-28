@@ -9,7 +9,6 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/usuarios")
-@CrossOrigin(origins = "*") // Habilita CORS para o frontend
 public class UsuarioController {
 
     @Autowired

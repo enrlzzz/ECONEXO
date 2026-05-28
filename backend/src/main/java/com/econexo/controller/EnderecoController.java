@@ -8,7 +8,6 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/enderecos")
-@CrossOrigin(origins = "*")
 public class EnderecoController {
     @Autowired
     private EnderecoService service;

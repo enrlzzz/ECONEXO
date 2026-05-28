@@ -8,7 +8,6 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/skills")
-@CrossOrigin(origins = "*")
 public class SkillController {
     @Autowired
     private SkillService service;

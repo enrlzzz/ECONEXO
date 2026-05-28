@@ -11,7 +11,18 @@ ECONEXO/
 ├── backend/      Spring Boot 3.4 + JPA (Java 21) — porta 8080
 ├── frontend/     React 19 + Vite + react-router (porta 5173)
 ├── database/     schema.sql (MySQL 8)
+├── deploy/       configs de produção (nginx, systemd, env, deploy guide)
 └── docs/
+```
+
+### Spring profiles
+
+- `dev` (default) — credenciais hard-coded em `application-dev.properties` (root/root local), CORS aberto, JPA `ddl-auto=update`, SQL logado.
+- `prod` — credenciais lidas de variáveis de ambiente, CORS restrito a `APP_ALLOWED_ORIGINS`, JPA `ddl-auto=validate` (nunca altera schema).
+
+Para rodar em prod localmente:
+```sh
+SPRING_PROFILES_ACTIVE=prod DB_USER=... DB_PASS=... APP_ALLOWED_ORIGINS=https://... ./mvnw spring-boot:run
 ```
 
 ## Pré-requisitos
@@ -90,3 +101,7 @@ SERVER_PORT=8080
 ```
 VITE_API_URL=http://localhost:8080
 ```
+
+## Deploy
+
+Veja [`deploy/DEPLOY.md`](deploy/DEPLOY.md) para passo-a-passo completo de deploy em VPS Hostinger (Ubuntu + nginx + systemd + Let's Encrypt).

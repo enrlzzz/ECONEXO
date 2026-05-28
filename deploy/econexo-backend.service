@@ -1,0 +1,40 @@
+# /etc/systemd/system/econexo-backend.service
+# Após colocar este arquivo no destino:
+#   sudo systemctl daemon-reload
+#   sudo systemctl enable --now econexo-backend
+#   sudo systemctl status econexo-backend
+#   sudo journalctl -u econexo-backend -f      # acompanhar logs
+
+[Unit]
+Description=EcoNexo Spring Boot Backend
+After=network.target mysql.service
+Requires=mysql.service
+
+[Service]
+Type=simple
+User=econexo
+Group=econexo
+WorkingDirectory=/var/www/econexo/backend
+
+# Credenciais e config vêm de /etc/econexo/backend.env (chmod 600 econexo:econexo)
+EnvironmentFile=/etc/econexo/backend.env
+Environment=SPRING_PROFILES_ACTIVE=prod
+Environment=JAVA_OPTS=-Xms256m -Xmx512m
+
+ExecStart=/usr/bin/java $JAVA_OPTS -jar /var/www/econexo/backend/ECONEXO-0.0.1-SNAPSHOT.jar
+
+SuccessExitStatus=143
+Restart=on-failure
+RestartSec=10s
+
+# Hardening
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=full
+ProtectHome=true
+
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target
