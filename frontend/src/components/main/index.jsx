@@ -15,7 +15,7 @@ import { IoIosSunny } from "react-icons/io";
 
 export default function Main() {
   return (
-    <main>
+    <main className="landing-main">
       <section className="introduction">
         <h1>Conectando Profissionais da</h1>
         <span>Energia Fotovoltaica</span>

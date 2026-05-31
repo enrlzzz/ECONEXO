@@ -1,4 +1,4 @@
-footer {
+.landing-footer {
     display: flex;
     justify-content: center;
     align-items: center;
@@ -38,7 +38,7 @@ footer {
 
 @media (max-width: 500px) {
 
-    footer {
+    .landing-footer {
         padding: 2rem 1.5rem;
     }
 
@@ -64,7 +64,7 @@ footer {
 
 @media (min-width: 501px) and (max-width: 1279px) {
 
-    footer {
+    .landing-footer {
         padding: 2.5rem;
     }
 

@@ -1,10 +1,11 @@
 import "./index.css";
 import "/src/variables.css";
 
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 
 import { useUserData } from "../../../useUserData";
+import { logout } from "../../../userSession";
 
 import { BsLightning } from "react-icons/bs";
 import { IoIosMenu } from "react-icons/io";
@@ -14,11 +15,15 @@ import { GoProjectRoadmap } from "react-icons/go";
 import { TbMessageCircle } from "react-icons/tb";
 import { IoIosNotificationsOutline } from "react-icons/io";
 import { FaArrowTrendUp } from "react-icons/fa6";
+import { FiLogOut } from "react-icons/fi";
+import { MdSpaceDashboard } from "react-icons/md";
 
 export default function HeaderInterface() {
-  const { nome } = useUserData();
+  const navigate = useNavigate();
+  const { nome, cidade, estado, role, initials, color } = useUserData();
 
   const [menuOpen, setMenuOpen] = useState(false);
+  const [userMenuOpen, setUserMenuOpen] = useState(false);
 
   useEffect(() => {
     document.body.style.backgroundColor = "var(--whitesmoke)";
@@ -27,15 +32,81 @@ export default function HeaderInterface() {
     };
   }, []);
 
+  const handleLogout = () => {
+    logout();
+    navigate("/login", { replace: true });
+  };
+
+  const primeiroNome = (nome || "").split(" ")[0] || "Usuário";
+  const localizacao = [cidade, estado].filter(Boolean).join(" · ");
+
   return (
     <>
       <header className="header-interface">
-        <div className="logos-menu-interface">
-          <Link to="/">
+        {/* PERFIL — canto superior esquerdo */}
+        <div className="header-left-profile">
+          <button
+            type="button"
+            className="profile-chip"
+            onClick={() => setUserMenuOpen((v) => !v)}
+            aria-label="Abrir menu do usuário"
+          >
+            <span
+              className="profile-chip-avatar"
+              style={{ background: color }}
+            >
+              {initials || "?"}
+            </span>
+            <span className="profile-chip-info">
+              <span className="profile-chip-name">{primeiroNome}</span>
+              <span className="profile-chip-meta">
+                {localizacao || role || "EcoNexo"}
+              </span>
+            </span>
+          </button>
+
+          {userMenuOpen && (
+            <div className="profile-dropdown eco-anim-fade-down">
+              <div className="profile-dropdown-head">
+                <span
+                  className="profile-dropdown-avatar"
+                  style={{ background: color }}
+                >
+                  {initials || "?"}
+                </span>
+                <div>
+                  <strong>{nome || "Usuário"}</strong>
+                  <small>{localizacao || role || ""}</small>
+                </div>
+              </div>
+              <Link
+                to="/menu-user/profile"
+                onClick={() => setUserMenuOpen(false)}
+              >
+                Meu perfil
+              </Link>
+              <Link
+                to="/menu-user/painel"
+                onClick={() => setUserMenuOpen(false)}
+              >
+                <MdSpaceDashboard /> Painel
+              </Link>
+              <Link
+                to="/menu-user/settings"
+                onClick={() => setUserMenuOpen(false)}
+              >
+                Configurações
+              </Link>
+              <button type="button" onClick={handleLogout} className="logout">
+                <FiLogOut /> Sair
+              </button>
+            </div>
+          )}
+
+          <Link to="/menu-user" className="logos-menu-interface">
             <span className="logo-title-menu-interface">
               <BsLightning />
             </span>
-
             <span className="title-menu-interface">EcoNexo</span>
           </Link>
         </div>
@@ -44,7 +115,7 @@ export default function HeaderInterface() {
         <nav className="links-menu-interface">
           <Link to="/menu-user">
             <span>
-              <IoIosMenu /> Menu
+              <IoIosMenu /> Início
             </span>
           </Link>
 
@@ -79,15 +150,8 @@ export default function HeaderInterface() {
           </Link>
         </nav>
 
-        {/* RIGHT SIDE */}
+        {/* RIGHT SIDE — só o botão mobile */}
         <div className="header-right">
-          <Link to="/menu-user/settings">
-            <span className="user-simbol">
-              {nome.charAt(0).toUpperCase()}
-            </span>
-          </Link>
-
-          {/* BOTÃO MENU MOBILE */}
           <button
             className="mobile-menu-btn"
             onClick={() => setMenuOpen(!menuOpen)}
@@ -104,11 +168,21 @@ export default function HeaderInterface() {
           onClick={() => setMenuOpen(false)}
         ></div>
       )}
+      {userMenuOpen && (
+        <div
+          className="profile-overlay"
+          onClick={() => setUserMenuOpen(false)}
+        ></div>
+      )}
 
       {/* MENU MOBILE */}
       <nav className={`mobile-menu ${menuOpen ? "open" : ""}`}>
         <Link to="/menu-user" onClick={() => setMenuOpen(false)}>
-          <IoIosMenu /> Menu
+          <IoIosMenu /> Início
+        </Link>
+
+        <Link to="/menu-user/painel" onClick={() => setMenuOpen(false)}>
+          <MdSpaceDashboard /> Painel
         </Link>
 
         <Link to="/menu-user/buscar" onClick={() => setMenuOpen(false)}>
@@ -133,6 +207,17 @@ export default function HeaderInterface() {
         <Link to="/menu-user/portfolio" onClick={() => setMenuOpen(false)}>
           <FaArrowTrendUp /> Portfólio
         </Link>
+
+        <button
+          type="button"
+          className="mobile-logout"
+          onClick={() => {
+            setMenuOpen(false);
+            handleLogout();
+          }}
+        >
+          <FiLogOut /> Sair
+        </button>
       </nav>
     </>
   );

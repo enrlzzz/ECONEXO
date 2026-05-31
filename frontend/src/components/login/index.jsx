@@ -4,15 +4,21 @@ import "/src/variables.css";
 import { Link, useNavigate } from "react-router-dom";
 
 import { BsLightning } from "react-icons/bs";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import { usuariosService } from "../../services/usuarios";
+import { isLoggedIn, persistUser } from "../../userSession";
 
 export default function Login() {
   const navigate = useNavigate();
   const [form, setForm] = useState({ email: "", senha: "" });
   const [erro, setErro] = useState("");
   const [enviando, setEnviando] = useState(false);
+
+  // Login persistente: se já houver sessão, vai direto para a área logada
+  useEffect(() => {
+    if (isLoggedIn()) navigate("/menu-user", { replace: true });
+  }, [navigate]);
 
   const handleChange = (event) => {
     const { name, value } = event.target;
@@ -26,10 +32,8 @@ export default function Login() {
 
     try {
       const usuario = await usuariosService.login(form.email, form.senha);
-      localStorage.setItem("userId", String(usuario.idUsuario));
-      localStorage.setItem("userName", usuario.nome);
-      localStorage.setItem("userEmail", usuario.email);
-      navigate("/menu-user");
+      persistUser(usuario);
+      navigate("/menu-user", { replace: true });
     } catch (e) {
       setErro(
         e.status === 401

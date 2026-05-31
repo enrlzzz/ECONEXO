@@ -1,0 +1,213 @@
+/* ===================================== */
+/* Animações ECONEXO — centralizadas      */
+/* Prefixo eco- para não conflitar.       */
+/* Respeita prefers-reduced-motion.       */
+/* ===================================== */
+
+@keyframes eco-fade-up {
+    from {
+        opacity: 0;
+        transform: translateY(8px);
+    }
+    to {
+        opacity: 1;
+        transform: none;
+    }
+}
+
+@keyframes eco-fade-down {
+    from {
+        opacity: 0;
+        transform: translateY(-6px);
+    }
+    to {
+        opacity: 1;
+        transform: none;
+    }
+}
+
+@keyframes eco-pop-in {
+    0% {
+        opacity: 0;
+        transform: translateY(-6px) scale(0.985);
+    }
+    100% {
+        opacity: 1;
+        transform: none;
+    }
+}
+
+@keyframes eco-bubble-in {
+    from {
+        opacity: 0;
+        transform: translateY(6px) scale(0.97);
+    }
+    to {
+        opacity: 1;
+        transform: none;
+    }
+}
+
+@keyframes eco-heart-burst {
+    0% {
+        transform: scale(1);
+    }
+    40% {
+        transform: scale(1.35);
+    }
+    70% {
+        transform: scale(0.92);
+    }
+    100% {
+        transform: scale(1);
+    }
+}
+
+@keyframes eco-typing-bounce {
+    0%,
+    80%,
+    100% {
+        transform: translateY(0);
+        opacity: 0.4;
+    }
+    40% {
+        transform: translateY(-4px);
+        opacity: 1;
+    }
+}
+
+@keyframes eco-soft-pulse {
+    0% {
+        box-shadow: 0 0 0 0 rgba(42, 38, 199, 0.45);
+    }
+    100% {
+        box-shadow: 0 0 0 10px rgba(42, 38, 199, 0);
+    }
+}
+
+/* ===================================== */
+/* Utilities                              */
+/* ===================================== */
+
+.eco-anim-fade-up {
+    animation: eco-fade-up 320ms cubic-bezier(0.22, 0.7, 0.3, 1) both;
+}
+
+.eco-anim-fade-down {
+    animation: eco-fade-down 200ms cubic-bezier(0.22, 0.7, 0.3, 1) both;
+}
+
+.eco-anim-pop-in {
+    animation: eco-pop-in 360ms cubic-bezier(0.22, 0.7, 0.3, 1) both;
+}
+
+.eco-anim-bubble-in {
+    animation: eco-bubble-in 280ms cubic-bezier(0.22, 0.7, 0.3, 1) both;
+}
+
+.eco-anim-heart-burst {
+    animation: eco-heart-burst 380ms cubic-bezier(0.32, 0.8, 0.4, 1.2) both;
+    transform-origin: center;
+    display: inline-flex;
+}
+
+.eco-anim-pulse {
+    animation: eco-soft-pulse 1.2s ease-out infinite;
+}
+
+/* Atraso em cascata para listas — itens com :nth-child entram em sequência */
+.eco-anim-stagger > * {
+    animation: eco-fade-up 360ms cubic-bezier(0.22, 0.7, 0.3, 1) both;
+}
+.eco-anim-stagger > *:nth-child(1) {
+    animation-delay: 0ms;
+}
+.eco-anim-stagger > *:nth-child(2) {
+    animation-delay: 60ms;
+}
+.eco-anim-stagger > *:nth-child(3) {
+    animation-delay: 120ms;
+}
+.eco-anim-stagger > *:nth-child(4) {
+    animation-delay: 180ms;
+}
+.eco-anim-stagger > *:nth-child(n + 5) {
+    animation-delay: 240ms;
+}
+
+/* ===================================== */
+/* Typing indicator                       */
+/* ===================================== */
+
+.eco-typing {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 10px 14px;
+}
+
+.eco-typing i {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--eco-ink-4);
+    display: inline-block;
+    animation: eco-typing-bounce 1s ease-in-out infinite;
+}
+
+.eco-typing i:nth-child(2) {
+    animation-delay: 150ms;
+}
+.eco-typing i:nth-child(3) {
+    animation-delay: 300ms;
+}
+
+/* ===================================== */
+/* Hover/focus micro-interações suaves   */
+/* ===================================== */
+
+.eco-card,
+.dm-conv,
+.eco-post-mensagem,
+.eco-acao,
+.dm-icon-btn,
+.dm-send,
+.eco-btn-primary,
+.eco-btn-ghost,
+.eco-chip,
+.profile-chip {
+    transition:
+        transform 0.15s ease,
+        box-shadow 0.18s ease,
+        background-color 0.16s ease,
+        color 0.16s ease,
+        border-color 0.16s ease;
+}
+
+.profile-chip:hover {
+    transform: translateY(-1px);
+}
+
+.eco-btn-primary:hover:not(:disabled),
+.dm-send:hover:not(:disabled) {
+    transform: translateY(-1px);
+}
+
+.eco-btn-primary:active:not(:disabled),
+.dm-send:active:not(:disabled) {
+    transform: translateY(0) scale(0.98);
+}
+
+/* ===================================== */
+/* prefers-reduced-motion                 */
+/* ===================================== */
+
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.001ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.001ms !important;
+    }
+}

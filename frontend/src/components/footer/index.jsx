@@ -4,7 +4,7 @@ import { LuCopyright } from "react-icons/lu";
 
 export default function Footer() {
   return (
-    <footer>
+    <footer className="landing-footer">
       <div className="copyright">
         <span>
           <LuCopyright />

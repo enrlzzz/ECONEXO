@@ -9,13 +9,16 @@ import { IoLocation } from "react-icons/io5";
 import { GoProjectRoadmap } from "react-icons/go";
 import { GiRibbonMedal } from "react-icons/gi";
 
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 import { useState } from "react";
-import { useEffect } from "react";
 import { useLocation } from "react-router-dom";
 
+import { mensagensService } from "../../../services/mensagens";
+import { colorFor, getInitials } from "../../../userSession";
+
 export default function Profile() {
+  const navigate = useNavigate();
   const [abaAtiva, setAbaAtiva] = useState("portfolio");
   const { state: instalador } = useLocation();
   const portfolio = instalador?.portfolio || [];
@@ -26,6 +29,27 @@ export default function Profile() {
   const avaliacoes = instalador?.avaliacoes || 0;
   const cidade = instalador?.cidade || "";
   const estado = instalador?.estado || "";
+
+  const abrirMensagem = () => {
+    if (!instalador || !nome || nome === "Instalador") {
+      navigate("/menu-user/messages");
+      return;
+    }
+    const idAlvo =
+      instalador.idUsuario != null
+        ? String(instalador.idUsuario)
+        : `prof_${nome.replace(/\s+/g, "_").toLowerCase()}`;
+    const conv = mensagensService.encontrarOuCriarConversaCom({
+      id: idAlvo,
+      nome,
+      initials: getInitials(nome),
+      color: colorFor(idAlvo),
+      role: "Instalador Fotovoltaico",
+      regiao: [cidade, estado].filter(Boolean).join(" · "),
+      verificado: true,
+    });
+    navigate(`/menu-user/messages?conversa=${conv.id}`);
+  };
 
   return (
     <div className="container-profile">
@@ -84,11 +108,13 @@ export default function Profile() {
         </div>
 
         <div className="profile-right">
-          <Link to="/menu-user/messages">
-            <button className="btn-contatar-profile">
-              <TbMessageCircle /> Mensagem
-            </button>
-          </Link>
+          <button
+            type="button"
+            className="btn-contatar-profile"
+            onClick={abrirMensagem}
+          >
+            <TbMessageCircle /> Mensagem
+          </button>
           <button className="btn-conectar-profile">Conectar</button>
         </div>
       </div>

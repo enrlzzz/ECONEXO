@@ -23,7 +23,182 @@
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
 
+    /* overflow visible para o dropdown do perfil não ser recortado pelo header */
+    overflow: visible;
+}
+
+/* ===================================== */
+/* PERFIL (canto superior esquerdo) */
+/* ===================================== */
+
+.header-left-profile {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    position: relative;
+}
+
+.profile-chip {
+    display: flex;
+    align-items: center;
+    gap: 0.9rem;
+
+    padding: 0.5rem 1.2rem 0.5rem 0.5rem;
+
+    background: var(--white);
+    border: 1px solid var(--eco-line);
+    border-radius: 999px;
+
+    cursor: pointer;
+    transition: 0.18s ease;
+
+    box-shadow: var(--eco-shadow-sm);
+}
+
+.profile-chip:hover {
+    border-color: var(--eco-blue-100);
+    background: var(--eco-blue-050);
+}
+
+.profile-chip-avatar {
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    color: var(--white);
+    font-weight: 800;
+    font-size: 1.4rem;
+
+    flex-shrink: 0;
+
+    box-shadow: inset 0 0 0 1.5px rgba(255, 255, 255, 0.2);
+}
+
+.profile-chip-info {
+    display: flex;
+    flex-direction: column;
+    text-align: left;
+    line-height: 1.2;
+}
+
+.profile-chip-name {
+    font-size: 1.4rem;
+    font-weight: 800;
+    color: var(--black);
+}
+
+.profile-chip-meta {
+    font-size: 1.1rem;
+    color: var(--eco-ink-3);
+    font-weight: 600;
+    margin-top: 0.2rem;
+
+    max-width: 14rem;
+    white-space: nowrap;
     overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.profile-dropdown {
+    position: absolute;
+    top: calc(100% + 0.8rem);
+    left: 0;
+
+    min-width: 24rem;
+
+    background: var(--white);
+    border: 1px solid var(--eco-line);
+    border-radius: 14px;
+
+    box-shadow: var(--eco-shadow);
+
+    z-index: 250;
+
+    padding: 0.6rem;
+
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+}
+
+.profile-dropdown-head {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+
+    padding: 1rem 1rem 1.2rem;
+    border-bottom: 1px solid var(--eco-line-2);
+    margin-bottom: 0.4rem;
+}
+
+.profile-dropdown-avatar {
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--white);
+    font-weight: 800;
+    font-size: 1.5rem;
+    flex-shrink: 0;
+}
+
+.profile-dropdown-head strong {
+    display: block;
+    font-size: 1.4rem;
+    color: var(--black);
+}
+
+.profile-dropdown-head small {
+    display: block;
+    font-size: 1.1rem;
+    color: var(--eco-ink-3);
+    margin-top: 0.2rem;
+}
+
+.profile-dropdown a,
+.profile-dropdown button {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+
+    padding: 0.9rem 1rem;
+
+    font-size: 1.35rem;
+    font-weight: 600;
+    color: var(--black);
+
+    border-radius: 10px;
+    text-decoration: none;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    text-align: left;
+
+    transition: 0.15s ease;
+}
+
+.profile-dropdown a:hover,
+.profile-dropdown button:hover {
+    background: var(--eco-bg);
+}
+
+.profile-dropdown button.logout {
+    color: #c12c2c;
+    margin-top: 0.4rem;
+    border-top: 1px solid var(--eco-line-2);
+    border-radius: 0 0 10px 10px;
+}
+
+.profile-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 240;
 }
 
 /* ===================================== */
@@ -257,6 +432,30 @@
     text-align: center;
 }
 
+.mobile-logout {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+
+    padding: 1.2rem;
+    margin-top: 2rem;
+
+    border-radius: 12px;
+
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: #c12c2c;
+
+    background: transparent;
+    border: none;
+
+    cursor: pointer;
+}
+
+.mobile-logout:hover {
+    background: #fdecec;
+}
+
 /* ===================================== */
 /* MOBILE */
 /* ===================================== */
@@ -285,6 +484,10 @@
     .title-menu-interface {
         font-size: 2.2rem;
     }
+
+    .profile-chip-meta {
+        display: none;
+    }
 }
 
 /* ===================================== */
@@ -294,12 +497,16 @@
 @media (max-width: 500px) {
 
     .header-interface {
+        min-height: 6.5rem;
         height: 6.5rem;
-        padding: 0 1.5rem;
+        padding: 0 1.2rem;
     }
 
-    .logo-title-menu-interface,
     .title-menu-interface {
+        display: none;
+    }
+
+    .logo-title-menu-interface {
         font-size: 1.9rem;
     }
 
@@ -308,6 +515,24 @@
         height: 42px;
 
         font-size: 1.5rem;
+    }
+
+    .profile-chip {
+        padding: 0.3rem 0.3rem;
+    }
+
+    .profile-chip-avatar {
+        width: 34px;
+        height: 34px;
+        font-size: 1.2rem;
+    }
+
+    .profile-chip-name {
+        font-size: 1.25rem;
+    }
+
+    .profile-dropdown {
+        min-width: 22rem;
     }
 
     .mobile-menu {

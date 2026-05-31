@@ -6,7 +6,7 @@ import { BsLightning } from "react-icons/bs";
 
 export default function Header() {
   return (
-    <header>
+    <header className="landing-header">
       <div className="logos">
         <span className="logo-title">
           <BsLightning />
