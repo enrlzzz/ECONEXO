@@ -59,14 +59,21 @@ nslookup -type=NS seudominio.com
 
 hPanel → *Databases → Management → Create a New Database*.
 
-A Hostinger **prefixa tudo** com o ID da sua conta. Anote os valores reais:
+A Hostinger **prefixa tudo** com o ID da sua conta (algo como `u645824401_`).
+Anote os 4 valores reais — eles vão ser pedidos no Render:
 
-| Campo | Exemplo do que a Hostinger gera |
+| Campo | Onde achar |
 |---|---|
-| Database | `u123456789_econexo` |
-| Usuário | `u123456789_admin` |
-| Senha | a que você definir |
-| Host | `localhost` no painel, mas **um IP/hostname externo** para acesso remoto |
+| Database | `<SEU_BANCO>` — *Databases → Management*, coluna do banco |
+| Usuário | `<SEU_USUARIO>` — *Databases → Management*, coluna do usuário. **Não é igual ao nome do banco** |
+| Senha | a que você definir ao criar |
+| Host | ⚠️ **não é `localhost`** — o painel mostra `localhost` porque assume acesso interno. Para o Render você precisa do hostname/IP externo, que aparece em *Remote MySQL* (passo 2.3) |
+
+> 🚨 **Os dois erros que custam mais tempo aqui**, ambos já aconteceram neste projeto:
+> 1. Pôr o **nome do banco** no campo `DB_HOST` → `UnknownHostException: Name does not resolve`
+> 2. Copiar um **valor de exemplo** de documentação em vez do seu → `Access denied for user`
+>
+> Copie sempre do painel, nunca de um guia.
 
 ### 2.2 Carregar o schema
 
@@ -74,7 +81,7 @@ A Hostinger **prefixa tudo** com o ID da sua conta. Anote os valores reais:
 `CREATE DATABASE` nem `USE` (que fariam o phpMyAdmin falhar na linha 1, já que em
 hospedagem compartilhada a conta não pode criar databases e o nome vem prefixado).
 
-hPanel → *phpMyAdmin* → selecione `u123456789_econexo` no menu da esquerda → aba
+hPanel → *phpMyAdmin* → selecione `<SEU_BANCO>` no menu da esquerda → aba
 **Importar** → escolha `database/schema.sql` → *Executar*.
 
 > ⚠️ **Selecione o banco antes de importar.** Como o arquivo não tem `USE`, se você
@@ -93,7 +100,7 @@ O backend roda no Render, fora da Hostinger — sem isto ele não enxerga o banc
 
 hPanel → *Databases → Remote MySQL*:
 - Marque **“Any Host”** (`%`)
-- Selecione o database `u123456789_econexo`
+- Selecione o database `<SEU_BANCO>`
 - Anote o **hostname/IP remoto** que aparecer — é o seu `DB_HOST`
 
 > **Por que “Any Host”:** o free tier do Render não dá IP de saída fixo, então não
@@ -114,8 +121,8 @@ hPanel → *Databases → Remote MySQL*:
 | Variável | Valor |
 |---|---|
 | `DB_HOST` | hostname remoto do MySQL da Hostinger |
-| `DB_NAME` | `u123456789_econexo` |
-| `DB_USER` | `u123456789_admin` |
+| `DB_NAME` | `<SEU_BANCO>` |
+| `DB_USER` | `<SEU_USUARIO>` |
 | `DB_PASS` | a senha do banco |
 | `APP_ALLOWED_ORIGINS` | `https://seudominio.com,https://www.seudominio.com` |
 
@@ -209,7 +216,29 @@ tabelas. É proposital: evita que o Hibernate altere o banco de produção sozin
 | Backend não inicia — `Schema-validation: missing table` | Schema não importado, ou importado no database errado |
 | Backend não inicia — `Access denied for user` | `DB_USER`/`DB_PASS` errados, ou Remote MySQL não habilitado |
 | Backend não inicia — `Communications link failure` | Remote MySQL sem “Any Host” marcado |
-| Build da Hostinger falha em `npm ci` | *Build command* sem o `cd frontend` (é monorepo) |
+| Backend não inicia — `UnknownHostException: Name does not resolve` | `DB_HOST` recebeu o **nome do banco** em vez do hostname do servidor |
+| Build da Hostinger falha em `npm ci` | *Build command* com `cd frontend` **junto** com diretório raiz `frontend` — use um ou outro, não os dois |
+| Build da Hostinger falha em `npm ci` com *lock file out of sync* | Alguém editou `package.json` sem rodar `npm install`; rode e commite o lock |
+
+### Avisos benignos no log do Render (pode ignorar)
+
+```
+HHH000339: Could not obtain connection metadata:
+           SQLSyntaxErrorException: Unknown column 'RESERVED' in 'WHERE'
+HHH90000025: MySQLDialect does not need to be specified explicitly
+```
+
+O primeiro revela que a Hostinger roda **MariaDB**, não MySQL Oracle: o driver
+consulta `INFORMATION_SCHEMA.KEYWORDS.RESERVED`, coluna que só existe no MySQL.
+Como o MariaDB é compatível no protocolo e no SQL que usamos, tudo funciona — o
+efeito é só o Hibernate logar `Database driver: undefined/unknown`.
+
+O segundo é a dialect declarada à mão em `application.properties`, que o
+Hibernate 6 já detecta sozinho.
+
+Nenhum dos dois impede o boot. Se um dia forem incomodar, a correção é trocar a
+dialect por `MariaDBDialect` — ou simplesmente remover a linha e deixar a
+detecção automática agir.
 
 ---
 
