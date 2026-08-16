@@ -126,6 +126,7 @@ hPanel → *Databases → Remote MySQL*:
 | `DB_PASS` | a senha do banco |
 | `APP_ALLOWED_ORIGINS` | `https://seudominio.com,https://www.seudominio.com` |
 | `JWT_SECRET` | **mínimo 32 caracteres.** Gere com `openssl rand -base64 48` — ou deixe o Render sortear (`generateValue`) |
+| `ECONEXO_CRYPTO_KEY` | Criptografia do CPF em repouso. `openssl rand -base64 32`, ou deixe o Render sortear |
 
    (`SPRING_PROFILES_ACTIVE=prod` e `DB_PORT=3306` já vêm preenchidos.)
 
@@ -135,6 +136,11 @@ hPanel → *Databases → Remote MySQL*:
 >
 > Trocar a chave depois invalida todos os tokens em circulação: todo mundo
 > precisa entrar de novo. Isso é justamente o botão de emergência caso ela vaze.
+
+> 🔴 **`ECONEXO_CRYPTO_KEY` é diferente: NÃO pode ser trocada depois.** Ela
+> decifra os CPFs gravados; se mudar, eles viram lixo irrecuperável. Se um dia
+> precisar rotacionar, o caminho é decifrar a base com a chave antiga, trocar,
+> e recifrar — nunca trocar direto no painel.
 
 4. *Create* → o primeiro build leva ~5 min (compila o JAR dentro do container).
 

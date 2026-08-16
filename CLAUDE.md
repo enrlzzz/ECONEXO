@@ -61,6 +61,20 @@ Escritas como regra permanente porque cada uma delas já foi um problema real aq
    o commit, o histórico do Git guarda.
 9. **Erro não vaza stack trace.** `@ControllerAdvice` devolve JSON padronizado.
 10. **Rate limit em `login` e `cadastro`:** 10 tentativas, bloqueio de 15 min.
+11. **CPF é criptografado em repouso** (`@Convert` + AES-256-GCM). A chave vive
+    em `ECONEXO_CRYPTO_KEY`, **nunca no banco** — chave junto do dado torna a
+    criptografia inútil. Ao adicionar outro dado sensível, use o mesmo converter.
+12. **Cadastro exige consentimento LGPD**, gravado com **data e versão da
+    política**. Sem os três, não há prova de consentimento (Art. 8º, §2º —
+    o ônus é do controlador). Mudou o texto da política? Suba
+    `econexo.lgpd.versao-politica`.
+
+### ⚠️ Chaves que não podem ser trocadas sem plano
+
+| Variável | Se trocar |
+|---|---|
+| `JWT_SECRET` | Todos os tokens caem; todo mundo precisa logar de novo. É o botão de emergência se vazar. |
+| `ECONEXO_CRYPTO_KEY` | **Os CPFs já gravados tornam-se ILEGÍVEIS para sempre.** Trocar exige decifrar a base com a chave antiga antes. |
 
 ### Como isso é garantido
 

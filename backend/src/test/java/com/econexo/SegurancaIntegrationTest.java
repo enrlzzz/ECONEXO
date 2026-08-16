@@ -35,6 +35,7 @@ class SegurancaIntegrationTest {
     @Autowired UsuarioRepository usuarioRepository;
     @Autowired ObjectMapper json;
     @Autowired RateLimitService rateLimitService;
+    @Autowired jakarta.persistence.EntityManager entityManager;
 
     private static final String EMAIL = "ricardo@econexo.test";
     private static final String SENHA = "SenhaForte123";
@@ -50,7 +51,8 @@ class SegurancaIntegrationTest {
     private String cadastrar() throws Exception {
         String corpo = """
             {"nome":"Ricardo Teste","email":"%s","senha":"%s",
-             "cpf":"12345678901","telefone":"15999998888","dataNascimento":"1990-05-10"}
+             "cpf":"12345678901","telefone":"15999998888","dataNascimento":"1990-05-10",
+             "consentimentoLgpd":true}
             """.formatted(EMAIL, SENHA);
 
         mvc.perform(post("/api/usuarios").contentType(MediaType.APPLICATION_JSON).content(corpo))
@@ -91,13 +93,77 @@ class SegurancaIntegrationTest {
         MvcResult r = mvc.perform(post("/api/usuarios")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content("""
-                    {"nome":"Joao","email":"joao@econexo.test","senha":"SenhaForte123"}
+                    {"nome":"Joao","email":"joao@econexo.test","senha":"SenhaForte123","consentimentoLgpd":true}
                     """))
                 .andExpect(status().isCreated())
                 .andReturn();
 
         assertThat(r.getResponse().getContentAsString())
                 .doesNotContain("SenhaForte123", "senha");
+    }
+
+    // ---------- M2: CPF criptografado em repouso ----------
+
+    @Test
+    @DisplayName("M2 - CPF é gravado criptografado, ilegível no banco")
+    void cpfEhCriptografadoNoBanco() throws Exception {
+        cadastrar();
+
+        // Consulta crua, sem passar pelo JPA: é o que um dump do banco ou uma
+        // SQL injection enxergariam.
+        String armazenado = (String) entityManager
+                .createNativeQuery("SELECT cpf FROM usuario WHERE email = :e")
+                .setParameter("e", EMAIL)
+                .getSingleResult();
+
+        assertThat(armazenado).isNotNull();
+        assertThat(armazenado).doesNotContain("12345678901");
+        assertThat(armazenado).startsWith("enc:v1:");
+    }
+
+    @Test
+    @DisplayName("M2 - a aplicação continua lendo o CPF normalmente")
+    void cpfEhLegivelPelaAplicacao() throws Exception {
+        cadastrar();
+
+        Usuario u = usuarioRepository.findByEmail(EMAIL).orElseThrow();
+        assertThat(u.getCpf()).isEqualTo("12345678901");
+    }
+
+    @Test
+    @DisplayName("M2 - UNIQUE do CPF continua valendo mesmo cifrado")
+    void cpfDuplicadoAindaEhBarrado() throws Exception {
+        cadastrar();
+
+        mvc.perform(post("/api/usuarios").contentType(MediaType.APPLICATION_JSON).content("""
+                {"nome":"Clone","email":"clone@econexo.test","senha":"SenhaForte123",
+                 "cpf":"12345678901","consentimentoLgpd":true}
+                """))
+           .andExpect(status().isConflict());
+    }
+
+    // ---------- M2: consentimento LGPD ----------
+
+    @Test
+    @DisplayName("LGPD - cadastro sem consentimento é recusado")
+    void cadastroSemConsentimentoEhRecusado() throws Exception {
+        mvc.perform(post("/api/usuarios").contentType(MediaType.APPLICATION_JSON).content("""
+                {"nome":"Sem Aceite","email":"semaceite@econexo.test","senha":"SenhaForte123"}
+                """))
+           .andExpect(status().isBadRequest());
+
+        assertThat(usuarioRepository.findByEmail("semaceite@econexo.test")).isEmpty();
+    }
+
+    @Test
+    @DisplayName("LGPD - consentimento é gravado com data e versão da política")
+    void consentimentoEhComprovavel() throws Exception {
+        cadastrar();
+
+        Usuario u = usuarioRepository.findByEmail(EMAIL).orElseThrow();
+        assertThat(u.getConsentimentoLgpd()).isTrue();
+        assertThat(u.getConsentimentoEm()).isNotNull();
+        assertThat(u.getConsentimentoVersao()).isNotBlank();
     }
 
     // ---------- C2: senha com BCrypt ----------
@@ -160,7 +226,7 @@ class SegurancaIntegrationTest {
         String tokenA = cadastrar();
 
         mvc.perform(post("/api/usuarios").contentType(MediaType.APPLICATION_JSON).content("""
-                {"nome":"Vitima","email":"vitima@econexo.test","senha":"OutraSenha123"}
+                {"nome":"Vitima","email":"vitima@econexo.test","senha":"OutraSenha123","consentimentoLgpd":true}
                 """)).andExpect(status().isCreated());
 
         Integer idVitima = usuarioRepository.findByEmail("vitima@econexo.test")
@@ -170,7 +236,7 @@ class SegurancaIntegrationTest {
                 .header("Authorization", "Bearer " + tokenA)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content("""
-                    {"nome":"Invadido","email":"vitima@econexo.test","senha":"NovaSenha123"}
+                    {"nome":"Invadido","email":"vitima@econexo.test","senha":"NovaSenha123","consentimentoLgpd":true}
                     """))
            .andExpect(status().isForbidden());
     }
@@ -181,7 +247,7 @@ class SegurancaIntegrationTest {
         String tokenA = cadastrar();
 
         mvc.perform(post("/api/usuarios").contentType(MediaType.APPLICATION_JSON).content("""
-                {"nome":"Vitima2","email":"vitima2@econexo.test","senha":"OutraSenha123"}
+                {"nome":"Vitima2","email":"vitima2@econexo.test","senha":"OutraSenha123","consentimentoLgpd":true}
                 """)).andExpect(status().isCreated());
 
         Integer idVitima = usuarioRepository.findByEmail("vitima2@econexo.test")
@@ -200,7 +266,7 @@ class SegurancaIntegrationTest {
     @DisplayName("B2 - id enviado no corpo do cadastro é ignorado")
     void idNoCorpoEhIgnorado() throws Exception {
         mvc.perform(post("/api/usuarios").contentType(MediaType.APPLICATION_JSON).content("""
-                {"idUsuario":999,"nome":"Fulano","email":"fulano@econexo.test","senha":"SenhaForte123"}
+                {"idUsuario":999,"nome":"Fulano","email":"fulano@econexo.test","senha":"SenhaForte123","consentimentoLgpd":true}
                 """)).andExpect(status().isCreated());
 
         assertThat(usuarioRepository.findById(999)).isEmpty();
@@ -259,7 +325,7 @@ class SegurancaIntegrationTest {
         MvcResult r = mvc.perform(post("/api/usuarios")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content("""
-                    {"nome":"Outro","email":"%s","senha":"SenhaForte123"}
+                    {"nome":"Outro","email":"%s","senha":"SenhaForte123","consentimentoLgpd":true}
                     """.formatted(EMAIL)))
                 .andExpect(status().isConflict())
                 .andReturn();

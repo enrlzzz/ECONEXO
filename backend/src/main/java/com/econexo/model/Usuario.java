@@ -3,6 +3,7 @@ package com.econexo.model;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 /**
  * Classe que representa a entidade Usuário.
@@ -26,7 +27,13 @@ public class Usuario {
     @Column(nullable = false)
     private String senha;
 
-    @Column(unique = true, length = 14)
+    /**
+     * Criptografado em repouso (AES-256-GCM) — no banco não existe CPF legível.
+     * O converter cifra/decifra sozinho; aqui em Java o valor é o CPF normal.
+     * A coluna precisa de 255 porque o cifrado em base64 é bem maior que 14.
+     */
+    @Convert(converter = com.econexo.security.CriptografiaConverter.class)
+    @Column(unique = true, length = 255)
     private String cpf;
 
     @Column(length = 20)
@@ -34,6 +41,23 @@ public class Usuario {
 
     @Column(name = "data_nascimento")
     private LocalDate dataNascimento;
+
+    /**
+     * Consentimento LGPD.
+     *
+     * A LGPD (Art. 8º, §2º) coloca o ônus da prova do consentimento no
+     * controlador — ou seja, em nós. Guardar só um "true" não prova nada:
+     * é preciso saber QUANDO foi dado e para QUAL versão da política, senão
+     * uma mudança de texto invalida a prova de todos os consentimentos.
+     */
+    @Column(name = "consentimento_lgpd", nullable = false)
+    private Boolean consentimentoLgpd = false;
+
+    @Column(name = "consentimento_em")
+    private LocalDateTime consentimentoEm;
+
+    @Column(name = "consentimento_versao", length = 20)
+    private String consentimentoVersao;
 
     public Usuario() {
     }
@@ -119,6 +143,33 @@ public class Usuario {
 
     public void setDataNascimento(LocalDate dataNascimento) {
         this.dataNascimento = dataNascimento;
+    }
+
+    @JsonIgnore
+    public Boolean getConsentimentoLgpd() {
+        return consentimentoLgpd;
+    }
+
+    public void setConsentimentoLgpd(Boolean consentimentoLgpd) {
+        this.consentimentoLgpd = consentimentoLgpd;
+    }
+
+    @JsonIgnore
+    public LocalDateTime getConsentimentoEm() {
+        return consentimentoEm;
+    }
+
+    public void setConsentimentoEm(LocalDateTime consentimentoEm) {
+        this.consentimentoEm = consentimentoEm;
+    }
+
+    @JsonIgnore
+    public String getConsentimentoVersao() {
+        return consentimentoVersao;
+    }
+
+    public void setConsentimentoVersao(String consentimentoVersao) {
+        this.consentimentoVersao = consentimentoVersao;
     }
 
     @Override

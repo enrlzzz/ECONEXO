@@ -27,6 +27,11 @@ export default function Cadastro() {
   const [erro, setErro] = useState("");
   const [enviando, setEnviando] = useState(false);
 
+  // Consentimento LGPD: fica fora do `form` porque é um aceite explícito,
+  // não um dado do cadastro. Começa SEMPRE desmarcado — checkbox pré-marcado
+  // não é consentimento válido (a LGPD exige manifestação livre e inequívoca).
+  const [aceitouPolitica, setAceitouPolitica] = useState(false);
+
   const handleChange = (event) => {
     const { name, value } = event.target;
     setForm({ ...form, [name]: value });
@@ -36,6 +41,10 @@ export default function Cadastro() {
     event.preventDefault();
     if (form.senha !== form.confirmarSenha) {
       setErro("As senhas não coincidem.");
+      return;
+    }
+    if (!aceitouPolitica) {
+      setErro("É necessário aceitar a Política de Privacidade para criar a conta.");
       return;
     }
     setErro("");
@@ -49,6 +58,7 @@ export default function Cadastro() {
         cpf: form.cpf || null,
         telefone: form.telefone || null,
         dataNascimento: form.dataNascimento || null,
+        consentimentoLgpd: aceitouPolitica,
       });
 
       // O cadastro não devolve token (só confirma a criação). Entramos em
@@ -233,9 +243,29 @@ export default function Cadastro() {
             Campos profissionais (CREA / NR-10 / NR-35) serão habilitados em breve.
           </p>
 
+          <label className="label-consentimento">
+            <input
+              type="checkbox"
+              name="consentimentoLgpd"
+              checked={aceitouPolitica}
+              onChange={(e) => setAceitouPolitica(e.target.checked)}
+            />
+            <span>
+              Li e aceito a{" "}
+              <Link to="/politica-de-privacidade" target="_blank" rel="noopener noreferrer">
+                Política de Privacidade
+              </Link>{" "}
+              e autorizo o tratamento dos meus dados pessoais.
+            </span>
+          </label>
+
           {erro && <p style={{ color: "red" }}>{erro}</p>}
 
-          <button type="submit" className="button-register" disabled={enviando}>
+          <button
+            type="submit"
+            className="button-register"
+            disabled={enviando || !aceitouPolitica}
+          >
             {enviando ? "Cadastrando..." : "Cadastrar"}
           </button>
 

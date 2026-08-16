@@ -3,12 +3,15 @@ package com.econexo.service;
 import com.econexo.dto.UsuarioRequest;
 import com.econexo.dto.UsuarioResponse;
 import com.econexo.exception.AcessoNegadoException;
+import com.econexo.exception.ValidacaoException;
 import com.econexo.model.Usuario;
 import com.econexo.repository.UsuarioRepository;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -24,14 +27,25 @@ public class UsuarioService {
 
     private final UsuarioRepository usuarioRepository;
     private final PasswordEncoder passwordEncoder;
+    private final String versaoPolitica;
 
-    public UsuarioService(UsuarioRepository usuarioRepository, PasswordEncoder passwordEncoder) {
+    public UsuarioService(UsuarioRepository usuarioRepository,
+                          PasswordEncoder passwordEncoder,
+                          @Value("${econexo.lgpd.versao-politica:1.0}") String versaoPolitica) {
         this.usuarioRepository = usuarioRepository;
         this.passwordEncoder = passwordEncoder;
+        this.versaoPolitica = versaoPolitica;
     }
 
     @Transactional
     public UsuarioResponse criarUsuario(UsuarioRequest req) {
+        // LGPD Art. 8º: o consentimento tem que ser inequívoco e comprovável.
+        // Sem aceite, não há base legal para tratar CPF, telefone e localização.
+        if (!Boolean.TRUE.equals(req.consentimentoLgpd())) {
+            throw new ValidacaoException(
+                    "É necessário aceitar a Política de Privacidade para criar a conta.");
+        }
+
         Usuario usuario = new Usuario();
         usuario.setNome(req.nome());
         usuario.setEmail(req.email().trim().toLowerCase());
@@ -39,6 +53,11 @@ public class UsuarioService {
         usuario.setCpf(vazioViraNulo(req.cpf()));
         usuario.setTelefone(vazioViraNulo(req.telefone()));
         usuario.setDataNascimento(req.dataNascimento());
+
+        // Prova do consentimento: o quê, quando e para qual versão do texto.
+        usuario.setConsentimentoLgpd(true);
+        usuario.setConsentimentoEm(LocalDateTime.now());
+        usuario.setConsentimentoVersao(versaoPolitica);
 
         // E-mail duplicado sobe como DataIntegrityViolationException e o
         // GlobalExceptionHandler devolve mensagem genérica — de propósito,

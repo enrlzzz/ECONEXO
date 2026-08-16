@@ -42,6 +42,13 @@ public record UsuarioRequest(
         String telefone,
 
         @Past(message = "Data de nascimento deve ser no passado")
-        LocalDate dataNascimento
+        LocalDate dataNascimento,
+
+        /**
+         * Aceite da Política de Privacidade. Obrigatório no CADASTRO —
+         * validado em UsuarioService, não por anotação, porque a atualização
+         * de perfil reusa este record e não precisa reafirmar o aceite.
+         */
+        Boolean consentimentoLgpd
 ) {
 }

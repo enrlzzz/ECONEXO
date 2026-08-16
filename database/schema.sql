@@ -24,10 +24,17 @@ create TABLE usuario (
     id_usuario INT AUTO_INCREMENT PRIMARY KEY,
     nome VARCHAR(100) NOT NULL,
     email VARCHAR(150) UNIQUE NOT NULL,
+    -- hash BCrypt ($2a$12$...), nunca a senha em si
     senha VARCHAR(255) NOT NULL,
-    cpf VARCHAR(14) UNIQUE,
+    -- criptografado em repouso (AES-256-GCM): 255 porque o cifrado em
+    -- base64 é muito maior que os 14 caracteres do CPF em texto
+    cpf VARCHAR(255) UNIQUE,
     telefone VARCHAR(20),
-    data_nascimento DATE
+    data_nascimento DATE,
+    -- prova de consentimento LGPD (Art. 8º, §2º): o ônus é do controlador
+    consentimento_lgpd BOOLEAN NOT NULL DEFAULT FALSE,
+    consentimento_em DATETIME,
+    consentimento_versao VARCHAR(20)
 );
 
 CREATE TABLE skill (

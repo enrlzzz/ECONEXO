@@ -41,6 +41,12 @@ public class GlobalExceptionHandler {
                 .body(ErroResponse.deValidacao("Verifique os campos informados.", campos));
     }
 
+    @ExceptionHandler(ValidacaoException.class)
+    public ResponseEntity<ErroResponse> validacaoManual(ValidacaoException e) {
+        return ResponseEntity.badRequest()
+                .body(ErroResponse.de(400, "Dados inválidos", e.getMessage()));
+    }
+
     @ExceptionHandler(RegraNegocioException.class)
     public ResponseEntity<ErroResponse> regraNegocio(RegraNegocioException e) {
         return ResponseEntity.status(HttpStatus.CONFLICT)

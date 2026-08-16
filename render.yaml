@@ -50,3 +50,9 @@ services:
       # Trocar esta chave invalida todos os tokens: todo mundo precisa logar de novo.
       - key: JWT_SECRET
         generateValue: true
+
+      # Chave de criptografia do CPF em repouso (AES-256-GCM).
+      # ⚠️ NUNCA troque depois que houver CPF gravado: os dados existentes
+      # ficam ilegíveis para sempre. Não há recuperação.
+      - key: ECONEXO_CRYPTO_KEY
+        generateValue: true
