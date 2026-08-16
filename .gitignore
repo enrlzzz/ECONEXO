@@ -30,8 +30,9 @@ backend/HELP.md
 !backend/.mvn/wrapper/*.jar.sha256
 
 # --- Frontend (Node / Vite) ---
-frontend/node_modules/
-frontend/dist/
-frontend/dist-ssr/
-frontend/.vite/
+# Padrões sem prefixo de pasta: pegam qualquer nível (raiz, frontend/, futuros pacotes)
+node_modules/
+dist/
+dist-ssr/
+.vite/
 *.local

@@ -1,5 +1,24 @@
-create database if not exists Econexo;
-use Econexo;
+-- Schema do EcoNexo (MySQL 8)
+--
+-- Este arquivo NÃO cria nem seleciona o database — quem escolhe o banco é quem
+-- importa. Isso é proposital: em hospedagem compartilhada (Hostinger) a conta
+-- não tem permissão de CREATE DATABASE e o nome vem prefixado pelo painel
+-- (ex.: u123456789_econexo), então um "create database Econexo" faria o import
+-- do phpMyAdmin falhar logo na primeira linha.
+--
+-- Como carregar em cada ambiente:
+--
+--   Local (dev):
+--     mysql -u root -p -e "CREATE DATABASE IF NOT EXISTS Econexo"
+--     mysql -u root -p Econexo < database/schema.sql
+--
+--   Hostinger (produção):
+--     hPanel > Databases > cria o banco, depois phpMyAdmin > seleciona o banco
+--     criado > aba Importar > envia este arquivo.
+--
+--   VPS:
+--     sudo mysql < deploy/setup-mysql.sql     # cria banco + usuário
+--     sudo mysql Econexo < database/schema.sql
 
 create TABLE usuario (
     id_usuario INT AUTO_INCREMENT PRIMARY KEY,

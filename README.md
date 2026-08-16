@@ -42,8 +42,13 @@ Maven é incluído como wrapper (`backend/mvnw.cmd`), não precisa instalar glob
 Subir MySQL local e criar o schema:
 
 ```sh
-mysql -u root -p < database/schema.sql
+mysql -u root -p -e "CREATE DATABASE IF NOT EXISTS Econexo"
+mysql -u root -p Econexo < database/schema.sql
 ```
+
+> `schema.sql` não cria nem seleciona o database — o banco é escolhido por quem
+> importa. Isso permite que o mesmo arquivo sirva para dev, VPS e Hostinger
+> (onde o nome do banco vem prefixado pelo painel).
 
 Credenciais default (configuradas em `backend/src/main/resources/application.properties`):
 
@@ -104,4 +109,26 @@ VITE_API_URL=http://localhost:8080
 
 ## Deploy
 
-Veja [`deploy/DEPLOY.md`](deploy/DEPLOY.md) para passo-a-passo completo de deploy em VPS Hostinger (Ubuntu + nginx + systemd + Let's Encrypt).
+Arquitetura de produção — **deploy automático a cada push na `main`**:
+
+```
+name.com (DNS) ──► Hostinger ──► public_html/  (build do React/Vite)
+                        └──────► MySQL 8       (Remote MySQL habilitado)
+                                    ▲
+                                    │ JDBC
+Render.com (free) ──► econexo-api.onrender.com  (Spring Boot em Docker)
+```
+
+👉 **[`deploy/HOSTINGER-RENDER.md`](deploy/HOSTINGER-RENDER.md)** — passo a passo completo.
+
+Arquivos que sustentam esse deploy:
+
+| Arquivo | Papel |
+|---|---|
+| [`render.yaml`](render.yaml) | Blueprint do Render — cria o serviço da API já configurado |
+| [`backend/Dockerfile`](backend/Dockerfile) | Build do JAR em container (Render/Railway/Fly) |
+| [`frontend/public/.htaccess`](frontend/public/.htaccess) | Fallback SPA no Apache da Hostinger (sem ele, F5 fora da home dá 404) |
+| [`frontend/.env.production`](frontend/.env.production) | Aponta o front para a API no Render |
+| [`.github/workflows/ci.yml`](.github/workflows/ci.yml) | Build do backend + lint/build do frontend em cada PR |
+
+[`deploy/DEPLOY.md`](deploy/DEPLOY.md) descreve a alternativa em **VPS** (nginx + systemd + Let's Encrypt), mantida como referência caso o projeto migre.

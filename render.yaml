@@ -1,0 +1,43 @@
+# Blueprint do Render — https://render.com/docs/blueprint-spec
+# No painel do Render: New > Blueprint > conecta o repo enrlzzz/ECONEXO.
+# Ele lê este arquivo e cria o serviço já configurado.
+#
+# Arquitetura: este serviço é SÓ a API. O frontend fica na Hostinger
+# (public_html) e o MySQL também (Remote MySQL habilitado).
+
+services:
+  - type: web
+    name: econexo-api
+    runtime: docker
+    plan: free
+    # Free tier não tem região no Brasil. Oregon é a de menor latência
+    # utilizável para o Sudeste (~180ms). Suficiente para a demo.
+    region: oregon
+    rootDir: backend
+    dockerfilePath: ./Dockerfile
+    branch: main
+    # Deploy automático a cada push na main
+    autoDeployTrigger: commit
+
+    envVars:
+      - key: SPRING_PROFILES_ACTIVE
+        value: prod
+
+      # --- Credenciais do MySQL da Hostinger ---
+      # sync: false = o Render NÃO guarda no repo; você digita o valor
+      # uma vez no painel (Environment). Nada de senha no Git.
+      - key: DB_HOST
+        sync: false
+      - key: DB_PORT
+        value: "3306"
+      - key: DB_NAME
+        sync: false
+      - key: DB_USER
+        sync: false
+      - key: DB_PASS
+        sync: false
+
+      # Domínios autorizados a chamar a API (CORS).
+      # Ex: https://econexo.com,https://www.econexo.com
+      - key: APP_ALLOWED_ORIGINS
+        sync: false
