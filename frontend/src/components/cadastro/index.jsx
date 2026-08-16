@@ -7,6 +7,7 @@ import { useState } from "react";
 import { BsLightning } from "react-icons/bs";
 
 import { usuariosService } from "../../services/usuarios";
+import { persistSession } from "../../userSession";
 
 export default function Cadastro() {
   const navigate = useNavigate();
@@ -41,7 +42,7 @@ export default function Cadastro() {
     setEnviando(true);
 
     try {
-      const novo = await usuariosService.criar({
+      await usuariosService.criar({
         nome: form.nome,
         email: form.email,
         senha: form.senha,
@@ -50,18 +51,23 @@ export default function Cadastro() {
         dataNascimento: form.dataNascimento || null,
       });
 
-      localStorage.setItem("userId", String(novo.idUsuario));
-      localStorage.setItem("userName", novo.nome);
-      localStorage.setItem("userEmail", novo.email);
-      localStorage.setItem("userCidade", form.cidade);
-      localStorage.setItem("userEstado", form.estado);
+      // O cadastro não devolve token (só confirma a criação). Entramos em
+      // seguida com as mesmas credenciais para obter a sessão — sem token,
+      // toda chamada seguinte à API voltaria 401.
+      const sessao = await usuariosService.login(form.email, form.senha);
+      persistSession({
+        ...sessao,
+        usuario: { ...sessao.usuario, cidade: form.cidade, estado: form.estado },
+      });
 
       navigate("/menu-user");
     } catch (e) {
       setErro(
-        e.status === 409 || /duplicate|unique/i.test(e.message)
-          ? "Este email ou CPF já está cadastrado."
-          : `Falha ao cadastrar: ${e.message}`,
+        e.status === 409
+          ? "Não foi possível concluir o cadastro com os dados informados."
+          : e.status === 429
+            ? e.message
+            : `Falha ao cadastrar: ${e.message}`,
       );
     } finally {
       setEnviando(false);

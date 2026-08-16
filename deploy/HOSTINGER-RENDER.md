@@ -125,8 +125,16 @@ hPanel → *Databases → Remote MySQL*:
 | `DB_USER` | `<SEU_USUARIO>` |
 | `DB_PASS` | a senha do banco |
 | `APP_ALLOWED_ORIGINS` | `https://seudominio.com,https://www.seudominio.com` |
+| `JWT_SECRET` | **mínimo 32 caracteres.** Gere com `openssl rand -base64 48` — ou deixe o Render sortear (`generateValue`) |
 
    (`SPRING_PROFILES_ACTIVE=prod` e `DB_PORT=3306` já vêm preenchidos.)
+
+> ⚠️ **Sem `JWT_SECRET` o backend não sobe** — e isso é proposital. Uma chave
+> ausente ou curta tornaria os tokens forjáveis, ou seja, autenticação
+> decorativa. Melhor falhar no deploy do que subir com login que não protege nada.
+>
+> Trocar a chave depois invalida todos os tokens em circulação: todo mundo
+> precisa entrar de novo. Isso é justamente o botão de emergência caso ela vaze.
 
 4. *Create* → o primeiro build leva ~5 min (compila o JAR dentro do container).
 

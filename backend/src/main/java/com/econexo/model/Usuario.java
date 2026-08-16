@@ -1,5 +1,6 @@
 package com.econexo.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import java.time.LocalDate;
 
@@ -82,6 +83,11 @@ public class Usuario {
         this.email = email;
     }
 
+    /**
+     * Rede de segurança: a API responde só com DTOs, mas se algum dia alguém
+     * devolver a entidade por engano, o hash da senha não vai junto no JSON.
+     */
+    @JsonIgnore
     public String getSenha() {
         return senha;
     }
@@ -90,6 +96,7 @@ public class Usuario {
         this.senha = senha;
     }
 
+    @JsonIgnore
     public String getCpf() {
         return cpf;
     }

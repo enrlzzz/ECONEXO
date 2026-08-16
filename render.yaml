@@ -39,5 +39,14 @@ services:
 
       # Domínios autorizados a chamar a API (CORS).
       # Ex: https://econexo.com,https://www.econexo.com
+      # Sem valor, o backend se RECUSA a subir — em produção é melhor falhar
+      # no deploy do que liberar a API para qualquer origem.
       - key: APP_ALLOWED_ORIGINS
         sync: false
+
+      # Chave de assinatura do JWT. generateValue faz o Render sortear um valor
+      # aleatório e guardá-lo só no painel — nunca passa pelo Git.
+      # Precisa ter no mínimo 32 caracteres (HS256); o backend valida no boot.
+      # Trocar esta chave invalida todos os tokens: todo mundo precisa logar de novo.
+      - key: JWT_SECRET
+        generateValue: true

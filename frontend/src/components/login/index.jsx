@@ -7,7 +7,7 @@ import { BsLightning } from "react-icons/bs";
 import { useEffect, useState } from "react";
 
 import { usuariosService } from "../../services/usuarios";
-import { isLoggedIn, persistUser } from "../../userSession";
+import { isLoggedIn, persistSession } from "../../userSession";
 
 export default function Login() {
   const navigate = useNavigate();
@@ -31,14 +31,17 @@ export default function Login() {
     setEnviando(true);
 
     try {
-      const usuario = await usuariosService.login(form.email, form.senha);
-      persistUser(usuario);
+      // Resposta: { token, expiraEmSegundos, usuario }
+      const sessao = await usuariosService.login(form.email, form.senha);
+      persistSession(sessao);
       navigate("/menu-user", { replace: true });
     } catch (e) {
       setErro(
         e.status === 401
           ? "Email ou senha incorretos."
-          : `Falha ao entrar: ${e.message}`,
+          : e.status === 429
+            ? e.message // "Excesso de tentativas. Tente novamente em N minuto(s)."
+            : `Falha ao entrar: ${e.message}`,
       );
     } finally {
       setEnviando(false);

@@ -62,6 +62,22 @@ Escritas como regra permanente porque cada uma delas já foi um problema real aq
 9. **Erro não vaza stack trace.** `@ControllerAdvice` devolve JSON padronizado.
 10. **Rate limit em `login` e `cadastro`:** 10 tentativas, bloqueio de 15 min.
 
+### Como isso é garantido
+
+`backend/src/test/java/com/econexo/SegurancaIntegrationTest.java` tem 15 testes,
+um por regra acima, rodando contra H2 em memória (não precisa de MySQL local).
+O CI executa em cada PR.
+
+**Se um desses testes quebrar, uma vulnerabilidade já corrigida foi reaberta.**
+Não faça merge "consertando o teste" — conserte o código.
+
+### Contrato da API de autenticação
+
+- `POST /api/auth/login` — corpo `{email, senha}` → `{token, expiraEmSegundos, usuario}`
+- `POST /api/usuarios` — cadastro (público)
+- Todo o resto exige `Authorization: Bearer <token>`
+- Erros seguem sempre `{status, erro, mensagem, campos?}` — nunca stack trace
+
 ---
 
 ## 3. Deploy
