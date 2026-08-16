@@ -47,9 +47,13 @@ export default function PoliticaPrivacidade() {
             engenheiros de projetos fotovoltaicos a instaladores técnicos
             qualificados.
           </p>
-          <p>
-            Contato do responsável pelo tratamento de dados:{" "}
-            <strong>lunitec.econexo@gmail.com</strong>
+          <p className="politica-pendente">
+            <strong>⚠️ Canal de contato provisório.</strong> Este projeto está em
+            desenvolvimento e ainda não possui um endereço oficial para
+            solicitações sobre dados pessoais. Enquanto isso, os pedidos previstos
+            na seção 5 devem ser feitos diretamente à equipe do projeto, na
+            Facens. Um e-mail dedicado será publicado aqui antes de a plataforma
+            receber dados de usuários reais.
           </p>
         </section>
 
@@ -151,8 +155,9 @@ export default function PoliticaPrivacidade() {
             <li>Pedir a portabilidade dos dados</li>
           </ul>
           <p>
-            A exclusão da conta pode ser feita direto em Configurações, ou por
-            e-mail. Respondemos em até 15 dias.
+            A exclusão da conta pode ser feita direto em Configurações. Os demais
+            pedidos devem ser feitos pelo canal indicado na seção 1, e são
+            respondidos em até 15 dias.
           </p>
         </section>
 
@@ -167,9 +172,9 @@ export default function PoliticaPrivacidade() {
         <section>
           <h2>7. Alterações</h2>
           <p>
-            Se esta política mudar de forma relevante, avisaremos por e-mail e
-            pediremos novo consentimento. A versão à qual você aderiu fica
-            registrada junto ao seu cadastro.
+            Se esta política mudar de forma relevante, pediremos novo
+            consentimento no seu próximo acesso. A versão à qual você aderiu fica
+            registrada junto ao seu cadastro, com data e hora.
           </p>
         </section>
 

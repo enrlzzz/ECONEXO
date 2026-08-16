@@ -124,3 +124,12 @@
     white-space: nowrap;
   }
 }
+
+/* Aviso de pendência — some quando o e-mail oficial for publicado */
+.politica-pendente {
+  background-color: rgba(232, 145, 27, 0.1);
+  border-left: 4px solid #e8911b;
+  padding: 0.85rem 1rem;
+  border-radius: 4px;
+  font-size: 0.925rem;
+}
