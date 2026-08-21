@@ -60,7 +60,7 @@ export default function Login() {
       </Link>
 
       <div className="login-user">
-        <h3>Entrar no EcoNexo</h3>
+        <h3>Entrar na Plataforma</h3>
 
         <form onSubmit={handleSubmit}>
           <label htmlFor="email" className="label-name">
