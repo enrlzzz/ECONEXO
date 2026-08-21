@@ -1,0 +1,41 @@
+# SPA fallback — Hostinger serve o public_html via Apache/LiteSpeed.
+# Sem isto, dar F5 em /menu-user/buscar retorna 404: o servidor procura uma
+# pasta com esse nome, que não existe (o react-router resolve as 12 rotas no
+# browser, não no servidor).
+#
+# O Vite copia tudo que está em public/ para a raiz do dist/ no build.
+
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+  RewriteBase /
+
+  # Arquivo ou pasta que existe de verdade (JS, CSS, imagens) é servido direto.
+  RewriteCond %{REQUEST_FILENAME} -f [OR]
+  RewriteCond %{REQUEST_FILENAME} -d
+  RewriteRule ^ - [L]
+
+  # Qualquer outra rota cai no index.html e o react-router assume.
+  RewriteRule ^ index.html [L]
+</IfModule>
+
+# Assets do Vite têm hash no nome (index-CyY2JRLx.js), então podem ter cache
+# longo com segurança: se o conteúdo muda, o nome do arquivo muda junto.
+<IfModule mod_expires.c>
+  ExpiresActive On
+  ExpiresByType text/css "access plus 1 year"
+  ExpiresByType application/javascript "access plus 1 year"
+  ExpiresByType image/svg+xml "access plus 1 month"
+  ExpiresByType image/png "access plus 1 month"
+</IfModule>
+
+# O index.html NÃO pode ser cacheado: é ele que aponta para os assets novos
+# a cada deploy. Se ficar em cache, o usuário continua vendo a versão antiga.
+<IfModule mod_headers.c>
+  <FilesMatch "index\.html$">
+    Header set Cache-Control "no-cache, must-revalidate"
+  </FilesMatch>
+</IfModule>
+
+<IfModule mod_deflate.c>
+  AddOutputFilterByType DEFLATE text/html text/css application/javascript application/json image/svg+xml
+</IfModule>

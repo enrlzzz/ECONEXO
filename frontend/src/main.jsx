@@ -16,6 +16,7 @@ import Search from "./components/interface-user/search-interface/index.jsx";
 import Profile from "./components/interface-user/profile-interface/index.jsx";
 import Settings from "./components/interface-user/settings-interface/index.jsx";
 import Administration from "./components/interface-user/administration-interface/index.jsx";
+import PoliticaPrivacidade from "./components/politica-privacidade/index.jsx";
 import ProtectedRoute from "./components/auth/ProtectedRoute.jsx";
 
 const protect = (element) => <ProtectedRoute>{element}</ProtectedRoute>;
@@ -34,6 +35,13 @@ const router = createBrowserRouter([
   {
     path: "/login",
     element: <Login />,
+  },
+
+  // Pública de propósito: a LGPD (Art. 9º) exige acesso facilitado à
+  // informação sobre o tratamento — não dá para exigir login para lê-la.
+  {
+    path: "/politica-de-privacidade",
+    element: <PoliticaPrivacidade />,
   },
 
   {

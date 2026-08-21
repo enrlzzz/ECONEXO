@@ -331,3 +331,30 @@ label {
         font-size: 1.4rem;
     }
 }
+/* Consentimento LGPD — checkbox e link para a política */
+.label-consentimento {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.6rem;
+  margin: 1.25rem 0 0.5rem;
+  font-size: 0.875rem;
+  line-height: 1.5;
+  cursor: pointer;
+}
+
+.label-consentimento input[type="checkbox"] {
+  width: auto;
+  margin: 0.2rem 0 0 0;
+  flex-shrink: 0;
+  cursor: pointer;
+}
+
+.label-consentimento a {
+  color: var(--color-primary, #0e8f5a);
+  text-decoration: underline;
+}
+
+.button-register:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}

@@ -1,0 +1,58 @@
+# Blueprint do Render — https://render.com/docs/blueprint-spec
+# No painel do Render: New > Blueprint > conecta o repo enrlzzz/ECONEXO.
+# Ele lê este arquivo e cria o serviço já configurado.
+#
+# Arquitetura: este serviço é SÓ a API. O frontend fica na Hostinger
+# (public_html) e o MySQL também (Remote MySQL habilitado).
+
+services:
+  - type: web
+    name: econexo-api
+    runtime: docker
+    plan: free
+    # Free tier não tem região no Brasil. Oregon é a de menor latência
+    # utilizável para o Sudeste (~180ms). Suficiente para a demo.
+    region: oregon
+    rootDir: backend
+    dockerfilePath: ./Dockerfile
+    branch: main
+    # Deploy automático a cada push na main
+    autoDeployTrigger: commit
+
+    envVars:
+      - key: SPRING_PROFILES_ACTIVE
+        value: prod
+
+      # --- Credenciais do MySQL da Hostinger ---
+      # sync: false = o Render NÃO guarda no repo; você digita o valor
+      # uma vez no painel (Environment). Nada de senha no Git.
+      - key: DB_HOST
+        sync: false
+      - key: DB_PORT
+        value: "3306"
+      - key: DB_NAME
+        sync: false
+      - key: DB_USER
+        sync: false
+      - key: DB_PASS
+        sync: false
+
+      # Domínios autorizados a chamar a API (CORS).
+      # Ex: https://econexo.com,https://www.econexo.com
+      # Sem valor, o backend se RECUSA a subir — em produção é melhor falhar
+      # no deploy do que liberar a API para qualquer origem.
+      - key: APP_ALLOWED_ORIGINS
+        sync: false
+
+      # Chave de assinatura do JWT. generateValue faz o Render sortear um valor
+      # aleatório e guardá-lo só no painel — nunca passa pelo Git.
+      # Precisa ter no mínimo 32 caracteres (HS256); o backend valida no boot.
+      # Trocar esta chave invalida todos os tokens: todo mundo precisa logar de novo.
+      - key: JWT_SECRET
+        generateValue: true
+
+      # Chave de criptografia do CPF em repouso (AES-256-GCM).
+      # ⚠️ NUNCA troque depois que houver CPF gravado: os dados existentes
+      # ficam ilegíveis para sempre. Não há recuperação.
+      - key: ECONEXO_CRYPTO_KEY
+        generateValue: true

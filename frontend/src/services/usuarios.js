@@ -6,6 +6,13 @@ export const usuariosService = {
   buscarPorId: (id) => api.get(`/usuarios/${id}`),
   atualizar: (id, usuario) => api.put(`/usuarios/${id}`, usuario),
   remover: (id) => api.delete(`/usuarios/${id}`),
-  login: (email, senha) =>
-    api.post(`/usuarios/login`, undefined, { params: { email, senha } }),
+
+  /**
+   * Devolve { token, expiraEmSegundos, usuario }.
+   *
+   * As credenciais vão no CORPO. Antes iam como query string
+   * (/usuarios/login?email=..&senha=..), o que gravava a senha em texto puro
+   * no log do servidor, no do proxy e no histórico do navegador.
+   */
+  login: (email, senha) => api.post("/auth/login", { email, senha }),
 };

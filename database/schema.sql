@@ -1,14 +1,40 @@
-create database if not exists Econexo;
-use Econexo;
+-- Schema do EcoNexo (MySQL 8)
+--
+-- Este arquivo NÃO cria nem seleciona o database — quem escolhe o banco é quem
+-- importa. Isso é proposital: em hospedagem compartilhada (Hostinger) a conta
+-- não tem permissão de CREATE DATABASE e o nome vem prefixado pelo painel
+-- (ex.: u123456789_econexo), então um "create database Econexo" faria o import
+-- do phpMyAdmin falhar logo na primeira linha.
+--
+-- Como carregar em cada ambiente:
+--
+--   Local (dev):
+--     mysql -u root -p -e "CREATE DATABASE IF NOT EXISTS Econexo"
+--     mysql -u root -p Econexo < database/schema.sql
+--
+--   Hostinger (produção):
+--     hPanel > Databases > cria o banco, depois phpMyAdmin > seleciona o banco
+--     criado > aba Importar > envia este arquivo.
+--
+--   VPS:
+--     sudo mysql < deploy/setup-mysql.sql     # cria banco + usuário
+--     sudo mysql Econexo < database/schema.sql
 
 create TABLE usuario (
     id_usuario INT AUTO_INCREMENT PRIMARY KEY,
     nome VARCHAR(100) NOT NULL,
     email VARCHAR(150) UNIQUE NOT NULL,
+    -- hash BCrypt ($2a$12$...), nunca a senha em si
     senha VARCHAR(255) NOT NULL,
-    cpf VARCHAR(14) UNIQUE,
+    -- criptografado em repouso (AES-256-GCM): 255 porque o cifrado em
+    -- base64 é muito maior que os 14 caracteres do CPF em texto
+    cpf VARCHAR(255) UNIQUE,
     telefone VARCHAR(20),
-    data_nascimento DATE
+    data_nascimento DATE,
+    -- prova de consentimento LGPD (Art. 8º, §2º): o ônus é do controlador
+    consentimento_lgpd BOOLEAN NOT NULL DEFAULT FALSE,
+    consentimento_em DATETIME,
+    consentimento_versao VARCHAR(20)
 );
 
 CREATE TABLE skill (

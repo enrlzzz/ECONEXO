@@ -1,0 +1,30 @@
+# Normaliza fim de linha: o time desenvolve no Windows (CRLF) mas o deploy roda
+# em Linux (Render/Hostinger). Sem isto, arquivos sensíveis a CRLF quebram —
+# Dockerfile, .htaccess e scripts shell são os casos clássicos.
+
+# Detecção automática para texto em geral
+* text=auto
+
+# Precisam OBRIGATORIAMENTE de LF, mesmo no Windows
+*.sh        text eol=lf
+mvnw        text eol=lf
+Dockerfile  text eol=lf
+*.htaccess  text eol=lf
+.htaccess   text eol=lf
+*.yml       text eol=lf
+*.yaml      text eol=lf
+*.sql       text eol=lf
+
+# Windows-only: precisa de CRLF
+*.cmd       text eol=crlf
+*.bat       text eol=crlf
+
+# Binários — nunca converter
+*.png       binary
+*.jpg       binary
+*.jpeg      binary
+*.gif       binary
+*.ico       binary
+*.jar       binary
+*.woff      binary
+*.woff2     binary

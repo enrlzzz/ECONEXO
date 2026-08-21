@@ -26,6 +26,41 @@ export function colorFor(seed) {
   return PALETTE[h % PALETTE.length];
 }
 
+const TOKEN_KEY = "authToken";
+const TOKEN_EXP_KEY = "authTokenExpiraEm";
+
+/**
+ * Guarda o token JWT devolvido pelo login.
+ *
+ * É esse token que autoriza de verdade — o backend rejeita qualquer chamada
+ * sem ele. Os demais campos abaixo são só para a interface desenhar nome e
+ * avatar sem ter que perguntar à API a cada tela.
+ */
+export function persistSession({ token, expiraEmSegundos, usuario }) {
+  if (token) {
+    localStorage.setItem(TOKEN_KEY, token);
+    localStorage.setItem(
+      TOKEN_EXP_KEY,
+      String(Date.now() + (expiraEmSegundos ?? 8 * 3600) * 1000),
+    );
+  }
+  persistUser(usuario);
+}
+
+export function getToken() {
+  const token = localStorage.getItem(TOKEN_KEY);
+  if (!token) return null;
+
+  // Expirado: limpa aqui para a interface não continuar se achando logada
+  // enquanto toda chamada à API volta 401.
+  const expiraEm = Number(localStorage.getItem(TOKEN_EXP_KEY) || 0);
+  if (expiraEm && Date.now() > expiraEm) {
+    logout();
+    return null;
+  }
+  return token;
+}
+
 export function persistUser(usuario) {
   if (!usuario) return;
   const id = String(usuario.idUsuario ?? usuario.id ?? "");
@@ -55,12 +90,19 @@ export function getUser() {
   };
 }
 
+/**
+ * Só serve para a interface decidir o que desenhar. NÃO é autorização:
+ * qualquer pessoa edita o localStorage no DevTools. Quem autoriza de fato é
+ * o backend, que valida a assinatura do token a cada requisição.
+ */
 export function isLoggedIn() {
-  return Boolean(localStorage.getItem("userId"));
+  return Boolean(getToken());
 }
 
 export function logout() {
   [
+    TOKEN_KEY,
+    TOKEN_EXP_KEY,
     "userId",
     "userName",
     "userEmail",
