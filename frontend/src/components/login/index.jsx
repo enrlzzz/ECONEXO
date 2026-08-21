@@ -60,10 +60,12 @@ export default function Login() {
       </Link>
 
       <div className="login-user">
-        <h3>Entrar na Plataforma</h3>
+        <h3>Entrar no EcoNexo</h3>
 
         <form onSubmit={handleSubmit}>
-          <label htmlFor="email" className="label-name">Email</label>
+          <label htmlFor="email" className="label-name">
+            Email
+          </label>
           <input
             type="email"
             placeholder="seu@email.com"
@@ -74,7 +76,9 @@ export default function Login() {
             onChange={handleChange}
           />
 
-          <label htmlFor="senha" className="label-password">Senha</label>
+          <label htmlFor="senha" className="label-password">
+            Senha
+          </label>
           <input
             type="password"
             placeholder="********"
