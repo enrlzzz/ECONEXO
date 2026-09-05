@@ -4,8 +4,8 @@ import "/src/variables.css";
 import { Link, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 
-import { useUserData } from "../../../useUserData";
 import { logout } from "../../../userSession";
+import PerfilMenu from "../../shared/perfil-menu";
 
 import { BsLightning } from "react-icons/bs";
 import { IoIosMenu } from "react-icons/io";
@@ -20,10 +20,8 @@ import { MdSpaceDashboard } from "react-icons/md";
 
 export default function HeaderInterface() {
   const navigate = useNavigate();
-  const { nome, cidade, estado, role, initials, color } = useUserData();
 
   const [menuOpen, setMenuOpen] = useState(false);
-  const [userMenuOpen, setUserMenuOpen] = useState(false);
 
   useEffect(() => {
     document.body.style.backgroundColor = "var(--whitesmoke)";
@@ -32,83 +30,28 @@ export default function HeaderInterface() {
     };
   }, []);
 
+  // Mesmo destino do "Sair" do PerfilMenu: a home. Dois botões de sair que
+  // levam a lugares diferentes é o tipo de divergência que essa consolidação
+  // veio resolver.
   const handleLogout = () => {
     logout();
-    navigate("/login", { replace: true });
+    navigate("/", { replace: true });
   };
-
-  const primeiroNome = (nome || "").split(" ")[0] || "Usuário";
-  const localizacao = [cidade, estado].filter(Boolean).join(" · ");
 
   return (
     <>
       <header className="header-interface">
-        {/* PERFIL — canto superior esquerdo */}
+        {/*
+          PERFIL — canto superior esquerdo.
+
+          Era uma segunda implementação do mesmo menu que existe na home:
+          chip, dropdown, overlay e logout duplicados. As duas já tinham
+          divergido (esta não listava a Timeline). Agora é o componente
+          compartilhado, ancorado à esquerda porque o chip fica desse lado.
+        */}
         <div className="header-left-profile">
-          <button
-            type="button"
-            className="profile-chip"
-            onClick={() => setUserMenuOpen((v) => !v)}
-            aria-label="Abrir menu do usuário"
-          >
-            <span
-              className="profile-chip-avatar"
-              style={{ background: color }}
-            >
-              {initials || "?"}
-            </span>
-            <span className="profile-chip-info">
-              <span className="profile-chip-name">{primeiroNome}</span>
-              <span className="profile-chip-meta">
-                {localizacao || role || "EcoNexo"}
-              </span>
-            </span>
-          </button>
+          <PerfilMenu ancora="esquerda" />
 
-          {userMenuOpen && (
-            <div className="profile-dropdown eco-anim-fade-down">
-              <div className="profile-dropdown-head">
-                <span
-                  className="profile-dropdown-avatar"
-                  style={{ background: color }}
-                >
-                  {initials || "?"}
-                </span>
-                <div>
-                  <strong>{nome || "Usuário"}</strong>
-                  <small>{localizacao || role || ""}</small>
-                </div>
-              </div>
-              <Link
-                to="/menu-user/profile"
-                onClick={() => setUserMenuOpen(false)}
-              >
-                Meu perfil
-              </Link>
-              <Link
-                to="/menu-user/painel"
-                onClick={() => setUserMenuOpen(false)}
-              >
-                <MdSpaceDashboard /> Painel
-              </Link>
-              <Link
-                to="/menu-user/settings"
-                onClick={() => setUserMenuOpen(false)}
-              >
-                Configurações
-              </Link>
-              <button type="button" onClick={handleLogout} className="logout">
-                <FiLogOut /> Sair
-              </button>
-            </div>
-          )}
-
-          {/*
-            A logo leva para a home pública "/", não para a timeline.
-            Já existe "Início" no menu para voltar à timeline; a logo é o
-            caminho de volta para fora da área logada — e o header de lá
-            mostra o perfil conectado, não "Entrar/Cadastre-se".
-          */}
           <Link to="/" className="logos-menu-interface" title="Ir para a home">
             <span className="logo-title-menu-interface">
               <BsLightning />
@@ -172,12 +115,6 @@ export default function HeaderInterface() {
         <div
           className="menu-overlay"
           onClick={() => setMenuOpen(false)}
-        ></div>
-      )}
-      {userMenuOpen && (
-        <div
-          className="profile-overlay"
-          onClick={() => setUserMenuOpen(false)}
         ></div>
       )}
 

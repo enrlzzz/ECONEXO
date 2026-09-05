@@ -103,6 +103,7 @@
     position: absolute;
     top: calc(100% + 0.8rem);
     right: 0;
+    left: auto;
 
     min-width: 24rem;
 
@@ -195,4 +196,11 @@
         top: 1.4rem;
         right: 1.4rem;
     }
+}
+
+/* Area logada: o chip fica no canto esquerdo do header, entao o dropdown
+   abre alinhado a esquerda — ancorado a direita ele escaparia da tela. */
+.perfil-menu.is-ancora-esquerda .perfil-menu-dropdown {
+    right: auto;
+    left: 0;
 }

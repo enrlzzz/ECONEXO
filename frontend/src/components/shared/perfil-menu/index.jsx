@@ -8,8 +8,9 @@ import { IoIosMenu } from "react-icons/io";
 import { MdSpaceDashboard } from "react-icons/md";
 import { CgProfile } from "react-icons/cg";
 import { IoSettingsOutline } from "react-icons/io5";
+import { MdOutlineShield } from "react-icons/md";
 
-import { logout } from "../../../userSession";
+import { logout, isAdmin } from "../../../userSession";
 import { useLogado, useUserData } from "../../../useUserData";
 
 /**
@@ -25,8 +26,15 @@ import { useLogado, useUserData } from "../../../useUserData";
  *     Fica false em /login e /register, onde oferecer "Entrar" é redundante.
  *   flutuante — posiciona no canto superior direito da página, para telas
  *     que não têm barra de header própria.
+ *   ancora — "direita" (padrão) ou "esquerda". Na área logada o chip fica no
+ *     canto ESQUERDO do header, então o dropdown precisa abrir alinhado por
+ *     ali; ancorado à direita ele escaparia da tela.
  */
-export default function PerfilMenu({ mostrarAuth = false, flutuante = false }) {
+export default function PerfilMenu({
+  mostrarAuth = false,
+  flutuante = false,
+  ancora = "direita",
+}) {
   const navigate = useNavigate();
   const logado = useLogado();
   const { nome, initials, color, cidade, estado } = useUserData();
@@ -54,7 +62,13 @@ export default function PerfilMenu({ mostrarAuth = false, flutuante = false }) {
     navigate("/", { replace: true });
   };
 
-  const classeRaiz = `perfil-menu ${flutuante ? "is-flutuante" : ""}`;
+  const classeRaiz = [
+    "perfil-menu",
+    flutuante ? "is-flutuante" : "",
+    ancora === "esquerda" ? "is-ancora-esquerda" : "",
+  ]
+    .filter(Boolean)
+    .join(" ");
 
   if (!logado) {
     if (!mostrarAuth) return null;
@@ -73,6 +87,7 @@ export default function PerfilMenu({ mostrarAuth = false, flutuante = false }) {
   }
 
   const primeiroNome = (nome || "").split(" ")[0] || "Você";
+  const admin = isAdmin();
   const localizacao = [cidade, estado].filter(Boolean).join(" · ");
 
   return (
@@ -125,6 +140,17 @@ export default function PerfilMenu({ mostrarAuth = false, flutuante = false }) {
             <Link to="/menu-user/settings" onClick={() => setAberto(false)}>
               <IoSettingsOutline /> Configurações
             </Link>
+
+            {/* Só aparece para administrador. Esconder o item é conveniência:
+                quem autoriza o painel de verdade tem que ser o backend. */}
+            {admin && (
+              <Link
+                to="/menu-user/administration"
+                onClick={() => setAberto(false)}
+              >
+                <MdOutlineShield /> Administração
+              </Link>
+            )}
 
             <button type="button" onClick={sair} className="logout">
               <FiLogOut /> Sair
