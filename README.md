@@ -130,5 +130,37 @@ Arquivos que sustentam esse deploy:
 | [`frontend/public/.htaccess`](frontend/public/.htaccess) | Fallback SPA no Apache da Hostinger (sem ele, F5 fora da home dá 404) |
 | [`frontend/.env.production`](frontend/.env.production) | Aponta o front para a API no Render |
 | [`.github/workflows/ci.yml`](.github/workflows/ci.yml) | Build do backend + lint/build do frontend em cada PR |
+| [`.github/workflows/keep-alive.yml`](.github/workflows/keep-alive.yml) | Ping periódico no `/health` para a instância do Render não dormir |
 
 [`deploy/DEPLOY.md`](deploy/DEPLOY.md) descreve a alternativa em **VPS** (nginx + systemd + Let's Encrypt), mantida como referência caso o projeto migre.
+
+## Observações de infraestrutura
+
+**O backend roda no plano gratuito do Render.** Esse plano suspende a instância
+depois de ~15 minutos sem tráfego. A requisição seguinte precisa esperar a
+máquina subir de novo e a JVM/Spring bootar: na prática, **70 a 90 segundos** —
+tempo suficiente para o login parecer travado para quem está testando o site.
+
+Como mitigação existe o workflow
+[`.github/workflows/keep-alive.yml`](.github/workflows/keep-alive.yml): a cada
+12 minutos ele faz um `GET https://econexo-api.onrender.com/health`, mantendo a
+instância acordada. Também dá para disparar na mão pela aba **Actions**
+(`Run workflow`) — útil para aquecer o backend minutos antes de uma
+apresentação. Se o ping falhar, o job termina em erro e a Action fica vermelha,
+o que serve de alerta de que a API caiu de verdade.
+
+Duas ressalvas honestas sobre isso:
+
+- **É paliativo, não solução.** Manter a instância acordada artificialmente
+  contorna o sintoma. A correção real é um plano pago do Render (ou qualquer
+  host sem *sleep* automático), onde o serviço simplesmente não é suspenso.
+  O keep-alive existe porque este é um projeto de faculdade em vitrine, e um
+  login de 90 segundos inviabiliza a demonstração.
+- **O cron do GitHub Actions não é pontual.** Em horário de pico o agendador
+  atrasa, e crons frequentes são os primeiros a sofrer. Se aparecerem intervalos
+  acima de 15 minutos entre execuções, baixe o cron para `*/10 * * * *`.
+
+O endpoint `GET /health` responde `{"status":"ok"}` sem consultar o banco e sem
+exigir autenticação. Ele fica **fora** de `/api/**` de propósito: a regra 4 do
+[`CLAUDE.md`](CLAUDE.md) exige token em todo `/api/**` (exceto login e cadastro),
+e abrir uma exceção ali só para o ping enfraqueceria a regra.

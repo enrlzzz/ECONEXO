@@ -55,6 +55,10 @@ public class SecurityConfig {
                     // Preflight do CORS precisa passar sem token.
                     .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
 
+                    // Health check do keep-alive (GitHub Actions). Não expõe
+                    // nada: responde {"status":"ok"} sem tocar no banco.
+                    .requestMatchers(HttpMethod.GET, "/health").permitAll()
+
                     // As duas únicas portas abertas: entrar e criar conta.
                     .requestMatchers(HttpMethod.POST, "/api/auth/login").permitAll()
                     .requestMatchers(HttpMethod.POST, "/api/usuarios").permitAll()

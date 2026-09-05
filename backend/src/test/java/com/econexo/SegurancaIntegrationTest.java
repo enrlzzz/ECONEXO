@@ -200,6 +200,19 @@ class SegurancaIntegrationTest {
         mvc.perform(get("/api/projetos")).andExpect(status().isUnauthorized());
     }
 
+    @Test
+    @DisplayName("C3 - /health responde 200 sem token e nao vaza nada")
+    void healthEhPublicoEEnxuto() throws Exception {
+        String corpo = mvc.perform(get("/health"))
+                .andExpect(status().isOk())
+                .andReturn().getResponse().getContentAsString();
+
+        // O keep-alive so precisa saber que a instancia esta de pe. Se um dia
+        // alguem enfiar versao, env ou detalhe de banco aqui, este teste quebra:
+        // o endpoint e publico, tudo que ele devolver e publico.
+        assertThat(corpo).isEqualTo("{\"status\":\"ok\"}");
+    }
+
     // ---------- C4: login por corpo ----------
 
     @Test

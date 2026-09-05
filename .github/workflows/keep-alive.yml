@@ -1,0 +1,61 @@
+# Keep-alive do backend no Render (plano free).
+#
+# O free tier derruba a instância após ~15 min sem tráfego. Religar custa
+# 70-90s (boot da JVM + Spring), o que na prática significa um login que
+# parece travado na primeira tentativa depois de um tempo parado.
+#
+# Este workflow bate em /health de tempos em tempos para a instância não
+# dormir. É MITIGAÇÃO PARA A DEMO, não solução de produção — ver a seção
+# "Observações de infraestrutura" do README.
+name: Keep-alive (Render free tier)
+
+on:
+  schedule:
+    # A cada 12 minutos — abaixo dos ~15 min de inatividade que derrubam a
+    # instância, com folga para atraso.
+    #
+    # O agendador do GitHub Actions NÃO é pontual: em horário de pico ele
+    # atrasa, e crons muito frequentes são os primeiros a sofrer. Se os logs
+    # mostrarem intervalos passando de 15 min, baixe para '*/10 * * * *'.
+    - cron: "*/12 * * * *"
+
+  # Permite disparar na mão pela aba Actions (útil antes de uma apresentação,
+  # para aquecer a instância sem esperar o cron).
+  workflow_dispatch:
+
+# Se um ping ainda estiver rodando quando o próximo disparar, o novo espera e
+# o antigo é cancelado — não adianta empilhar ping.
+concurrency:
+  group: keep-alive
+  cancel-in-progress: true
+
+jobs:
+  ping:
+    name: Ping /health
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - name: Ping no health check
+        env:
+          HEALTH_URL: https://econexo-api.onrender.com/health
+        run: |
+          set -euo pipefail
+
+          # Uma instância dormindo pode levar ~90s para responder. --max-time 30
+          # cortaria justamente o cold start que este workflow existe para
+          # evitar, então damos 120s de teto.
+          #
+          # --fail-with-body faz o curl sair != 0 em qualquer status >= 400 sem
+          # esconder o corpo do erro; sem ele um 503 sairia como "sucesso".
+          resposta=$(curl --silent --show-error --fail-with-body \
+                          --location --max-time 120 \
+                          --write-out '\nHTTP %{http_code} em %{time_total}s\n' \
+                          "$HEALTH_URL")
+
+          echo "$resposta"
+
+          # Alguns proxies devolvem 200 com página de erro no corpo. Só o
+          # corpo certo prova que quem respondeu foi o Spring, não o Render.
+          # Falhar aqui pinta a Action de vermelho e serve de alerta.
+          echo "$resposta" | grep -q '"status":"ok"'
