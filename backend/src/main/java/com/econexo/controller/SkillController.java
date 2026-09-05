@@ -1,20 +1,32 @@
 package com.econexo.controller;
 
-import com.econexo.model.Skill;
+import com.econexo.dto.SkillRequest;
+import com.econexo.dto.SkillResponse;
 import com.econexo.service.SkillService;
-import org.springframework.beans.factory.annotation.Autowired;
+import jakarta.validation.Valid;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
 import java.util.List;
 
 @RestController
 @RequestMapping("/api/skills")
 public class SkillController {
-    @Autowired
-    private SkillService service;
+
+    private final SkillService service;
+
+    public SkillController(SkillService service) {
+        this.service = service;
+    }
 
     @GetMapping
-    public List<Skill> listarTodas() { return service.listarTodas(); }
+    public List<SkillResponse> listarTodas() {
+        return service.listarTodas();
+    }
 
     @PostMapping
-    public Skill salvar(@RequestBody Skill skill) { return service.salvar(skill); }
+    public ResponseEntity<SkillResponse> salvar(@Valid @RequestBody SkillRequest req) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(service.salvar(req));
+    }
 }

@@ -39,7 +39,9 @@ create TABLE usuario (
     cidade VARCHAR(100),
     estado VARCHAR(2),
     -- INSTALADOR | PROJETISTA | TECNICO
-    tipo_profissional VARCHAR(20)
+    tipo_profissional VARCHAR(20),
+    -- acesso ao painel administrativo; so muda por SQL direto, nunca por API
+    admin BOOLEAN NOT NULL DEFAULT FALSE
 );
 
 CREATE TABLE skill (

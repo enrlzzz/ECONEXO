@@ -17,6 +17,8 @@ export default function Login() {
 
   // Login persistente: se já houver sessão, vai direto para a área logada
   useEffect(() => {
+    // Sem PerfilMenu nesta tela de propósito: quem já tem sessão é levado
+    // direto para a timeline, então o menu nunca chegaria a aparecer.
     if (isLoggedIn()) navigate("/menu-user", { replace: true });
   }, [navigate]);
 

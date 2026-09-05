@@ -1,22 +1,42 @@
-import { useState, useEffect } from "react";
-import { getUser } from "./userSession";
+import { useCallback, useEffect, useState } from "react";
+import { getUser, isLoggedIn } from "./userSession";
 
-export function useUserData() {
-  const [userData, setUserData] = useState(() => readSafe());
+/**
+ * Assina as mudanças de sessão.
+ *
+ * "storage" só dispara em OUTRAS abas; por isso userSession também emite o
+ * evento próprio "econexo:sessao". Sem ele, salvar o perfil ou sair não
+ * atualizava o header da mesma aba até o F5.
+ */
+function useAssinaturaSessao(ler) {
+  const [valor, setValor] = useState(ler);
+
+  const atualizar = useCallback(() => setValor(ler()), [ler]);
 
   useEffect(() => {
-    // "storage" só dispara em OUTRAS abas. Sem o evento próprio abaixo,
-    // salvar o perfil não atualizava o nome no header da mesma aba até o F5.
-    const onStorage = () => setUserData(readSafe());
-    window.addEventListener("storage", onStorage);
-    window.addEventListener("econexo:sessao", onStorage);
+    window.addEventListener("storage", atualizar);
+    window.addEventListener("econexo:sessao", atualizar);
     return () => {
-      window.removeEventListener("storage", onStorage);
-      window.removeEventListener("econexo:sessao", onStorage);
+      window.removeEventListener("storage", atualizar);
+      window.removeEventListener("econexo:sessao", atualizar);
     };
-  }, []);
+  }, [atualizar]);
 
-  return userData;
+  return valor;
+}
+
+export function useUserData() {
+  return useAssinaturaSessao(readSafe);
+}
+
+/**
+ * "Existe sessão agora?" — reativo.
+ *
+ * isLoggedIn() lido direto no corpo do componente não re-renderiza quando a
+ * pessoa sai: o menu continuava mostrando o perfil de quem já tinha deslogado.
+ */
+export function useLogado() {
+  return useAssinaturaSessao(isLoggedIn);
 }
 
 function readSafe() {

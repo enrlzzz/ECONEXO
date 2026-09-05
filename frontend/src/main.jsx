@@ -18,6 +18,7 @@ import Settings from "./components/interface-user/settings-interface/index.jsx";
 import Administration from "./components/interface-user/administration-interface/index.jsx";
 import PoliticaPrivacidade from "./components/politica-privacidade/index.jsx";
 import ProtectedRoute from "./components/auth/ProtectedRoute.jsx";
+import AdminRoute from "./components/auth/AdminRoute.jsx";
 
 const protect = (element) => <ProtectedRoute>{element}</ProtectedRoute>;
 
@@ -92,8 +93,13 @@ const router = createBrowserRouter([
   },
 
   {
+    // Exige a flag `admin`. Antes bastava estar logado e digitar a URL.
     path: "/menu-user/administration",
-    element: protect(<Administration />),
+    element: (
+      <AdminRoute>
+        <Administration />
+      </AdminRoute>
+    ),
   },
 ]);
 

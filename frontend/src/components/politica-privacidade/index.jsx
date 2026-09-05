@@ -4,6 +4,8 @@ import "/src/variables.css";
 import { Link } from "react-router-dom";
 import { BsLightning } from "react-icons/bs";
 
+import PerfilMenu from "../shared/perfil-menu";
+
 /**
  * Política de Privacidade — rota PÚBLICA (/politica-de-privacidade).
  *
@@ -31,6 +33,10 @@ export default function PoliticaPrivacidade() {
             <span className="title-menu">EcoNexo</span>
           </div>
         </Link>
+
+        {/* Página pública por exigência da LGPD (Art. 9º), mas quem chega
+            aqui logado não deve perder o acesso ao próprio menu. */}
+        <PerfilMenu />
       </header>
 
       <main className="politica-conteudo">

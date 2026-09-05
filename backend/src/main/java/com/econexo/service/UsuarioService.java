@@ -98,14 +98,28 @@ public class UsuarioService {
         return Optional.of(usuario);
     }
 
+    /**
+     * O cadastro completo (com e-mail e telefone) só sai para o próprio dono.
+     * Para qualquer outra pessoa, devolve o cartão público.
+     */
     @Transactional(readOnly = true)
-    public Optional<UsuarioResponse> buscarPorId(Integer id) {
-        return usuarioRepository.findById(id).map(UsuarioResponse::de);
+    public Optional<Object> buscarPorId(Integer id, Integer idAutenticado) {
+        return usuarioRepository.findById(id)
+                .map(u -> id.equals(idAutenticado)
+                        ? (Object) UsuarioResponse.de(u)
+                        : (Object) ProfissionalResponse.de(u));
     }
 
+    /**
+     * Diretório de usuários.
+     *
+     * Responde ProfissionalResponse, não UsuarioResponse: antes esta rota
+     * entregava o e-mail de TODA a base para qualquer usuário logado — um
+     * raspador de e-mails a uma requisição de distância.
+     */
     @Transactional(readOnly = true)
-    public List<UsuarioResponse> listarTodos() {
-        return usuarioRepository.findAll().stream().map(UsuarioResponse::de).toList();
+    public List<ProfissionalResponse> listarTodos() {
+        return usuarioRepository.findAll().stream().map(ProfissionalResponse::de).toList();
     }
 
     /**

@@ -64,6 +64,16 @@ public class Usuario {
     private String tipoProfissional;
 
     /**
+     * Acesso ao painel administrativo.
+     *
+     * Só muda por SQL direto no banco, de propósito: não existe (e não deve
+     * existir) endpoint que promova alguém a administrador — seria o caminho
+     * mais curto para escalar privilégio.
+     */
+    @Column(nullable = false)
+    private Boolean admin = false;
+
+    /**
      * Consentimento LGPD.
      *
      * A LGPD (Art. 8º, §2º) coloca o ônus da prova do consentimento no
@@ -188,6 +198,14 @@ public class Usuario {
 
     public void setTipoProfissional(String tipoProfissional) {
         this.tipoProfissional = tipoProfissional;
+    }
+
+    public Boolean getAdmin() {
+        return admin != null && admin;
+    }
+
+    public void setAdmin(Boolean admin) {
+        this.admin = admin;
     }
 
     @JsonIgnore

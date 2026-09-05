@@ -33,6 +33,14 @@ class SegurancaIntegrationTest {
 
     @Autowired MockMvc mvc;
     @Autowired UsuarioRepository usuarioRepository;
+    @Autowired com.econexo.repository.AvaliacaoRepository avaliacaoRepository;
+    @Autowired com.econexo.repository.EnderecoRepository enderecoRepository;
+    @Autowired com.econexo.repository.FormacaoRepository formacaoRepository;
+    @Autowired com.econexo.repository.PostCurtidaRepository postCurtidaRepository;
+    @Autowired com.econexo.repository.PostComentarioRepository postComentarioRepository;
+    @Autowired com.econexo.repository.PostRepository postRepository;
+    @Autowired com.econexo.repository.MensagemRepository mensagemRepository;
+    @Autowired com.econexo.repository.ProjetoRepository projetoRepository;
     @Autowired ObjectMapper json;
     @Autowired RateLimitService rateLimitService;
     @Autowired jakarta.persistence.EntityManager entityManager;
@@ -42,6 +50,18 @@ class SegurancaIntegrationTest {
 
     @BeforeEach
     void limpar() {
+        // Filhos antes do pai. No MySQL de produção as FKs têm ON DELETE
+        // CASCADE (ver database/schema.sql), mas no H2 quem cria o schema é o
+        // Hibernate, e ele gera as FKs sem cascade — apagar usuário direto
+        // estoura violação de integridade.
+        postCurtidaRepository.deleteAll();
+        postComentarioRepository.deleteAll();
+        postRepository.deleteAll();
+        mensagemRepository.deleteAll();
+        avaliacaoRepository.deleteAll();
+        enderecoRepository.deleteAll();
+        formacaoRepository.deleteAll();
+        projetoRepository.deleteAll();
         usuarioRepository.deleteAll();
         // No MockMvc todas as requisições vêm do mesmo IP: sem zerar, o
         // bloqueio gerado pelo teste de rate limit vazaria para os demais.
@@ -85,6 +105,128 @@ class SegurancaIntegrationTest {
         String corpo = r.getResponse().getContentAsString();
         assertThat(corpo).doesNotContain("senha", "cpf", "12345678901");
         assertThat(corpo).contains("Ricardo Teste");
+    }
+
+    @Test
+    @DisplayName("C1 - diretorio nao expoe e-mail nem telefone de terceiros")
+    void diretorioNaoExpoeContatoAlheio() throws Exception {
+        String tokenA = cadastrar();
+
+        mvc.perform(post("/api/usuarios").contentType(MediaType.APPLICATION_JSON).content("""
+                {"nome":"Outra Pessoa","email":"outra@econexo.test","senha":"OutraSenha123",
+                 "telefone":"11988887777","consentimentoLgpd":true}
+                """)).andExpect(status().isCreated());
+
+        String corpo = mvc.perform(get("/api/usuarios")
+                        .header("Authorization", "Bearer " + tokenA))
+                .andExpect(status().isOk())
+                .andReturn().getResponse().getContentAsString();
+
+        // O nome e publico (e o ponto do diretorio). O contato nao: com o
+        // e-mail de todo mundo numa resposta, a busca vira raspador da base.
+        assertThat(corpo).contains("Outra Pessoa");
+        assertThat(corpo).doesNotContain("outra@econexo.test", "11988887777");
+    }
+
+    @Test
+    @DisplayName("C1 - buscar outro usuario nao devolve o cadastro completo")
+    void perfilAlheioNaoTrazContato() throws Exception {
+        String tokenA = cadastrar();
+
+        mvc.perform(post("/api/usuarios").contentType(MediaType.APPLICATION_JSON).content("""
+                {"nome":"Alvo","email":"alvo@econexo.test","senha":"SenhaAlvo123",
+                 "telefone":"11977776666","consentimentoLgpd":true}
+                """)).andExpect(status().isCreated());
+
+        Integer idAlvo = usuarioRepository.findByEmail("alvo@econexo.test")
+                .orElseThrow().getIdUsuario();
+
+        String alheio = mvc.perform(get("/api/usuarios/" + idAlvo)
+                        .header("Authorization", "Bearer " + tokenA))
+                .andExpect(status().isOk())
+                .andReturn().getResponse().getContentAsString();
+
+        assertThat(alheio).contains("Alvo");
+        assertThat(alheio).doesNotContain("alvo@econexo.test", "11977776666");
+
+        // Mas o proprio cadastro continua vindo completo — a tela de
+        // Configuracoes depende disso para preencher o formulario.
+        Integer idProprio = usuarioRepository.findByEmail(EMAIL).orElseThrow().getIdUsuario();
+        String proprio = mvc.perform(get("/api/usuarios/" + idProprio)
+                        .header("Authorization", "Bearer " + tokenA))
+                .andExpect(status().isOk())
+                .andReturn().getResponse().getContentAsString();
+
+        assertThat(proprio).contains(EMAIL);
+    }
+
+    @Test
+    @DisplayName("B1 - enderecos: cada um so enxerga os seus")
+    void enderecoNaoVazaParaOutroUsuario() throws Exception {
+        String tokenA = cadastrar();
+
+        mvc.perform(post("/api/enderecos")
+                .header("Authorization", "Bearer " + tokenA)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("""
+                    {"cep":"18000-000","cidade":"Sorocaba","estado":"SP",
+                     "logradouro":"Rua Secreta","numero":"42"}
+                    """))
+           .andExpect(status().isCreated());
+
+        mvc.perform(post("/api/usuarios").contentType(MediaType.APPLICATION_JSON).content("""
+                {"nome":"Bisbilhoteiro","email":"bis@econexo.test","senha":"SenhaBis123",
+                 "consentimentoLgpd":true}
+                """)).andExpect(status().isCreated());
+
+        String tokenB = logar("bis@econexo.test", "SenhaBis123");
+
+        // Endereco residencial e o dado mais sensivel fora de senha e CPF:
+        // a rota antiga fazia findAll() e entregava a base inteira.
+        String vistoPorB = mvc.perform(get("/api/enderecos")
+                        .header("Authorization", "Bearer " + tokenB))
+                .andExpect(status().isOk())
+                .andReturn().getResponse().getContentAsString();
+
+        assertThat(vistoPorB).isEqualTo("[]");
+        assertThat(vistoPorB).doesNotContain("Rua Secreta", "18000-000");
+
+        String vistoPorA = mvc.perform(get("/api/enderecos")
+                        .header("Authorization", "Bearer " + tokenA))
+                .andExpect(status().isOk())
+                .andReturn().getResponse().getContentAsString();
+
+        assertThat(vistoPorA).contains("Rua Secreta");
+    }
+
+    @Test
+    @DisplayName("B1 - avaliacao nao pode ser assinada em nome de outro")
+    void avaliacaoUsaAvaliadorDoToken() throws Exception {
+        String tokenA = cadastrar();
+
+        mvc.perform(post("/api/usuarios").contentType(MediaType.APPLICATION_JSON).content("""
+                {"nome":"Avaliado","email":"avaliado@econexo.test","senha":"SenhaAv123",
+                 "consentimentoLgpd":true}
+                """)).andExpect(status().isCreated());
+
+        Integer idAvaliado = usuarioRepository.findByEmail("avaliado@econexo.test")
+                .orElseThrow().getIdUsuario();
+        Integer idA = usuarioRepository.findByEmail(EMAIL).orElseThrow().getIdUsuario();
+
+        // Tenta forjar o avaliador no corpo. O campo nem existe no DTO, entao
+        // e ignorado — e o avaliador gravado tem que ser o dono do token.
+        String corpo = mvc.perform(post("/api/avaliacoes")
+                        .header("Authorization", "Bearer " + tokenA)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                            {"avaliadoId":%d,"estrelas":5,"comentario":"Otimo",
+                             "avaliador":{"idUsuario":%d}}
+                            """.formatted(idAvaliado, idAvaliado)))
+                .andExpect(status().isCreated())
+                .andReturn().getResponse().getContentAsString();
+
+        assertThat(json.readTree(corpo).get("avaliador").get("idUsuario").asInt())
+                .isEqualTo(idA);
     }
 
     @Test

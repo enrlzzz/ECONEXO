@@ -5,7 +5,11 @@ import com.econexo.model.Usuario;
 import java.time.LocalDate;
 
 /**
- * Tudo que a API devolve sobre um usuário.
+ * Tudo que a API devolve sobre o PRÓPRIO usuário (login, /me, edição).
+ *
+ * Para terceiros existe ProfissionalResponse, que não tem e-mail nem
+ * telefone. Antes GET /api/usuarios devolvia este record para a base inteira,
+ * entregando o e-mail de todo mundo a qualquer pessoa logada.
  *
  * REGRA: senha e CPF NUNCA aparecem aqui. Não adicione.
  *
@@ -22,7 +26,8 @@ public record UsuarioResponse(
         LocalDate dataNascimento,
         String cidade,
         String estado,
-        String tipoProfissional
+        String tipoProfissional,
+        boolean admin
 ) {
 
     public static UsuarioResponse de(Usuario usuario) {
@@ -34,7 +39,8 @@ public record UsuarioResponse(
                 usuario.getDataNascimento(),
                 usuario.getCidade(),
                 usuario.getEstado(),
-                usuario.getTipoProfissional()
+                usuario.getTipoProfissional(),
+                usuario.getAdmin()
         );
     }
 }

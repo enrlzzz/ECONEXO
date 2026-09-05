@@ -133,3 +133,21 @@
   border-radius: 4px;
   font-size: 0.925rem;
 }
+
+/* Logo a esquerda, menu de perfil a direita. */
+.politica-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1.6rem;
+    flex-wrap: wrap;
+}
+
+/* A regra `.title-menu { color: var(--white) }` vive no CSS do cadastro, que
+   tem fundo escuro. O Vite junta tudo num bundle unico, entao ela vazava para
+   ca — logo branca sobre fundo branco, ou seja, invisivel. Esta pagina e de
+   acesso obrigatorio pela LGPD (Art. 9o); nao pode depender de sorte de
+   ordem de CSS. */
+.politica-header .title-menu {
+    color: var(--darkblue);
+}

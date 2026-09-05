@@ -59,8 +59,9 @@ public class UsuarioController {
         }
     }
 
+    /** Diretório — ProfissionalResponse, sem e-mail nem telefone de terceiros. */
     @GetMapping
-    public List<UsuarioResponse> listarTodos() {
+    public List<ProfissionalResponse> listarTodos() {
         return usuarioService.listarTodos();
     }
 
@@ -81,9 +82,14 @@ public class UsuarioController {
         return usuarioService.buscarProfissionais(nome, cidade, estado, tipo);
     }
 
+    /**
+     * Cadastro completo se for o seu; cartão público se for de outra pessoa.
+     * Quem decide é o token, não o path.
+     */
     @GetMapping("/{id}")
-    public ResponseEntity<UsuarioResponse> buscarPorId(@PathVariable Integer id) {
-        return usuarioService.buscarPorId(id)
+    public ResponseEntity<Object> buscarPorId(@PathVariable Integer id,
+                                              @AuthenticationPrincipal Integer idAutenticado) {
+        return usuarioService.buscarPorId(id, idAutenticado)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }

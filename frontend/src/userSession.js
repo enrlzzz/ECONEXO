@@ -74,6 +74,7 @@ export function persistUser(usuario) {
   // lugar só. Antes o padrão era "Profissional", o que fazia todo mundo
   // aparecer como profissional mesmo sem ter informado nada.
   localStorage.setItem("userRole", usuario.tipoProfissional ?? "");
+  localStorage.setItem("userAdmin", usuario.admin ? "1" : "0");
   localStorage.setItem("userInitials", getInitials(usuario.nome));
   localStorage.setItem("userColor", colorFor(id || usuario.email || usuario.nome));
 
@@ -108,6 +109,14 @@ export function isLoggedIn() {
   return Boolean(getToken());
 }
 
+/**
+ * Também NÃO é autorização — só decide se o item do painel aparece no menu.
+ * Quem autoriza é o backend, em cada endpoint administrativo.
+ */
+export function isAdmin() {
+  return isLoggedIn() && localStorage.getItem("userAdmin") === "1";
+}
+
 export function logout() {
   [
     TOKEN_KEY,
@@ -120,6 +129,7 @@ export function logout() {
     "userRole",
     "userInitials",
     "userColor",
+    "userAdmin",
   ].forEach((k) => localStorage.removeItem(k));
 
   window.dispatchEvent(new Event("econexo:sessao"));

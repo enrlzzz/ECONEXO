@@ -6,6 +6,8 @@ import { useState } from "react";
 
 import { BsLightning } from "react-icons/bs";
 
+import PerfilMenu from "../shared/perfil-menu";
+
 import { usuariosService } from "../../services/usuarios";
 import { persistSession } from "../../userSession";
 
@@ -86,6 +88,10 @@ export default function Cadastro() {
 
   return (
     <div className="register-container">
+      {/* Sessão ativa aparece aqui também: quem já está logado e cai
+          nesta tela precisa enxergar de onde sair ou voltar ao painel.
+          mostrarAuth=false porque oferecer "Entrar" nesta página é redundante. */}
+      <PerfilMenu flutuante />
       <Link to="/">
         <div className="logos-menu">
           <span className="logo-title-menu">
