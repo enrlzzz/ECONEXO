@@ -81,14 +81,32 @@ Site em `http://localhost:5173`. As chamadas para `/api/*` são roteadas pelo pr
 
 ## Endpoints principais
 
-| Método | Path | Descrição |
-|---|---|---|
-| `POST` | `/api/usuarios` | Cadastrar usuário |
-| `POST` | `/api/usuarios/login?email=&senha=` | Login |
-| `GET`  | `/api/usuarios` | Listar usuários |
-| `GET`  | `/api/usuarios/{id}` | Buscar por id |
-| `GET`  | `/api/skills` | Listar skills |
-| `GET`  | `/api/projetos` | Listar projetos |
+Só `POST /api/auth/login`, `POST /api/usuarios` e `GET /health` são públicos.
+**Todo o resto exige `Authorization: Bearer <token>`.**
+
+| Método | Path | Auth | Descrição |
+|---|---|---|---|
+| `POST` | `/api/auth/login` | pública | Login — `{email, senha}` **no corpo** → `{token, expiraEmSegundos, usuario}` |
+| `POST` | `/api/usuarios` | pública | Cadastrar usuário (exige consentimento LGPD) |
+| `GET`  | `/api/usuarios` | Bearer | Listar usuários |
+| `GET`  | `/api/usuarios/{id}` | Bearer | Buscar por id |
+| `PUT`  | `/api/usuarios/{id}` | Bearer | Editar — só o próprio cadastro |
+| `DELETE` | `/api/usuarios/{id}` | Bearer | Excluir — só o próprio cadastro |
+| `GET`/`POST` | `/api/skills` | Bearer | Skills |
+| `GET`/`POST` | `/api/projetos` | Bearer | Projetos |
+| `GET`/`POST` | `/api/formacoes` | Bearer | Formações |
+| `GET`/`POST` | `/api/enderecos` | Bearer | Endereços |
+| `GET`/`POST` | `/api/avaliacoes` | Bearer | Avaliações |
+| `GET`  | `/health` | pública | Health check do keep-alive → `{"status":"ok"}` |
+
+> ⚠️ **Credencial nunca vai na query string.** Esta tabela já documentou um
+> `POST /api/usuarios/login?email=&senha=` que não existe mais: senha em URL
+> aparece no log do servidor, no do proxy e no histórico do navegador. O login
+> é `POST /api/auth/login` com as credenciais no corpo — regra 2 do
+> [`CLAUDE.md`](CLAUDE.md), coberta pelo teste `loginPorQueryStringNaoFunciona`.
+
+Erros seguem sempre `{status, erro, mensagem, campos?}` — nunca stack trace.
+Nenhuma resposta, em nenhum endpoint, contém `senha` ou `cpf`.
 
 ## Customização de ambiente
 
