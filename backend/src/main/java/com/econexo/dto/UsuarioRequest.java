@@ -27,12 +27,21 @@ public record UsuarioRequest(
         @Size(max = 150, message = "E-mail deve ter no máximo 150 caracteres")
         String email,
 
-        @NotBlank(message = "Senha é obrigatória")
+        /**
+         * Obrigatória no CADASTRO — a presença é validada em UsuarioService,
+         * não por @NotBlank, porque este mesmo record é reusado na EDIÇÃO de
+         * perfil. Com @NotBlank aqui, salvar nome ou cidade exigia reenviar a
+         * senha, e o PUT respondia 400 para quem só queria trocar a cidade.
+         *
+         * @Size continua valendo: senha presente e curta é rejeitada; ausente
+         * (null) passa pela validação e é ignorada na atualização.
+         *
+         * 72 é o limite do BCrypt: bytes além disso são silenciosamente
+         * ignorados. Barrar aqui evita que "senha de 100 chars" dê uma falsa
+         * sensação de força.
+         */
         @Size(min = 8, max = 72, message = "Senha deve ter entre 8 e 72 caracteres")
         String senha,
-
-        // 72 é o limite do BCrypt: bytes além disso são silenciosamente ignorados.
-        // Barrar aqui evita que "senha de 100 chars" dê uma falsa sensação de força.
 
         @Pattern(regexp = "^$|^\\d{11}$|^\\d{3}\\.\\d{3}\\.\\d{3}-\\d{2}$",
                 message = "CPF deve ter 11 dígitos")
@@ -43,6 +52,20 @@ public record UsuarioRequest(
 
         @Past(message = "Data de nascimento deve ser no passado")
         LocalDate dataNascimento,
+
+        @Size(max = 100, message = "Cidade deve ter no máximo 100 caracteres")
+        String cidade,
+
+        @Pattern(regexp = "^$|^[A-Za-z]{2}$", message = "Estado deve ser a sigla de 2 letras (ex: SP)")
+        String estado,
+
+        /**
+         * INSTALADOR, PROJETISTA, TECNICO ou vazio. Validado por regex e não
+         * por enum para que a lista possa crescer sem quebrar cadastros antigos.
+         */
+        @Pattern(regexp = "^$|^(INSTALADOR|PROJETISTA|TECNICO)$",
+                message = "Tipo profissional inválido")
+        String tipoProfissional,
 
         /**
          * Aceite da Política de Privacidade. Obrigatório no CADASTRO —

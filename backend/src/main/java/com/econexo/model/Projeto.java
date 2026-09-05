@@ -38,6 +38,20 @@ public class Projeto {
     @Column(name = "data_fim")
     private LocalDate dataFim;
 
+    /** Onde a obra acontece — usado pela busca de projetos por região. */
+    @Column(length = 100)
+    private String cidade;
+
+    @Column(length = 2)
+    private String estado;
+
+    /**
+     * Potência em kWp. BigDecimal e não double: 13,2 kWp em ponto flutuante
+     * binário vira 13.199999999999999, e isso aparece na tela do usuário.
+     */
+    @Column(name = "potencia_kwp", precision = 10, scale = 2)
+    private java.math.BigDecimal potenciaKwp;
+
     public Projeto() {
     }
 
@@ -107,6 +121,30 @@ public class Projeto {
 
     public void setDataInicio(LocalDate dataInicio) {
         this.dataInicio = dataInicio;
+    }
+
+    public String getCidade() {
+        return cidade;
+    }
+
+    public void setCidade(String cidade) {
+        this.cidade = cidade;
+    }
+
+    public String getEstado() {
+        return estado;
+    }
+
+    public void setEstado(String estado) {
+        this.estado = estado;
+    }
+
+    public java.math.BigDecimal getPotenciaKwp() {
+        return potenciaKwp;
+    }
+
+    public void setPotenciaKwp(java.math.BigDecimal potenciaKwp) {
+        this.potenciaKwp = potenciaKwp;
     }
 
     public LocalDate getDataFim() {

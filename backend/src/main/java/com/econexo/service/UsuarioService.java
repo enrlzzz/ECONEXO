@@ -1,5 +1,6 @@
 package com.econexo.service;
 
+import com.econexo.dto.ProfissionalResponse;
 import com.econexo.dto.UsuarioRequest;
 import com.econexo.dto.UsuarioResponse;
 import com.econexo.exception.AcessoNegadoException;
@@ -46,6 +47,12 @@ public class UsuarioService {
                     "É necessário aceitar a Política de Privacidade para criar a conta.");
         }
 
+        // A senha só é obrigatória aqui, no cadastro. Na edição de perfil o
+        // mesmo record vem sem ela e isso é legítimo (ver UsuarioRequest).
+        if (req.senha() == null || req.senha().isBlank()) {
+            throw new ValidacaoException("Senha é obrigatória.");
+        }
+
         Usuario usuario = new Usuario();
         usuario.setNome(req.nome());
         usuario.setEmail(req.email().trim().toLowerCase());
@@ -53,6 +60,7 @@ public class UsuarioService {
         usuario.setCpf(vazioViraNulo(req.cpf()));
         usuario.setTelefone(vazioViraNulo(req.telefone()));
         usuario.setDataNascimento(req.dataNascimento());
+        aplicarPerfil(usuario, req);
 
         // Prova do consentimento: o quê, quando e para qual versão do texto.
         usuario.setConsentimentoLgpd(true);
@@ -118,6 +126,7 @@ public class UsuarioService {
         usuario.setCpf(vazioViraNulo(req.cpf()));
         usuario.setTelefone(vazioViraNulo(req.telefone()));
         usuario.setDataNascimento(req.dataNascimento());
+        aplicarPerfil(usuario, req);
 
         // Senha só muda se vier preenchida — e sempre re-hasheada.
         if (req.senha() != null && !req.senha().isBlank()) {
@@ -133,6 +142,53 @@ public class UsuarioService {
             throw new AcessoNegadoException("Você só pode excluir a sua própria conta.");
         }
         usuarioRepository.deleteById(idAlvo);
+    }
+
+    /**
+     * Busca de profissionais.
+     *
+     * Devolve ProfissionalResponse, não UsuarioResponse: o diretório é visível
+     * a qualquer usuário logado, e e-mail/telefone de terceiros não têm por que
+     * trafegar numa listagem de busca.
+     *
+     * Filtros vazios são ignorados — sem nenhum filtro, lista todo mundo.
+     */
+    @Transactional(readOnly = true)
+    public List<ProfissionalResponse> buscarProfissionais(String nome, String cidade,
+                                                          String estado, String tipo) {
+        String nomeFiltro = normalizar(nome);
+        String cidadeFiltro = normalizar(cidade);
+        String estadoFiltro = normalizar(estado);
+        String tipoFiltro = normalizar(tipo);
+
+        return usuarioRepository.findAll().stream()
+                .filter(u -> nomeFiltro == null
+                        || (u.getNome() != null
+                            && u.getNome().toLowerCase().contains(nomeFiltro)))
+                .filter(u -> cidadeFiltro == null
+                        || (u.getCidade() != null
+                            && u.getCidade().toLowerCase().contains(cidadeFiltro)))
+                .filter(u -> estadoFiltro == null
+                        || estadoFiltro.equalsIgnoreCase(u.getEstado()))
+                .filter(u -> tipoFiltro == null
+                        || tipoFiltro.equalsIgnoreCase(u.getTipoProfissional()))
+                .map(ProfissionalResponse::de)
+                .toList();
+    }
+
+    private String normalizar(String valor) {
+        return (valor == null || valor.isBlank()) ? null : valor.trim().toLowerCase();
+    }
+
+    /**
+     * Campos de perfil profissional. Ficam separados porque, ao contrário de
+     * nome/e-mail, são opcionais e valem tanto no cadastro quanto na edição.
+     */
+    private void aplicarPerfil(Usuario usuario, UsuarioRequest req) {
+        usuario.setCidade(vazioViraNulo(req.cidade()));
+        String uf = vazioViraNulo(req.estado());
+        usuario.setEstado(uf == null ? null : uf.toUpperCase());
+        usuario.setTipoProfissional(vazioViraNulo(req.tipoProfissional()));
     }
 
     /** Coluna com UNIQUE trata múltiplos "" como duplicata; NULL não. */

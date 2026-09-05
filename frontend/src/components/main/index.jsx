@@ -48,9 +48,9 @@ export default function Main() {
             </span>
             <h3>1. Cadastre-se</h3>
             <p>
-              Crie seu perfil como Engenheiro ou Instalador e <br />
-              envie suas certificações (CREA/CFT ou NR-10 e <br />
-              NR-35)
+              Crie seu perfil como Engenheiro/Projetista ou <br />
+              Instalador e envie suas certificações (CREA para <br />
+              responsáveis técnicos, NR-10 e NR-35 para instaladores)
             </p>
           </div>
           <div className="steps2">
@@ -92,8 +92,8 @@ export default function Main() {
               </span>
               <h3>Profissionais Certificados</h3>
               <p>
-                Validamos todas as certificações: CREA/CFT para
-                <br /> engenheiros e NR-10 e NR-35 para instaladores
+                Validamos todas as certificações: CREA para responsáveis
+                <br /> técnicos e projetistas, NR-10 e NR-35 para instaladores
               </p>
             </div>
             <div className="point2">

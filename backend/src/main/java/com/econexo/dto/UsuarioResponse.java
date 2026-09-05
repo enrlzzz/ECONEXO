@@ -19,7 +19,10 @@ public record UsuarioResponse(
         String nome,
         String email,
         String telefone,
-        LocalDate dataNascimento
+        LocalDate dataNascimento,
+        String cidade,
+        String estado,
+        String tipoProfissional
 ) {
 
     public static UsuarioResponse de(Usuario usuario) {
@@ -28,7 +31,10 @@ public record UsuarioResponse(
                 usuario.getNome(),
                 usuario.getEmail(),
                 usuario.getTelefone(),
-                usuario.getDataNascimento()
+                usuario.getDataNascimento(),
+                usuario.getCidade(),
+                usuario.getEstado(),
+                usuario.getTipoProfissional()
         );
     }
 }

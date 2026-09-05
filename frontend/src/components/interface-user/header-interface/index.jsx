@@ -103,7 +103,13 @@ export default function HeaderInterface() {
             </div>
           )}
 
-          <Link to="/menu-user" className="logos-menu-interface">
+          {/*
+            A logo leva para a home pública "/", não para a timeline.
+            Já existe "Início" no menu para voltar à timeline; a logo é o
+            caminho de volta para fora da área logada — e o header de lá
+            mostra o perfil conectado, não "Entrar/Cadastre-se".
+          */}
+          <Link to="/" className="logos-menu-interface" title="Ir para a home">
             <span className="logo-title-menu-interface">
               <BsLightning />
             </span>

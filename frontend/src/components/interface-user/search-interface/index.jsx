@@ -1,130 +1,34 @@
 import "./index.css";
 import "/src/variables.css";
 
-import { useState } from "react";
-import { Link } from "react-router-dom";
+import { useCallback, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 import HeaderInterface from "../header-interface";
+import { profissionaisService } from "../../../services/profissionais";
+import { projetosService } from "../../../services/projetos";
+import { avatarDe, regiaoDe, tipoProfissionalLabel } from "../../../format";
 
 import { LuFilter } from "react-icons/lu";
-import { IoStarSharp } from "react-icons/io5";
+import { CiSearch } from "react-icons/ci";
 
-const estados = [
-  "AC",
-  "AL",
-  "AP",
-  "AM",
-  "BA",
-  "CE",
-  "DF",
-  "ES",
-  "GO",
-  "MA",
-  "MT",
-  "MS",
-  "MG",
-  "PA",
-  "PB",
-  "PR",
-  "PE",
-  "PI",
-  "RJ",
-  "RN",
-  "RS",
-  "RO",
-  "RR",
-  "SC",
-  "SP",
-  "SE",
-  "TO",
+const ESTADOS = [
+  "AC", "AL", "AP", "AM", "BA", "CE", "DF", "ES", "GO",
+  "MA", "MT", "MS", "MG", "PA", "PB", "PR", "PE", "PI",
+  "RJ", "RN", "RS", "RO", "RR", "SC", "SP", "SE", "TO",
 ];
 
-const instaladores = [
-  {
-    id: 1,
-    nome: "João Santos",
-    avaliacao: 4.9,
-    avaliacoes: 8,
-    cidade: "Campinas",
-    estado: "SP",
-    portfolio: [
-      {
-        id: 1,
-        titulo: "Instalação Industrial Complexa",
-        descricao: "Montagem de 100kWp em ambiente industrial",
-        data: "31/03/2024",
-        verificado: true,
-      },
-      {
-        id: 2,
-        titulo: "Sistema Comercial",
-        descricao: "Instalação em telhado comercial",
-        data: "14/03/2024",
-        verificado: false,
-      },
-    ],
-  },
-  {
-    id: 2,
-    nome: "Pedro Costa",
-    avaliacao: 4.6,
-    avaliacoes: 10,
-    cidade: "São José dos Campos",
-    estado: "SP",
-    portfolio: [],
-  },
-  {
-    id: 3,
-    nome: "Roberto Lima",
-    avaliacao: 4.8,
-    avaliacoes: 14,
-    cidade: "Sorocaba",
-    estado: "SP",
-    portfolio: [],
-  },
+const TIPOS = [
+  ["", "Todos os perfis"],
+  ["INSTALADOR", "Instaladores"],
+  ["PROJETISTA", "Projetistas"],
+  ["TECNICO", "Técnicos"],
 ];
 
-const projetos = [
-  {
-    id: 1,
-    titulo: "Instalação Residencial 5kWp",
-    descricao: "Sistema fotovoltaico residencial completo",
-    cidade: "São Paulo",
-    estado: "SP",
-    potencia: "5",
-    status: "Aberto",
-    data: "09/04/2024",
-  },
-  {
-    id: 2,
-    titulo: "Sistema Comercial 15kWp",
-    descricao: "Instalação para estabelecimento comercial",
-    cidade: "Santos",
-    estado: "SP",
-    potencia: "15",
-    status: "Em andamento",
-    data: "04/04/2024",
-  },
-];
+const FORM_VAZIO = { nome: "", estado: "", cidade: "", tipo: "" };
 
-export default function Search() {
-  const [tipoBusca, setTipoBusca] = useState("instaladores");
-  const [form, setForm] = useState({
-    nome: "",
-    estado: "",
-    cidade: "",
-    raio: "",
-  });
-
-  const handleChange = (event) => {
-    const { name, value } = event.target;
-    setForm({ ...form, [name]: value });
-  };
-
-  const navigate = useNavigate();
-
-  const Filtros = ({ placeholder }) => (
+function Filtros({ form, onChange, onLimpar, mostrarTipo }) {
+  return (
     <div className="search-filter">
       <div className="box-title-filter-search">
         <span className="filter-icon">
@@ -133,19 +37,33 @@ export default function Search() {
         <h3>Filtros de Busca</h3>
       </div>
 
-      <form className="form-search">
+      <form className="form-search" onSubmit={(e) => e.preventDefault()}>
         <label htmlFor="nome" className="label-nome">
           Buscar
         </label>
         <input
           type="text"
-          placeholder={placeholder}
+          placeholder="Nome do profissional"
           id="nome"
           name="nome"
           value={form.nome}
-          onChange={handleChange}
-          required
+          onChange={onChange}
         />
+
+        {mostrarTipo && (
+          <>
+            <label htmlFor="tipo" className="label-name">
+              Perfil
+            </label>
+            <select id="tipo" name="tipo" value={form.tipo} onChange={onChange}>
+              {TIPOS.map(([valor, rotulo]) => (
+                <option key={valor} value={valor}>
+                  {rotulo}
+                </option>
+              ))}
+            </select>
+          </>
+        )}
 
         <label htmlFor="estado" className="label-name">
           Estado
@@ -154,11 +72,10 @@ export default function Search() {
           id="estado"
           name="estado"
           value={form.estado}
-          onChange={handleChange}
-          required
+          onChange={onChange}
         >
           <option value="">Todos os estados</option>
-          {estados.map((uf) => (
+          {ESTADOS.map((uf) => (
             <option key={uf} value={uf}>
               {uf}
             </option>
@@ -174,31 +91,101 @@ export default function Search() {
           id="cidade"
           name="cidade"
           value={form.cidade}
-          onChange={handleChange}
-          required
+          onChange={onChange}
         />
 
-        <label htmlFor="raio" className="label-name">
-          Raio(km)
-        </label>
-        <select
-          id="raio"
-          name="raio"
-          value={form.raio}
-          onChange={handleChange}
-          required
-        >
-          <option value="">Selecione</option>
-          <option value="10km">10km</option>
-          <option value="25km">25km</option>
-          <option value="50km">50km</option>
-          <option value="100km">100km</option>
-          <option value="200km">200km</option>
-          <option value="500km">500km</option>
-        </select>
+        {/*
+          Não há filtro por raio em km: isso exigiria geocodificar cidade em
+          coordenadas, que o backend não faz. Um seletor de raio que na prática
+          ignora a distância seria um controle decorativo.
+        */}
+
+        <button type="button" className="btn-limpar-filtros" onClick={onLimpar}>
+          Limpar filtros
+        </button>
       </form>
     </div>
   );
+}
+
+/**
+ * Filtro de projetos feito no cliente sobre a lista real.
+ *
+ * A API de projetos ainda não recebe parâmetros de busca; como o volume aqui
+ * é pequeno, filtrar no cliente é honesto e não inventa dado. Se a base
+ * crescer, isto vira query no backend igual à de profissionais.
+ */
+function filtrarProjetos(projetos, form) {
+  const nome = form.nome.trim().toLowerCase();
+  const cidade = form.cidade.trim().toLowerCase();
+  return projetos.filter((p) => {
+    if (nome && !(p.titulo || "").toLowerCase().includes(nome)) return false;
+    if (cidade && !(p.cidade || "").toLowerCase().includes(cidade)) return false;
+    if (form.estado && p.estado !== form.estado) return false;
+    return true;
+  });
+}
+
+export default function Search() {
+  const navigate = useNavigate();
+
+  const [tipoBusca, setTipoBusca] = useState("profissionais");
+  const [form, setForm] = useState(FORM_VAZIO);
+  const [resultados, setResultados] = useState([]);
+  const [projetos, setProjetos] = useState([]);
+  const [carregando, setCarregando] = useState(true);
+  const [erro, setErro] = useState("");
+
+  const handleChange = (event) => {
+    const { name, value } = event.target;
+    setForm((atual) => ({ ...atual, [name]: value }));
+  };
+
+  const buscar = useCallback(async (filtros) => {
+    setCarregando(true);
+    setErro("");
+    try {
+      const lista = await profissionaisService.buscar(filtros);
+      setResultados(Array.isArray(lista) ? lista : []);
+    } catch (e) {
+      setErro(e.message || "Não foi possível carregar os profissionais.");
+      setResultados([]);
+    } finally {
+      setCarregando(false);
+    }
+  }, []);
+
+  // Debounce: sem ele, cada tecla digitada dispararia uma requisição.
+  useEffect(() => {
+    if (tipoBusca !== "profissionais") return undefined;
+    const timer = window.setTimeout(() => buscar(form), 350);
+    return () => window.clearTimeout(timer);
+  }, [form, buscar, tipoBusca]);
+
+  useEffect(() => {
+    if (tipoBusca !== "projetos") return undefined;
+    let ativo = true;
+    projetosService
+      .listar()
+      .then((lista) => {
+        if (!ativo) return;
+        setProjetos(Array.isArray(lista) ? lista : []);
+      })
+      .catch((e) => {
+        if (!ativo) return;
+        setErro(e.message || "Não foi possível carregar os projetos.");
+        setProjetos([]);
+      })
+      .finally(() => {
+        if (ativo) setCarregando(false);
+      });
+    return () => {
+      ativo = false;
+    };
+  }, [tipoBusca]);
+
+  const temFiltro = Object.values(form).some((v) => v);
+  const projetosFiltrados = filtrarProjetos(projetos, form);
 
   return (
     <div className="search-container">
@@ -206,15 +193,15 @@ export default function Search() {
 
       <div className="search-header">
         <h2>Buscar</h2>
-        <p>Encontre profissionais e projetos próximos a você</p>
+        <p>Encontre profissionais e projetos cadastrados na plataforma</p>
 
         <div className="buttons-search-preference">
           <button
             type="button"
-            className={tipoBusca === "instaladores" ? "ativo" : ""}
-            onClick={() => setTipoBusca("instaladores")}
+            className={tipoBusca === "profissionais" ? "ativo" : ""}
+            onClick={() => setTipoBusca("profissionais")}
           >
-            Instaladores
+            Profissionais
           </button>
           <button
             type="button"
@@ -225,90 +212,177 @@ export default function Search() {
           </button>
         </div>
 
-        {/* renderiza conteúdo diferente por aba */}
-        {tipoBusca === "instaladores" && (
-          <div>
-            <Filtros placeholder="Nome do profissional" />
+        <Filtros
+          form={form}
+          onChange={handleChange}
+          onLimpar={() => setForm(FORM_VAZIO)}
+          mostrarTipo={tipoBusca === "profissionais"}
+        />
 
-            <div className="search-results">
-              <div className="instaladores-grid">
-                {instaladores.map((inst) => (
-                  <div className="card-instalador" key={inst.id}>
-                    <div className="card-instalador-header">
-                      <span className="avatar">{inst.nome.charAt(0)}</span>
-                      <div>
-                        <h3>{inst.nome}</h3>
-                        <p>
-                          <span className="stars-icon">
-                            <IoStarSharp />
-                          </span>{" "}
-                          {inst.avaliacao} ({inst.avaliacoes} avaliações)
-                        </p>
-                      </div>
-                    </div>
-                    <p className="instalador-cidade">
-                      {inst.cidade}, {inst.estado}
+        {erro && <div className="search-erro">{erro}</div>}
+
+        {tipoBusca === "projetos" && (
+          <div className="search-results">
+            {carregando ? (
+              <p className="search-status">Buscando…</p>
+            ) : projetosFiltrados.length === 0 ? (
+              <div className="search-empty">
+                <CiSearch />
+                {projetos.length > 0 ? (
+                  <>
+                    <h3>Nenhum projeto encontrado</h3>
+                    <p>Nenhum projeto corresponde a esses filtros.</p>
+                  </>
+                ) : (
+                  <>
+                    <h3>Ainda não há projetos publicados</h3>
+                    <p>
+                      Assim que alguém publicar um projeto em{" "}
+                      <strong>Projetos</strong>, ele aparece aqui.
                     </p>
-                    <p className="instalador-cert">NR-10 e NR-35</p>
-                    <div className="card-instalador-btns">
-                      <button
-                        className="btn-perfil"
-                        onClick={() =>
-                          navigate("/menu-user/profile", { state: inst })
-                        }
-                      >
-                        Ver Perfil
-                      </button>
-
-                      <Link to="/menu-user/messages">
-                        <button className="btn-mensagen">Mensagem</button>
-                      </Link>
-                    </div>
-                  </div>
-                ))}
+                  </>
+                )}
               </div>
-            </div>
+            ) : (
+              <>
+                <p className="search-status">
+                  {projetosFiltrados.length} projeto
+                  {projetosFiltrados.length === 1 ? "" : "s"} encontrado
+                  {projetosFiltrados.length === 1 ? "" : "s"}
+                </p>
+                <div className="projetos-list">
+                  {projetosFiltrados.map((proj) => (
+                    <div className="card-projeto-search" key={proj.idProjeto}>
+                      <div className="card-projeo-header">
+                        <h3>{proj.titulo}</h3>
+                        {proj.status && (
+                          <span className="status-badge">{proj.status}</span>
+                        )}
+                      </div>
+                      <p className="projeto-desc">{proj.descricao}</p>
+                      <div className="projeto-info">
+                        <div>
+                          <p className="info-label">Localização</p>
+                          <p className="info-value">
+                            {[proj.cidade, proj.estado]
+                              .filter(Boolean)
+                              .join(", ") || "Não informada"}
+                          </p>
+                        </div>
+                        <div>
+                          <p className="info-label">Potência</p>
+                          <p className="info-value">
+                            {proj.potenciaKwp != null
+                              ? `${proj.potenciaKwp} kWp`
+                              : "Não informada"}
+                          </p>
+                        </div>
+                      </div>
+                      {proj.criador && (
+                        <div className="card-projeto-btns">
+                          <button
+                            className="btn-contatar"
+                            onClick={() =>
+                              navigate(
+                                `/menu-user/messages?com=${proj.criador.idUsuario}`,
+                              )
+                            }
+                          >
+                            Contatar {proj.criador.nome.split(" ")[0]}
+                          </button>
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </>
+            )}
           </div>
         )}
 
-        {tipoBusca === "projetos" && (
-          <div>
-            <Filtros placeholder="Título do projeto" />
-
-            <div className="search-results">
-              <div className="projetos-list">
-                {projetos.map((proj) => (
-                  <div className="card-projeto-search" key={proj.id}>
-                    <div className="card-projeo-header">
-                      <h3>{proj.titulo}</h3>
-                      <span className="status-badge">{proj.status}</span>
-                    </div>
-                    <p className="projeto-desc">{proj.descricao}</p>
-                    <div className="projeto-info">
-                      <div>
-                        <p className="info-label">Localização</p>
-                        <p className="info-value">
-                          {proj.cidade}, {proj.estado}
-                        </p>
-                      </div>
-                      <div>
-                        <p className="info-label">Potência</p>
-                        <p className="info-value">{proj.potencia} kWp</p>
-                      </div>
-                    </div>
-                    <div className="card-projeto-btns">
-                      <button className="btn-perfil-projeto">
-                        Ver Detalhes
-                      </button>
-                      <Link to="/menu-user/messages">
-                        <button className="btn-contatar">Contatar</button>
-                      </Link>
-                    </div>
-                  </div>
-                ))}
-              </div>
+        {tipoBusca === "profissionais" && (
+        <div className="search-results">
+          {carregando ? (
+            <p className="search-status">Buscando…</p>
+          ) : resultados.length === 0 ? (
+            <div className="search-empty">
+              <CiSearch />
+              {temFiltro ? (
+                <>
+                  <h3>Nenhum profissional encontrado</h3>
+                  <p>
+                    Nenhum cadastro corresponde a esses filtros. Tente ampliar a
+                    busca ou limpar os campos.
+                  </p>
+                </>
+              ) : (
+                <>
+                  <h3>Ainda não há profissionais cadastrados</h3>
+                  <p>
+                    Assim que outras pessoas criarem conta e preencherem cidade,
+                    estado e perfil profissional, elas aparecem aqui.
+                  </p>
+                </>
+              )}
             </div>
-          </div>
+          ) : (
+            <>
+              <p className="search-status">
+                {resultados.length} profissional
+                {resultados.length === 1 ? "" : "is"} encontrado
+                {resultados.length === 1 ? "" : "s"}
+              </p>
+
+              <div className="instaladores-grid">
+                {resultados.map((p) => {
+                  const a = avatarDe(p);
+                  const regiao = regiaoDe(p);
+                  const cargo = tipoProfissionalLabel(p.tipoProfissional);
+                  return (
+                    <div className="card-instalador" key={p.idUsuario}>
+                      <div className="card-instalador-header">
+                        <span
+                          className="avatar"
+                          style={{ background: a.color }}
+                        >
+                          {a.initials}
+                        </span>
+                        <div>
+                          <h3>{a.nome}</h3>
+                          {cargo && <p className="instalador-tipo">{cargo}</p>}
+                        </div>
+                      </div>
+
+                      <p className="instalador-cidade">
+                        {regiao || "Região não informada"}
+                      </p>
+
+                      <div className="card-instalador-btns">
+                        <button
+                          className="btn-perfil"
+                          onClick={() =>
+                            navigate(`/menu-user/profile?id=${p.idUsuario}`)
+                          }
+                        >
+                          Ver Perfil
+                        </button>
+
+                        <button
+                          className="btn-mensagen"
+                          onClick={() =>
+                            navigate(`/menu-user/messages?com=${p.idUsuario}`)
+                          }
+                        >
+                          Mensagem
+                        </button>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </>
+          )}
+        </div>
         )}
       </div>
     </div>

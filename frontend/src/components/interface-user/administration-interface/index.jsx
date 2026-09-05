@@ -13,44 +13,19 @@ import { MdOutlineDescription } from "react-icons/md";
 import { IoLocationOutline } from "react-icons/io5";
 import { BsExclamationCircle } from "react-icons/bs";
 
-const certificacoes = [
-  {
-    id: 1,
-    nome: "Maria Oliveira",
-    tipo: "Engenheiro/Projetista",
-    cidade: "Santos",
-    estado: "SP",
-    status: "Pendente",
-    data: "14/04/2024",
-    documentos: [{ nome: "CREA", arquivo: "crea-maria.pdf" }],
-  },
-  {
-    id: 2,
-    nome: "Pedro Costa",
-    tipo: "Instalador",
-    cidade: "São José dos Campos",
-    estado: "SP",
-    status: "Pendente",
-    data: "13/04/2024",
-    documentos: [
-      { nome: "NR-10", arquivo: "nr10-pedro.pdf" },
-      { nome: "NR-35", arquivo: "nr35-pedro.pdf" },
-    ],
-  },
-  {
-    id: 3,
-    nome: "João Santos",
-    tipo: "Instalador",
-    cidade: "Campinas",
-    estado: "SP",
-    status: "Aprovado",
-    data: "10/04/2024",
-    documentos: [
-      { nome: "NR-10", arquivo: "nr10-joao.pdf" },
-      { nome: "NR-35", arquivo: "nr35-joao.pdf" },
-    ],
-  },
-];
+/**
+ * Fila de validação de certificações — VAZIA de propósito.
+ *
+ * Esta lista continha três profissionais fictícios com PDFs inexistentes
+ * ("crea-maria.pdf", "nr10-pedro.pdf") e botões de Aprovar/Rejeitar que só
+ * mudavam o estado local: recarregar a página desfazia tudo. Num painel cujo
+ * propósito é atestar habilitação profissional, dado inventado é pior do que
+ * tela vazia — dá a impressão de que alguém foi verificado.
+ *
+ * Não existe no backend nem tabela de certificação, nem upload de documento,
+ * nem papel de administrador. Enquanto isso não existir, a fila fica vazia.
+ */
+const certificacoes = [];
 
 export default function Administration() {
   const [lista, setLista] = useState(certificacoes);
@@ -61,15 +36,6 @@ export default function Administration() {
   const aprovados = lista.filter((c) => c.status === "Aprovado").length;
   const rejeitados = lista.filter((c) => c.status === "Rejeitado").length;
   const total = lista.length;
-
-  const listaFiltrada =
-    filtro === "Todos"
-      ? lista
-      : lista.filter(
-          (c) =>
-            c.status ===
-            filtro.replace("s", "").replace("Pendente", "Pendente"),
-        );
 
   const filtrarLista = () => {
     if (filtro === "Todos") return lista;
@@ -185,6 +151,17 @@ export default function Administration() {
 
         {/* lista de certificações */}
         <div className="admin-list">
+          {filtrarLista().length === 0 && (
+            <div className="admin-empty">
+              <MdOutlineShield />
+              <h3>Nenhuma certificação na fila</h3>
+              <p>
+                O envio e a validação de documentos ainda não estão disponíveis
+                nesta versão. Quando o fluxo existir, as solicitações aparecem
+                aqui para revisão.
+              </p>
+            </div>
+          )}
           {filtrarLista().map((cert) => (
             <div className="cert-card" key={cert.id}>
               <div className="cert-card-header">

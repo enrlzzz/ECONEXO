@@ -1,20 +1,34 @@
 import "./index.css";
 import "/src/variables.css";
 
-import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
+import {
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { useSearchParams } from "react-router-dom";
 
 import HeaderInterface from "../header-interface";
 import { useUserData } from "../../../useUserData";
 import { mensagensService } from "../../../services/mensagens";
+import { profissionaisService } from "../../../services/profissionais";
+import {
+  avatarDe,
+  regiaoDe,
+  horaDe,
+  tempoRelativo,
+  tipoProfissionalLabel,
+} from "../../../format";
 
 import { CiSearch } from "react-icons/ci";
-import { FiPlus, FiSend, FiPaperclip, FiSmile, FiInfo } from "react-icons/fi";
-import { TbBolt } from "react-icons/tb";
+import { FiSend, FiInfo } from "react-icons/fi";
 import { IoLocation } from "react-icons/io5";
-import { BsShieldCheck, BsCheckAll, BsCheckCircleFill } from "react-icons/bs";
+import { BsCheckAll } from "react-icons/bs";
 
-function Avatar({ name, initials, color, size = 44, online }) {
+function Avatar({ name, initials, color, size = 44 }) {
   return (
     <span
       className="dm-avatar"
@@ -27,20 +41,6 @@ function Avatar({ name, initials, color, size = 44, online }) {
       }}
     >
       {initials}
-      {online && (
-        <span
-          className="dm-online"
-          style={{ width: size > 44 ? 14 : 11, height: size > 44 ? 14 : 11 }}
-        />
-      )}
-    </span>
-  );
-}
-
-function Seal({ size = 14 }) {
-  return (
-    <span className="dm-seal" style={{ width: size, height: size }}>
-      <BsCheckCircleFill size={size} />
     </span>
   );
 }
@@ -49,7 +49,9 @@ function ConvList({ convos, ativoId, busca, setBusca, onSelect }) {
   const filtradas = useMemo(() => {
     if (!busca.trim()) return convos;
     const k = busca.toLowerCase();
-    return convos.filter((c) => c.nome.toLowerCase().includes(k));
+    return convos.filter((c) =>
+      (c.participante?.nome || "").toLowerCase().includes(k),
+    );
   }, [convos, busca]);
 
   return (
@@ -57,13 +59,6 @@ function ConvList({ convos, ativoId, busca, setBusca, onSelect }) {
       <div className="dm-list-head">
         <div className="dm-list-title">
           <h2>Mensagens</h2>
-          <button
-            type="button"
-            className="dm-icon-btn dm-icon-btn-soft"
-            title="Nova conversa"
-          >
-            <FiPlus />
-          </button>
         </div>
         <div className="dm-search">
           <CiSearch />
@@ -77,52 +72,61 @@ function ConvList({ convos, ativoId, busca, setBusca, onSelect }) {
       </div>
 
       <div className="dm-list-body">
-        {filtradas.length === 0 && (
+        {convos.length === 0 && (
+          <p className="dm-list-empty">
+            Você ainda não tem conversas. Abra o perfil de alguém na busca ou na
+            timeline e envie a primeira mensagem.
+          </p>
+        )}
+        {convos.length > 0 && filtradas.length === 0 && (
           <p className="dm-list-empty">Nenhuma conversa encontrada.</p>
         )}
-        {filtradas.map((c) => (
-          <button
-            key={c.id}
-            type="button"
-            className={`dm-conv ${c.id === ativoId ? "is-active" : ""}`}
-            onClick={() => onSelect(c.id)}
-          >
-            <Avatar
-              name={c.nome}
-              initials={c.initials}
-              color={c.color}
-              size={50}
-              online={c.online}
-            />
-            <div className="dm-conv-info">
-              <div className="dm-conv-top">
-                <span className="dm-conv-name">{c.nome}</span>
-                {c.verificado && <Seal size={12} />}
-                <span
-                  className={`dm-conv-time ${c.naoLidas ? "is-unread" : ""}`}
-                >
-                  {c.tempo}
-                </span>
+        {filtradas.map((c) => {
+          const a = avatarDe(c.participante);
+          return (
+            <button
+              key={c.participante.idUsuario}
+              type="button"
+              className={`dm-conv ${
+                c.participante.idUsuario === ativoId ? "is-active" : ""
+              }`}
+              onClick={() => onSelect(c.participante.idUsuario)}
+            >
+              <Avatar
+                name={a.nome}
+                initials={a.initials}
+                color={a.color}
+                size={50}
+              />
+              <div className="dm-conv-info">
+                <div className="dm-conv-top">
+                  <span className="dm-conv-name">{a.nome}</span>
+                  <span
+                    className={`dm-conv-time ${c.naoLidas ? "is-unread" : ""}`}
+                  >
+                    {tempoRelativo(c.ultimaEm)}
+                  </span>
+                </div>
+                <div className="dm-conv-bottom">
+                  <span
+                    className={`dm-conv-last ${c.naoLidas ? "is-unread" : ""}`}
+                  >
+                    {c.ultimaMensagem}
+                  </span>
+                  {c.naoLidas > 0 && (
+                    <span className="dm-conv-badge">{c.naoLidas}</span>
+                  )}
+                </div>
               </div>
-              <div className="dm-conv-bottom">
-                <span
-                  className={`dm-conv-last ${c.naoLidas ? "is-unread" : ""}`}
-                >
-                  {c.ultima}
-                </span>
-                {c.naoLidas > 0 && (
-                  <span className="dm-conv-badge">{c.naoLidas}</span>
-                )}
-              </div>
-            </div>
-          </button>
-        ))}
+            </button>
+          );
+        })}
       </div>
     </aside>
   );
 }
 
-function ChatThread({ convo, onEnviar, usuario, recemId, aguardando }) {
+function ChatThread({ convo, onEnviar, usuario, recemId, enviando }) {
   const scrollerRef = useRef(null);
   const [valor, setValor] = useState("");
 
@@ -130,7 +134,7 @@ function ChatThread({ convo, onEnviar, usuario, recemId, aguardando }) {
     if (scrollerRef.current) {
       scrollerRef.current.scrollTop = scrollerRef.current.scrollHeight;
     }
-  }, [convo?.id, convo?.mensagens?.length, aguardando]);
+  }, [convo?.participante?.idUsuario, convo?.mensagens?.length]);
 
   if (!convo) {
     return (
@@ -143,35 +147,25 @@ function ChatThread({ convo, onEnviar, usuario, recemId, aguardando }) {
     );
   }
 
-  const enviar = () => {
+  const a = avatarDe(convo.participante);
+  const cargo = tipoProfissionalLabel(convo.participante.tipoProfissional);
+
+  const enviar = async () => {
     const t = valor.trim();
     if (!t) return;
-    onEnviar(t);
-    setValor("");
+    const ok = await onEnviar(t);
+    if (ok) setValor("");
   };
 
   return (
-    <section className="dm-col-chat" key={convo.id}>
+    <section className="dm-col-chat" key={convo.participante.idUsuario}>
       <header className="dm-chat-head">
-        <Avatar
-          name={convo.nome}
-          initials={convo.initials}
-          color={convo.color}
-          size={48}
-          online={convo.online}
-        />
+        <Avatar name={a.nome} initials={a.initials} color={a.color} size={48} />
         <div className="dm-chat-head-info">
           <div className="dm-chat-head-name">
-            <strong>{convo.nome}</strong>
-            {convo.verificado && <Seal />}
+            <strong>{a.nome}</strong>
           </div>
-          <span
-            className={`dm-chat-head-status ${
-              convo.online ? "is-online" : ""
-            }`}
-          >
-            {convo.online ? "Online agora" : convo.role}
-          </span>
+          <span className="dm-chat-head-status">{cargo}</span>
         </div>
         <button type="button" className="dm-icon-btn" title="Informações">
           <FiInfo />
@@ -179,18 +173,17 @@ function ChatThread({ convo, onEnviar, usuario, recemId, aguardando }) {
       </header>
 
       <div className="dm-chat-thread eco-anim-fade-up" ref={scrollerRef}>
-        <div className="dm-day-divider">Hoje</div>
-        {convo.mensagens.length === 0 && !aguardando && (
+        {convo.mensagens.length === 0 && (
           <div className="dm-thread-empty">
-            <p>Sem mensagens ainda. Envie a primeira para {convo.nome}.</p>
+            <p>Sem mensagens ainda. Envie a primeira para {a.nome}.</p>
           </div>
         )}
         {convo.mensagens.map((m) => {
-          const out = m.de === "eu";
-          const isRecem = m.id === recemId;
+          const out = String(m.remetenteId) === String(usuario.id);
+          const isRecem = m.idMensagem === recemId;
           return (
             <div
-              key={m.id}
+              key={m.idMensagem}
               className={`dm-row ${out ? "dm-row-out" : "dm-row-in"} ${
                 isRecem ? "eco-anim-bubble-in" : ""
               }`}
@@ -199,15 +192,12 @@ function ChatThread({ convo, onEnviar, usuario, recemId, aguardando }) {
                 <div className={`dm-bubble ${out ? "dm-b-out" : "dm-b-in"}`}>
                   {m.texto}
                 </div>
-                <div
-                  className={`dm-meta ${out ? "dm-meta-out" : "dm-meta-in"}`}
-                >
-                  {m.tempo}
+                <div className={`dm-meta ${out ? "dm-meta-out" : "dm-meta-in"}`}>
+                  {horaDe(m.criadoEm)}
                   {out && (
                     <BsCheckAll
-                      style={{
-                        color: m.lido ? "#34d77f" : "var(--eco-ink-4)",
-                      }}
+                      style={{ color: m.lida ? "#34d77f" : "var(--eco-ink-4)" }}
+                      title={m.lida ? "Lida" : "Enviada"}
                     />
                   )}
                 </div>
@@ -215,21 +205,9 @@ function ChatThread({ convo, onEnviar, usuario, recemId, aguardando }) {
             </div>
           );
         })}
-        {aguardando && (
-          <div className="dm-row dm-row-in">
-            <div className="dm-bubble dm-b-in eco-typing eco-anim-bubble-in">
-              <i></i>
-              <i></i>
-              <i></i>
-            </div>
-          </div>
-        )}
       </div>
 
       <div className="dm-composer">
-        <button type="button" className="dm-icon-btn" title="Anexar">
-          <FiPaperclip />
-        </button>
         <div className="dm-composer-input">
           <textarea
             rows={1}
@@ -241,20 +219,13 @@ function ChatThread({ convo, onEnviar, usuario, recemId, aguardando }) {
                 enviar();
               }
             }}
-            placeholder={`Escreva para ${convo.nome.split(" ")[0]}…`}
+            placeholder={`Escreva para ${a.nome.split(" ")[0]}…`}
           />
-          <button
-            type="button"
-            className="dm-icon-btn"
-            title="Emoji"
-          >
-            <FiSmile />
-          </button>
         </div>
         <button
           type="button"
           className="dm-send"
-          disabled={!valor.trim()}
+          disabled={!valor.trim() || enviando}
           onClick={enviar}
           title="Enviar"
         >
@@ -274,52 +245,23 @@ function ContextPanel({ convo }) {
     );
   }
 
+  const a = avatarDe(convo.participante);
+  const cargo = tipoProfissionalLabel(convo.participante.tipoProfissional);
+  const regiao = regiaoDe(convo.participante);
+
   return (
     <aside className="dm-col-ctx">
       <div className="dm-ctx-head">
-        <Avatar
-          name={convo.nome}
-          initials={convo.initials}
-          color={convo.color}
-          size={76}
-          online={convo.online}
-        />
+        <Avatar name={a.nome} initials={a.initials} color={a.color} size={76} />
         <div className="dm-ctx-name">
-          <h3>{convo.nome}</h3>
-          {convo.verificado && <Seal />}
+          <h3>{a.nome}</h3>
         </div>
-        <p className="dm-ctx-role">{convo.role}</p>
-        {convo.regiao && (
+        {cargo && <p className="dm-ctx-role">{cargo}</p>}
+        {regiao && (
           <p className="dm-ctx-region">
-            <IoLocation /> {convo.regiao}
+            <IoLocation /> {regiao}
           </p>
         )}
-
-        <div className="dm-ctx-badges">
-          <span className="dm-badge">
-            <BsShieldCheck /> NR-10
-          </span>
-          <span className="dm-badge">
-            <BsShieldCheck /> NR-35
-          </span>
-        </div>
-
-        <button type="button" className="dm-ctx-btn">
-          Ver perfil completo
-        </button>
-      </div>
-
-      <div className="dm-ctx-section">
-        <span className="dm-ctx-section-title">Projeto em discussão</span>
-        <div className="dm-ctx-projeto">
-          <div className="dm-ctx-projeto-icon">
-            <TbBolt />
-          </div>
-          <div>
-            <strong>Conexão direta EcoNexo</strong>
-            <p>{convo.role}</p>
-          </div>
-        </div>
       </div>
 
       <div className="dm-ctx-section">
@@ -339,72 +281,133 @@ export default function MessageInterface() {
   const [convos, setConvos] = useState([]);
   const [ativoId, setAtivoId] = useState(null);
   const [busca, setBusca] = useState("");
-  const [aguardando, setAguardando] = useState(false);
+  const [carregando, setCarregando] = useState(true);
+  const [enviando, setEnviando] = useState(false);
+  const [erro, setErro] = useState("");
   const [recemMsgId, setRecemMsgId] = useState(null);
-  const timerRef = useRef(null);
 
-  useEffect(() => {
-    const lista = mensagensService.listar();
-    setConvos(lista);
+  const paramCom = searchParams.get("com");
 
-    const paramConv = searchParams.get("conversa");
-    if (paramConv && lista.some((c) => c.id === paramConv)) {
-      setAtivoId(paramConv);
-      const atualizadas = mensagensService.marcarComoLida(paramConv);
-      setConvos(atualizadas);
-    } else if (lista.length > 0) {
-      setAtivoId(lista[0].id);
+  /**
+   * Quem veio da timeline/busca com ?com=<id> pode não ter conversa ainda.
+   * Nesse caso montamos um rascunho vazio na tela — mas nada é gravado no
+   * banco até a primeira mensagem realmente ser enviada.
+   */
+  const carregar = useCallback(async () => {
+    setCarregando(true);
+    setErro("");
+    try {
+      const lista = await mensagensService.listar();
+      const conversas = Array.isArray(lista) ? lista : [];
+
+      let alvo = paramCom ? Number(paramCom) : null;
+
+      if (alvo && !conversas.some((c) => c.participante.idUsuario === alvo)) {
+        try {
+          const encontrados = await profissionaisService.buscar();
+          const p = (encontrados || []).find((x) => x.idUsuario === alvo);
+          if (p) {
+            conversas.unshift({
+              participante: p,
+              ultimaMensagem: "",
+              ultimaEm: new Date().toISOString(),
+              naoLidas: 0,
+              mensagens: [],
+            });
+          } else {
+            alvo = null;
+          }
+        } catch {
+          alvo = null;
+        }
+      }
+
+      setConvos(conversas);
+      setAtivoId(alvo || conversas[0]?.participante.idUsuario || null);
+    } catch (e) {
+      setErro(e.message || "Não foi possível carregar as mensagens.");
+    } finally {
+      setCarregando(false);
     }
-  }, [searchParams]);
+  }, [paramCom]);
 
   useEffect(() => {
+    // carregar() é async e o primeiro setState só acontece depois do await,
+    // mas a chamada em si dispara setCarregando(true) de forma síncrona.
+    // Adiar para a microtask seguinte mantém o efeito fora do render atual.
+    let ativo = true;
+    Promise.resolve().then(() => {
+      if (ativo) carregar();
+    });
     return () => {
-      if (timerRef.current) clearTimeout(timerRef.current);
+      ativo = false;
     };
-  }, []);
+  }, [carregar]);
+
+  // Abrir uma conversa marca como lida o que chegou para mim.
+  useEffect(() => {
+    if (!ativoId) return;
+    const convo = convos.find((c) => c.participante.idUsuario === ativoId);
+    if (!convo || convo.naoLidas === 0) return;
+
+    mensagensService
+      .marcarComoLida(ativoId)
+      .then(() =>
+        setConvos((atuais) =>
+          atuais.map((c) =>
+            c.participante.idUsuario === ativoId ? { ...c, naoLidas: 0 } : c,
+          ),
+        ),
+      )
+      .catch(() => {
+        /* não conseguir marcar como lida não quebra a leitura */
+      });
+  }, [ativoId, convos]);
 
   const selecionar = (id) => {
-    if (timerRef.current) {
-      clearTimeout(timerRef.current);
-      timerRef.current = null;
-    }
-    setAguardando(false);
-    setRecemMsgId(null);
     setAtivoId(id);
-    setConvos(mensagensService.marcarComoLida(id));
-    if (searchParams.get("conversa") !== id) {
+    setRecemMsgId(null);
+    if (searchParams.get("com") !== String(id)) {
       const next = new URLSearchParams(searchParams);
-      next.set("conversa", id);
+      next.set("com", String(id));
       setSearchParams(next, { replace: true });
     }
   };
 
-  const enviar = (texto) => {
-    if (!ativoId) return;
-    const atualizadas = mensagensService.enviar(ativoId, texto);
-    setConvos(atualizadas);
-    const c = atualizadas.find((x) => x.id === ativoId);
-    const ultima = c?.mensagens[c.mensagens.length - 1];
-    setRecemMsgId(ultima?.id || null);
-    setAguardando(true);
-
-    if (timerRef.current) clearTimeout(timerRef.current);
-    timerRef.current = setTimeout(() => {
-      const c2 = mensagensService.receberRespostaSimulada(ativoId);
-      setConvos(c2);
-      setAguardando(false);
-      const conv2 = c2.find((x) => x.id === ativoId);
-      const ult = conv2?.mensagens[conv2.mensagens.length - 1];
-      setRecemMsgId(ult?.id || null);
-      timerRef.current = null;
-    }, 1500);
+  const enviar = async (texto) => {
+    if (!ativoId) return false;
+    setEnviando(true);
+    setErro("");
+    try {
+      const msg = await mensagensService.enviar(ativoId, texto);
+      setConvos((atuais) =>
+        atuais.map((c) =>
+          c.participante.idUsuario === ativoId
+            ? {
+                ...c,
+                mensagens: [...c.mensagens, msg],
+                ultimaMensagem: msg.texto,
+                ultimaEm: msg.criadoEm,
+              }
+            : c,
+        ),
+      );
+      setRecemMsgId(msg.idMensagem);
+      return true;
+    } catch (e) {
+      setErro(e.message || "Não foi possível enviar a mensagem.");
+      return false;
+    } finally {
+      setEnviando(false);
+    }
   };
 
-  const ativo = convos.find((c) => c.id === ativoId);
+  const ativo = convos.find((c) => c.participante.idUsuario === ativoId);
 
   return (
     <div className="dm-shell">
       <HeaderInterface />
+      {erro && <div className="dm-erro">{erro}</div>}
       <div className="dm-grid eco-anim-fade-up">
         <ConvList
           convos={convos}
@@ -413,13 +416,21 @@ export default function MessageInterface() {
           setBusca={setBusca}
           onSelect={selecionar}
         />
-        <ChatThread
-          convo={ativo}
-          onEnviar={enviar}
-          usuario={usuario}
-          recemId={recemMsgId}
-          aguardando={aguardando}
-        />
+        {carregando ? (
+          <section className="dm-col-chat dm-empty-chat">
+            <div>
+              <p>Carregando conversas…</p>
+            </div>
+          </section>
+        ) : (
+          <ChatThread
+            convo={ativo}
+            onEnviar={enviar}
+            usuario={usuario}
+            recemId={recemMsgId}
+            enviando={enviando}
+          />
+        )}
         <ContextPanel convo={ativo} />
       </div>
     </div>

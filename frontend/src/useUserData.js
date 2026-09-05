@@ -5,9 +5,15 @@ export function useUserData() {
   const [userData, setUserData] = useState(() => readSafe());
 
   useEffect(() => {
+    // "storage" só dispara em OUTRAS abas. Sem o evento próprio abaixo,
+    // salvar o perfil não atualizava o nome no header da mesma aba até o F5.
     const onStorage = () => setUserData(readSafe());
     window.addEventListener("storage", onStorage);
-    return () => window.removeEventListener("storage", onStorage);
+    window.addEventListener("econexo:sessao", onStorage);
+    return () => {
+      window.removeEventListener("storage", onStorage);
+      window.removeEventListener("econexo:sessao", onStorage);
+    };
   }, []);
 
   return userData;

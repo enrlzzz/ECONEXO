@@ -496,3 +496,64 @@
         font-size: 1.8rem;
     }
 }
+
+
+/* ===== estados de carga / erro / aviso ===== */
+
+.settings-erro,
+.settings-aviso {
+    max-width: 90rem;
+    margin: 1.6rem auto 0;
+    padding: 1.2rem 1.6rem;
+    border-radius: 12px;
+    font-size: 1.35rem;
+    font-weight: 600;
+}
+
+.settings-erro {
+    background: #fdecec;
+    border: 1px solid #f3c2c2;
+    color: #a32020;
+}
+
+.settings-aviso {
+    background: #eafaf0;
+    border: 1px solid #bfe6cd;
+    color: #1c6b3f;
+}
+
+.settings-status {
+    padding: 2rem 0;
+    font-size: 1.4rem;
+    color: var(--eco-ink-3, #6b7280);
+}
+
+.settings-hint {
+    font-size: 1.25rem;
+    color: var(--eco-ink-3, #6b7280);
+    margin-top: 1.2rem;
+    line-height: 1.5;
+}
+
+.settings-lista {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 1.4rem;
+    margin-top: 1.6rem;
+}
+
+.settings-lista li {
+    display: flex;
+    gap: 1rem;
+    align-items: flex-start;
+    font-size: 1.35rem;
+    line-height: 1.55;
+    color: var(--black);
+}
+
+.settings-lista li svg {
+    flex-shrink: 0;
+    margin-top: 0.3rem;
+    color: var(--eco-blue-500, #2a5fd6);
+}

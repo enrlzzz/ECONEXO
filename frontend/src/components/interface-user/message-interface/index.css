@@ -676,3 +676,18 @@
         min-height: 60vh;
     }
 }
+
+
+/* ===== mensagens reais: erro ===== */
+
+.dm-erro {
+    margin: 1.6rem auto 0;
+    max-width: 120rem;
+    padding: 1.2rem 1.6rem;
+    border-radius: 12px;
+    background: #fdecec;
+    border: 1px solid #f3c2c2;
+    color: #a32020;
+    font-size: 1.35rem;
+    font-weight: 600;
+}

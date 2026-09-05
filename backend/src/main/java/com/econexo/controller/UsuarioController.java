@@ -1,6 +1,7 @@
 package com.econexo.controller;
 
 import com.econexo.dto.ErroResponse;
+import com.econexo.dto.ProfissionalResponse;
 import com.econexo.dto.UsuarioRequest;
 import com.econexo.dto.UsuarioResponse;
 import com.econexo.security.RateLimitService;
@@ -61,6 +62,23 @@ public class UsuarioController {
     @GetMapping
     public List<UsuarioResponse> listarTodos() {
         return usuarioService.listarTodos();
+    }
+
+    /**
+     * Busca de profissionais para a tela de Buscar.
+     *
+     * Responde ProfissionalResponse (sem e-mail/telefone) porque o diretório é
+     * visível a qualquer usuário logado — ver o javadoc do DTO.
+     * Filtros em branco são ignorados.
+     */
+    @GetMapping("/busca")
+    public List<ProfissionalResponse> buscar(
+            @RequestParam(required = false) String nome,
+            @RequestParam(required = false) String cidade,
+            @RequestParam(required = false) String estado,
+            @RequestParam(required = false) String tipo) {
+
+        return usuarioService.buscarProfissionais(nome, cidade, estado, tipo);
     }
 
     @GetMapping("/{id}")

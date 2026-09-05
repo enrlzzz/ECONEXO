@@ -1,23 +1,34 @@
 import "./index.css";
 import "/src/variables.css";
 
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 
 import HeaderInterface from "../header-interface";
 import { useUserData } from "../../../useUserData";
+import { usuariosService } from "../../../services/usuarios";
+import { persistUser } from "../../../userSession";
 
 import { CgProfile } from "react-icons/cg";
 import { CiLock } from "react-icons/ci";
-import { IoIosNotificationsOutline } from "react-icons/io";
 import { IoLocationOutline } from "react-icons/io5";
-import { MdOutlinePhone } from "react-icons/md";
-import { MdOutlineEmail } from "react-icons/md";
-import { FiUpload } from "react-icons/fi";
-import { MdOutlineSave } from "react-icons/md";
-import { GoProjectRoadmap } from "react-icons/go";
+import { MdOutlinePhone, MdOutlineEmail, MdOutlineSave } from "react-icons/md";
+import { BsShieldCheck } from "react-icons/bs";
+
+const ESTADOS = [
+  "AC", "AL", "AP", "AM", "BA", "CE", "DF", "ES", "GO",
+  "MA", "MT", "MS", "MG", "PA", "PB", "PR", "PE", "PI",
+  "RJ", "RN", "RS", "RO", "RR", "SC", "SP", "SE", "TO",
+];
+
+const TIPOS = [
+  ["", "Não informado"],
+  ["PROJETISTA", "Projetista / Responsável técnico"],
+  ["INSTALADOR", "Instalador"],
+  ["TECNICO", "Técnico"],
+];
 
 export default function Settings() {
-  const { nome, cidade, estado } = useUserData();
+  const usuario = useUserData();
 
   const [tipoConfig, setTipoConfig] = useState("perfil");
 
@@ -25,39 +36,100 @@ export default function Settings() {
     nome: "",
     email: "",
     telefone: "",
-    biografia: "",
     cidade: "",
     estado: "",
-    crea: "",
-    foto: null,
+    tipoProfissional: "",
   });
 
+  const [senhas, setSenhas] = useState({ nova: "", confirmar: "" });
+
+  const [carregando, setCarregando] = useState(true);
+  const [salvando, setSalvando] = useState(false);
+  const [erro, setErro] = useState("");
+  const [aviso, setAviso] = useState("");
+
+  /**
+   * Carrega do backend, não do localStorage.
+   *
+   * O localStorage é cache de exibição e o usuário pode tê-lo editado. Quem
+   * responde "o que está gravado no meu cadastro?" é a API.
+   */
+  // Sem setState síncrono no corpo do effect: `carregando` já nasce true e o
+  // resto acontece nas continuações da promise.
   useEffect(() => {
-    setForm((prev) => ({
-      ...prev,
-      nome: nome || "",
-      cidade: cidade || "",
-      estado: estado || "",
-    }));
-  }, [nome, cidade, estado]);
+    if (!usuario.id) return undefined;
+    let ativo = true;
+    usuariosService
+      .buscarPorId(usuario.id)
+      .then((dados) => {
+        if (!ativo) return;
+        setForm({
+          nome: dados.nome || "",
+          email: dados.email || "",
+          telefone: dados.telefone || "",
+          cidade: dados.cidade || "",
+          estado: dados.estado || "",
+          tipoProfissional: dados.tipoProfissional || "",
+        });
+      })
+      .catch((e) => {
+        if (ativo) setErro(e.message || "Não foi possível carregar seu cadastro.");
+      })
+      .finally(() => {
+        if (ativo) setCarregando(false);
+      });
+    return () => {
+      ativo = false;
+    };
+  }, [usuario.id]);
 
   const handleChange = (event) => {
-    const { name, value, files, type } = event.target;
-
-    setForm({
-      ...form,
-      [name]: type === "file" ? files[0] : value,
-    });
+    const { name, value } = event.target;
+    setForm((atual) => ({ ...atual, [name]: value }));
   };
 
-  const handleSubmit = (event) => {
+  const salvarPerfil = async (event) => {
     event.preventDefault();
+    setSalvando(true);
+    setErro("");
+    setAviso("");
+    try {
+      // Sem campo senha: o backend só re-hasheia quando ela vem preenchida,
+      // então o perfil pode ser salvo sem exigir a senha atual.
+      const atualizado = await usuariosService.atualizar(usuario.id, form);
+      persistUser(atualizado);
+      setAviso("Alterações salvas.");
+    } catch (e) {
+      setErro(e.message || "Não foi possível salvar as alterações.");
+    } finally {
+      setSalvando(false);
+    }
+  };
 
-    localStorage.setItem("userName", form.nome);
-    localStorage.setItem("userCidade", form.cidade);
-    localStorage.setItem("userEstado", form.estado);
+  const salvarSenha = async (event) => {
+    event.preventDefault();
+    setErro("");
+    setAviso("");
 
-    alert("Alterações salvas!");
+    if (senhas.nova !== senhas.confirmar) {
+      setErro("As senhas não coincidem.");
+      return;
+    }
+    if (senhas.nova.length < 8) {
+      setErro("A senha deve ter ao menos 8 caracteres.");
+      return;
+    }
+
+    setSalvando(true);
+    try {
+      await usuariosService.atualizar(usuario.id, { ...form, senha: senhas.nova });
+      setSenhas({ nova: "", confirmar: "" });
+      setAviso("Senha alterada.");
+    } catch (e) {
+      setErro(e.message || "Não foi possível alterar a senha.");
+    } finally {
+      setSalvando(false);
+    }
   };
 
   return (
@@ -77,7 +149,6 @@ export default function Settings() {
             <CgProfile />
             Perfil
           </button>
-
           <button
             type="button"
             className={tipoConfig === "seguranca" ? "ativo" : ""}
@@ -86,17 +157,11 @@ export default function Settings() {
             <CiLock />
             Segurança
           </button>
-
-          <button
-            type="button"
-            className={tipoConfig === "notificacoes" ? "ativo" : ""}
-            onClick={() => setTipoConfig("notificacoes")}
-          >
-            <IoIosNotificationsOutline />
-            Notificações
-          </button>
         </div>
       </div>
+
+      {erro && <div className="settings-erro">{erro}</div>}
+      {aviso && <div className="settings-aviso">{aviso}</div>}
 
       {tipoConfig === "perfil" && (
         <div className="settings-content">
@@ -104,185 +169,175 @@ export default function Settings() {
             <h3>Informações Pessoais</h3>
             <p>Atualize suas informações de perfil</p>
 
-            <div className="foto-section">
-              <span className="avatar-settings">
-                {form.nome?.charAt(0).toUpperCase() || "N"}
-              </span>
+            {carregando ? (
+              <p className="settings-status">Carregando…</p>
+            ) : (
+              <form className="settings-form" onSubmit={salvarPerfil}>
+                <div className="form-row">
+                  <div className="form-group">
+                    <label htmlFor="nome">Nome Completo</label>
+                    <input
+                      type="text"
+                      id="nome"
+                      name="nome"
+                      value={form.nome}
+                      onChange={handleChange}
+                      placeholder="Seu nome"
+                      required
+                    />
+                  </div>
 
-              <div>
-                <label className="btn-alterar-foto" htmlFor="foto">
-                  <FiUpload />
-                  Alterar Foto
-                </label>
+                  <div className="form-group">
+                    <label htmlFor="email">Email</label>
+                    <div className="input-icon">
+                      <MdOutlineEmail className="input-icon-symbol" />
+                      <input
+                        type="email"
+                        id="email"
+                        name="email"
+                        value={form.email}
+                        onChange={handleChange}
+                        placeholder="seu@email.com"
+                        required
+                      />
+                    </div>
+                  </div>
+                </div>
 
-                <input
-                  type="file"
-                  id="foto"
-                  name="foto"
-                  accept=".jpg,.png,.gif"
-                  onChange={handleChange}
-                  hidden
-                />
+                <div className="form-row">
+                  <div className="form-group">
+                    <label htmlFor="telefone">Telefone</label>
+                    <div className="input-icon">
+                      <MdOutlinePhone className="input-icon-symbol" />
+                      <input
+                        type="text"
+                        id="telefone"
+                        name="telefone"
+                        value={form.telefone}
+                        onChange={handleChange}
+                        placeholder="(11) 99999-9999"
+                      />
+                    </div>
+                  </div>
 
-                <p className="foto-hint">
-                  JPG, PNG ou GIF. Máximo 2MB.
+                  <div className="form-group">
+                    <label htmlFor="tipoProfissional">
+                      Tipo de Profissional
+                    </label>
+                    <select
+                      id="tipoProfissional"
+                      name="tipoProfissional"
+                      value={form.tipoProfissional}
+                      onChange={handleChange}
+                    >
+                      {TIPOS.map(([valor, rotulo]) => (
+                        <option key={valor} value={valor}>
+                          {rotulo}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
+
+                <div className="form-row">
+                  <div className="form-group">
+                    <label htmlFor="cidade">Cidade</label>
+                    <div className="input-icon">
+                      <IoLocationOutline className="input-icon-symbol" />
+                      <input
+                        type="text"
+                        id="cidade"
+                        name="cidade"
+                        value={form.cidade}
+                        onChange={handleChange}
+                        placeholder="Sua cidade"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="form-group">
+                    <label htmlFor="estado">Estado</label>
+                    <select
+                      id="estado"
+                      name="estado"
+                      value={form.estado}
+                      onChange={handleChange}
+                    >
+                      <option value="">UF</option>
+                      {ESTADOS.map((uf) => (
+                        <option key={uf} value={uf}>
+                          {uf}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
+
+                <p className="settings-hint">
+                  Cidade, estado e tipo de profissional são o que faz você
+                  aparecer na busca de outros usuários.
                 </p>
-              </div>
-            </div>
 
-            <form className="settings-form" onSubmit={handleSubmit}>
-              <div className="form-row">
-                <div className="form-group">
-                  <label htmlFor="nome">Nome Completo</label>
-
-                  <input
-                    type="text"
-                    id="nome"
-                    name="nome"
-                    value={form.nome}
-                    onChange={handleChange}
-                    placeholder="Seu nome"
-                  />
+                <div className="form-actions">
+                  <button
+                    type="submit"
+                    className="btn-salvar"
+                    disabled={salvando}
+                  >
+                    <MdOutlineSave />
+                    {salvando ? "Salvando…" : "Salvar Alterações"}
+                  </button>
                 </div>
-
-                <div className="form-group">
-                  <label htmlFor="email">Email</label>
-
-                  <div className="input-icon">
-                    <MdOutlineEmail className="input-icon-symbol" />
-
-                    <input
-                      type="email"
-                      id="email"
-                      name="email"
-                      value={form.email}
-                      onChange={handleChange}
-                      placeholder="seu@email.com"
-                    />
-                  </div>
-                </div>
-              </div>
-
-              <div className="form-row">
-                <div className="form-group">
-                  <label htmlFor="telefone">Telefone</label>
-
-                  <div className="input-icon">
-                    <MdOutlinePhone className="input-icon-symbol" />
-
-                    <input
-                      type="text"
-                      id="telefone"
-                      name="telefone"
-                      value={form.telefone}
-                      onChange={handleChange}
-                      placeholder="(11) 99999-9999"
-                    />
-                  </div>
-                </div>
-
-                <div className="form-group">
-                  <label htmlFor="tipoProfissional">
-                    Tipo de Profissional
-                  </label>
-
-                  <input
-                    type="text"
-                    id="tipoProfissional"
-                    value="Engenheiro/Projetista"
-                    disabled
-                  />
-                </div>
-              </div>
-
-              <div className="form-group full-width">
-                <label htmlFor="biografia">Biografia</label>
-
-                <textarea
-                  id="biografia"
-                  name="biografia"
-                  value={form.biografia}
-                  onChange={handleChange}
-                  placeholder="Conte um pouco sobre sua experiência profissional..."
-                  rows={3}
-                />
-              </div>
-
-              <div className="form-row">
-                <div className="form-group">
-                  <label htmlFor="cidade">Cidade</label>
-
-                  <div className="input-icon">
-                    <IoLocationOutline className="input-icon-symbol" />
-
-                    <input
-                      type="text"
-                      id="cidade"
-                      name="cidade"
-                      value={form.cidade}
-                      onChange={handleChange}
-                      placeholder="Sua cidade"
-                    />
-                  </div>
-                </div>
-
-                <div className="form-group">
-                  <label htmlFor="estado">Estado</label>
-
-                  <input
-                    type="text"
-                    id="estado"
-                    name="estado"
-                    value={form.estado}
-                    onChange={handleChange}
-                    placeholder="UF"
-                  />
-                </div>
-              </div>
-
-              <div className="form-actions">
-                <button type="submit" className="btn-salvar">
-                  <MdOutlineSave />
-                  Salvar Alterações
-                </button>
-              </div>
-            </form>
+              </form>
+            )}
           </div>
 
+          {/*
+            Card de certificações: informativo, sem formulário.
+
+            O anterior tinha campo "Número do CREA/CFT" e botão de upload de
+            documentos que não gravavam nada — não existe coluna nem endpoint
+            para isso. Campo que aceita texto e descarta no refresh é pior do
+            que campo nenhum: a pessoa acredita que informou.
+
+            O texto também não cita mais CFT como habilitação para assinar
+            projeto fotovoltaico. Técnico registrado no CFT não tem atribuição
+            para assinar projeto elétrico de geração; isso é do engenheiro com
+            registro no CREA. Anunciar o contrário exporia a plataforma e os
+            usuários.
+          */}
           <div className="settings-card">
             <h3>Certificações</h3>
-            <p>Mantenha suas informações do CREA/CFT atualizadas</p>
+            <p>Como a EcoNexo trata habilitação profissional</p>
 
-            <div className="form-group">
-              <label htmlFor="crea">Número do CREA/CFT</label>
+            <ul className="settings-lista">
+              <li>
+                <BsShieldCheck />
+                <span>
+                  <strong>CREA</strong> — registro exigido de responsáveis
+                  técnicos e projetistas para assinar projeto e emitir ART.
+                </span>
+              </li>
+              <li>
+                <BsShieldCheck />
+                <span>
+                  <strong>NR-10</strong> — obrigatória para quem executa
+                  serviços em instalações elétricas.
+                </span>
+              </li>
+              <li>
+                <BsShieldCheck />
+                <span>
+                  <strong>NR-35</strong> — obrigatória para trabalho em altura,
+                  o caso da instalação em telhados.
+                </span>
+              </li>
+            </ul>
 
-              <div className="input-icon">
-                <GoProjectRoadmap className="input-icon-symbol" />
-
-                <input
-                  type="text"
-                  id="crea"
-                  name="crea"
-                  value={form.crea}
-                  onChange={handleChange}
-                  placeholder="CREA-SP 123456"
-                />
-              </div>
-            </div>
-
-            <label className="btn-alterar-foto" htmlFor="documentos">
-              <FiUpload />
-              Atualizar Documentos
-            </label>
-
-            <input
-              type="file"
-              id="documentos"
-              name="documentos"
-              accept=".pdf,.jpg,.png"
-              onChange={handleChange}
-              hidden
-            />
+            <p className="settings-hint">
+              O envio e a validação de documentos ainda não estão disponíveis
+              nesta versão.
+            </p>
           </div>
         </div>
       )}
@@ -291,74 +346,48 @@ export default function Settings() {
         <div className="settings-content">
           <div className="settings-card">
             <h3>Segurança</h3>
-            <p>Gerencie sua senha e segurança da conta</p>
+            <p>Altere a senha da sua conta</p>
 
-            <div className="form-group">
-              <label htmlFor="senhaAtual">Senha Atual</label>
-              <input type="password" id="senhaAtual" placeholder="********" />
-            </div>
-
-            <div className="form-group">
-              <label htmlFor="novaSenha">Nova Senha</label>
-              <input type="password" id="novaSenha" placeholder="********" />
-            </div>
-
-            <div className="form-group">
-              <label htmlFor="confirmarSenha">
-                Confirmar Nova Senha
-              </label>
-
-              <input
-                type="password"
-                id="confirmarSenha"
-                placeholder="********"
-              />
-            </div>
-
-            <div className="form-actions">
-              <button className="btn-salvar">
-                <MdOutlineSave />
-                Salvar Senha
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {tipoConfig === "notificacoes" && (
-        <div className="settings-content">
-          <div className="settings-card">
-            <h3>Notificações</h3>
-            <p>Escolha quais notificações deseja receber</p>
-
-            <div className="notificacao-item">
-              <div>
-                <h4>Novas mensagens</h4>
-                <p>
-                  Receba alertas quando alguém te enviar uma mensagem
-                </p>
+            <form className="settings-form" onSubmit={salvarSenha}>
+              <div className="form-group">
+                <label htmlFor="novaSenha">Nova Senha</label>
+                <input
+                  type="password"
+                  id="novaSenha"
+                  value={senhas.nova}
+                  onChange={(e) =>
+                    setSenhas((s) => ({ ...s, nova: e.target.value }))
+                  }
+                  placeholder="Mínimo 8 caracteres"
+                  autoComplete="new-password"
+                />
               </div>
 
-              <input type="checkbox" defaultChecked />
-            </div>
-
-            <div className="notificacao-item">
-              <div>
-                <h4>Novos projetos</h4>
-                <p>Seja notificado sobre projetos na sua região</p>
+              <div className="form-group">
+                <label htmlFor="confirmarSenha">Confirmar Nova Senha</label>
+                <input
+                  type="password"
+                  id="confirmarSenha"
+                  value={senhas.confirmar}
+                  onChange={(e) =>
+                    setSenhas((s) => ({ ...s, confirmar: e.target.value }))
+                  }
+                  placeholder="Repita a nova senha"
+                  autoComplete="new-password"
+                />
               </div>
 
-              <input type="checkbox" defaultChecked />
-            </div>
-
-            <div className="notificacao-item">
-              <div>
-                <h4>Avaliações</h4>
-                <p>Alertas quando receber uma nova avaliação</p>
+              <div className="form-actions">
+                <button
+                  type="submit"
+                  className="btn-salvar"
+                  disabled={salvando || !senhas.nova}
+                >
+                  <MdOutlineSave />
+                  {salvando ? "Salvando…" : "Salvar Senha"}
+                </button>
               </div>
-
-              <input type="checkbox" />
-            </div>
+            </form>
           </div>
         </div>
       )}

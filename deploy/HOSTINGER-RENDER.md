@@ -125,8 +125,8 @@ hPanel → *Databases → Remote MySQL*:
 | `DB_USER` | `<SEU_USUARIO>` |
 | `DB_PASS` | a senha do banco |
 | `APP_ALLOWED_ORIGINS` | `https://seudominio.com,https://www.seudominio.com` |
-| `JWT_SECRET` | **mínimo 32 caracteres.** Gere com `openssl rand -base64 48` — ou deixe o Render sortear (`generateValue`) |
-| `ECONEXO_CRYPTO_KEY` | Criptografia do CPF em repouso. `openssl rand -base64 32`, ou deixe o Render sortear |
+| `JWT_SECRET` | **mínimo 32 caracteres.** Gere com `openssl rand -base64 48` |
+| `ECONEXO_CRYPTO_KEY` | Criptografia do CPF em repouso. **Gere com `openssl rand -base64 32` — não use o sorteio do Render** (ver aviso abaixo) |
 
    (`SPRING_PROFILES_ACTIVE=prod` e `DB_PORT=3306` já vêm preenchidos.)
 
@@ -141,6 +141,32 @@ hPanel → *Databases → Remote MySQL*:
 > decifra os CPFs gravados; se mudar, eles viram lixo irrecuperável. Se um dia
 > precisar rotacionar, o caminho é decifrar a base com a chave antiga, trocar,
 > e recifrar — nunca trocar direto no painel.
+
+> 💣 **Não use `generateValue` do Render para `ECONEXO_CRYPTO_KEY`.** Já quebrou
+> a produção uma vez, e o sintoma engana.
+>
+> `ChaveCriptografia` faz **base64-decode antes de medir** e exige 32 bytes
+> decodificados. O valor sorteado pelo Render é uma string aleatória de 32
+> caracteres — que, lida como base64, rende apenas **24 bytes**. Parece uma chave
+> longa e passa despercebida na conferência visual, mas o backend recusa:
+>
+> ```
+> java.lang.IllegalStateException: econexo.crypto.key precisa render ao menos
+> 32 bytes (AES-256). Gere com: openssl rand -base64 32
+>     at com.econexo.security.ChaveCriptografia.carregar(ChaveCriptografia.java:45)
+> ==> Exited with status 1
+> ```
+>
+> O build **passa** e o deploy falha só no boot, então a página do serviço segue
+> mostrando "Live" com a versão ANTIGA. Foi assim que a produção rodou 3 semanas
+> num commit anterior à criptografia de CPF sem ninguém notar: cada push criava
+> um deploy vermelho, e o build velho continuava no ar atendendo normalmente.
+>
+> **Gere sempre com `openssl rand -base64 32`** (44 caracteres terminando em `=`).
+>
+> **Como detectar o problema:** *Deploys* → se o topo da lista tem vermelhos mas
+> o cabeçalho diz "Live" com um commit antigo, é isto. Abra o deploy vermelho e
+> procure a última linha `Caused by:`.
 
 4. *Create* → o primeiro build leva ~5 min (compila o JAR dentro do container).
 

@@ -34,7 +34,12 @@ create TABLE usuario (
     -- prova de consentimento LGPD (Art. 8º, §2º): o ônus é do controlador
     consentimento_lgpd BOOLEAN NOT NULL DEFAULT FALSE,
     consentimento_em DATETIME,
-    consentimento_versao VARCHAR(20)
+    consentimento_versao VARCHAR(20),
+    -- praça de atuação (não é endereço) — usada pela busca de profissionais
+    cidade VARCHAR(100),
+    estado VARCHAR(2),
+    -- INSTALADOR | PROJETISTA | TECNICO
+    tipo_profissional VARCHAR(20)
 );
 
 CREATE TABLE skill (
@@ -92,6 +97,11 @@ CREATE TABLE projeto (
     status VARCHAR(50),       -- Aberto, Em andamento, Concluído
     data_inicio DATE,
     data_fim DATE,
+    cidade VARCHAR(100),
+    estado VARCHAR(2),
+    -- DECIMAL e nao FLOAT: 13,2 em ponto flutuante binario vira
+    -- 13.199999999999999 e isso chega a tela do usuario
+    potencia_kwp DECIMAL(10,2),
 
     FOREIGN KEY (fk_criador) REFERENCES usuario(id_usuario)
         ON DELETE SET NULL
@@ -125,3 +135,70 @@ CREATE TABLE avaliacao (
     FOREIGN KEY (fk_avaliado) REFERENCES usuario(id_usuario)
         ON DELETE CASCADE
 );
+
+-- ---------------------------------------------------------------------------
+-- Timeline
+-- ---------------------------------------------------------------------------
+CREATE TABLE post (
+    id_post INT AUTO_INCREMENT PRIMARY KEY,
+    fk_autor INT NOT NULL,
+    texto TEXT NOT NULL,
+    criado_em DATETIME NOT NULL,
+
+    FOREIGN KEY (fk_autor) REFERENCES usuario(id_usuario)
+        ON DELETE CASCADE
+);
+
+CREATE INDEX idx_post_criado_em ON post (criado_em DESC);
+
+CREATE TABLE post_comentario (
+    id_comentario INT AUTO_INCREMENT PRIMARY KEY,
+    fk_post INT NOT NULL,
+    fk_autor INT NOT NULL,
+    texto TEXT NOT NULL,
+    criado_em DATETIME NOT NULL,
+
+    FOREIGN KEY (fk_post) REFERENCES post(id_post)
+        ON DELETE CASCADE,
+    FOREIGN KEY (fk_autor) REFERENCES usuario(id_usuario)
+        ON DELETE CASCADE
+);
+
+-- Uma linha por (post, usuário): o total de curtidas é COUNT(*), nunca uma
+-- coluna incrementada — coluna desanda no primeiro clique duplo.
+CREATE TABLE post_curtida (
+    id_curtida INT AUTO_INCREMENT PRIMARY KEY,
+    fk_post INT NOT NULL,
+    fk_usuario INT NOT NULL,
+    criado_em DATETIME NOT NULL,
+
+    UNIQUE KEY uk_curtida_post_usuario (fk_post, fk_usuario),
+
+    FOREIGN KEY (fk_post) REFERENCES post(id_post)
+        ON DELETE CASCADE,
+    FOREIGN KEY (fk_usuario) REFERENCES usuario(id_usuario)
+        ON DELETE CASCADE
+);
+
+-- ---------------------------------------------------------------------------
+-- Mensagens diretas
+--
+-- A "conversa" é derivada do par (remetente, destinatário) na consulta —
+-- não existe tabela de conversa. Só faria sentido com grupos, que não há.
+-- ---------------------------------------------------------------------------
+CREATE TABLE mensagem (
+    id_mensagem INT AUTO_INCREMENT PRIMARY KEY,
+    fk_remetente INT NOT NULL,
+    fk_destinatario INT NOT NULL,
+    texto TEXT NOT NULL,
+    criado_em DATETIME NOT NULL,
+    lida_em DATETIME NULL,
+
+    FOREIGN KEY (fk_remetente) REFERENCES usuario(id_usuario)
+        ON DELETE CASCADE,
+    FOREIGN KEY (fk_destinatario) REFERENCES usuario(id_usuario)
+        ON DELETE CASCADE
+);
+
+CREATE INDEX idx_mensagem_remetente ON mensagem (fk_remetente, criado_em);
+CREATE INDEX idx_mensagem_destinatario ON mensagem (fk_destinatario, criado_em);

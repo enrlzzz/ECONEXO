@@ -367,3 +367,49 @@
         padding: 2rem;
     }
 }
+
+
+/* ===== estados vazios / erro dos projetos reais ===== */
+
+.project-erro {
+    margin: 1.6rem auto;
+    max-width: 90rem;
+    padding: 1.2rem 1.6rem;
+    border-radius: 12px;
+    background: #fdecec;
+    border: 1px solid #f3c2c2;
+    color: #a32020;
+    font-size: 1.35rem;
+    font-weight: 600;
+}
+
+.project-status {
+    text-align: center;
+    padding: 3rem 0;
+    font-size: 1.4rem;
+    color: var(--eco-ink-3, #6b7280);
+}
+
+.project-empty {
+    max-width: 90rem;
+    margin: 2rem auto;
+    padding: 4.5rem 2rem;
+
+    text-align: center;
+
+    background: var(--white);
+    border: 1px solid var(--eco-line, #e4e8ef);
+    border-radius: 16px;
+}
+
+.project-empty h3 {
+    font-size: 1.8rem;
+    color: var(--black);
+    margin-bottom: 0.8rem;
+}
+
+.project-empty p {
+    font-size: 1.4rem;
+    color: var(--eco-ink-3, #6b7280);
+    line-height: 1.6;
+}

@@ -962,3 +962,66 @@
         font-size: 1.15rem;
     }
 }
+
+
+/* ===== timeline real: erro, dica de perfil, excluir ===== */
+
+.eco-erro {
+    padding: 1.4rem 1.8rem;
+    color: #a32020;
+    background: #fdecec;
+    border: 1px solid #f3c2c2;
+    font-size: 1.35rem;
+    font-weight: 600;
+}
+
+.eco-perfil-dica {
+    font-size: 1.25rem;
+    color: var(--eco-ink-3, #6b7280);
+    line-height: 1.55;
+    text-align: center;
+    padding: 0 0.4rem;
+}
+
+.eco-filtros-nota {
+    display: flex;
+    gap: 0.6rem;
+    align-items: flex-start;
+
+    margin-top: 1.4rem;
+    font-size: 1.2rem;
+    line-height: 1.5;
+    color: var(--eco-ink-3, #6b7280);
+}
+
+.eco-filtros-nota svg {
+    flex-shrink: 0;
+    margin-top: 0.2rem;
+}
+
+.eco-post-excluir {
+    align-self: flex-start;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    width: 3.6rem;
+    height: 3.6rem;
+
+    background: transparent;
+    border: 1px solid var(--eco-line, #e4e8ef);
+    border-radius: 10px;
+
+    color: var(--eco-ink-3, #6b7280);
+    font-size: 1.6rem;
+
+    cursor: pointer;
+    transition: 0.15s ease;
+}
+
+.eco-post-excluir:hover {
+    color: #c12c2c;
+    border-color: #f3c2c2;
+    background: #fdecec;
+}

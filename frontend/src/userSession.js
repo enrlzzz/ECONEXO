@@ -69,9 +69,18 @@ export function persistUser(usuario) {
   localStorage.setItem("userEmail", usuario.email ?? "");
   localStorage.setItem("userCidade", usuario.cidade ?? "");
   localStorage.setItem("userEstado", usuario.estado ?? "");
-  localStorage.setItem("userRole", usuario.role ?? "Profissional");
+  // A API chama de tipoProfissional (INSTALADOR/PROJETISTA/TECNICO). Guardamos
+  // o código cru, não um rótulo: quem traduz para texto é format.js, num
+  // lugar só. Antes o padrão era "Profissional", o que fazia todo mundo
+  // aparecer como profissional mesmo sem ter informado nada.
+  localStorage.setItem("userRole", usuario.tipoProfissional ?? "");
   localStorage.setItem("userInitials", getInitials(usuario.nome));
   localStorage.setItem("userColor", colorFor(id || usuario.email || usuario.nome));
+
+  // Avisa a própria aba. O evento "storage" nativo do navegador só chega às
+  // OUTRAS abas, então sem isto o header continuava com o nome antigo depois
+  // de salvar o perfil.
+  window.dispatchEvent(new Event("econexo:sessao"));
 }
 
 export function getUser() {
@@ -84,7 +93,7 @@ export function getUser() {
     email: localStorage.getItem("userEmail") || "",
     cidade: localStorage.getItem("userCidade") || "",
     estado: localStorage.getItem("userEstado") || "",
-    role: localStorage.getItem("userRole") || "Profissional",
+    role: localStorage.getItem("userRole") || "",
     initials: localStorage.getItem("userInitials") || getInitials(nome),
     color: localStorage.getItem("userColor") || colorFor(id),
   };
@@ -112,4 +121,6 @@ export function logout() {
     "userInitials",
     "userColor",
   ].forEach((k) => localStorage.removeItem(k));
+
+  window.dispatchEvent(new Event("econexo:sessao"));
 }

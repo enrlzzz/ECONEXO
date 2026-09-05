@@ -43,6 +43,27 @@ public class Usuario {
     private LocalDate dataNascimento;
 
     /**
+     * Localização profissional. Não é dado sensível (não é endereço completo,
+     * é a praça de atuação) e é o que a busca por região usa para filtrar.
+     */
+    @Column(length = 100)
+    private String cidade;
+
+    @Column(length = 2)
+    private String estado;
+
+    /**
+     * O que a pessoa faz no setor: INSTALADOR, PROJETISTA, TECNICO ou
+     * NAO_INFORMADO. Existe porque a busca precisa distinguir quem instala de
+     * quem assina projeto — sem isso, "buscar instalador" devolve todo mundo.
+     *
+     * Guardado como String (e não enum do JPA) para que um valor novo no
+     * futuro não quebre a leitura das linhas já gravadas.
+     */
+    @Column(name = "tipo_profissional", length = 20)
+    private String tipoProfissional;
+
+    /**
      * Consentimento LGPD.
      *
      * A LGPD (Art. 8º, §2º) coloca o ônus da prova do consentimento no
@@ -143,6 +164,30 @@ public class Usuario {
 
     public void setDataNascimento(LocalDate dataNascimento) {
         this.dataNascimento = dataNascimento;
+    }
+
+    public String getCidade() {
+        return cidade;
+    }
+
+    public void setCidade(String cidade) {
+        this.cidade = cidade;
+    }
+
+    public String getEstado() {
+        return estado;
+    }
+
+    public void setEstado(String estado) {
+        this.estado = estado;
+    }
+
+    public String getTipoProfissional() {
+        return tipoProfissional;
+    }
+
+    public void setTipoProfissional(String tipoProfissional) {
+        this.tipoProfissional = tipoProfissional;
     }
 
     @JsonIgnore
