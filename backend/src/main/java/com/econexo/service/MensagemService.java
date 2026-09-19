@@ -25,11 +25,13 @@ public class MensagemService {
 
     private final MensagemRepository mensagemRepository;
     private final UsuarioRepository usuarioRepository;
+    private final NotificacaoService notificacaoService;
 
     public MensagemService(MensagemRepository mensagemRepository,
-                           UsuarioRepository usuarioRepository) {
+                           UsuarioRepository usuarioRepository, NotificacaoService notificacaoService) {
         this.mensagemRepository = mensagemRepository;
         this.usuarioRepository = usuarioRepository;
+        this.notificacaoService = notificacaoService;
     }
 
     /**
@@ -109,7 +111,9 @@ public class MensagemService {
         mensagem.setDestinatario(destinatario);
         mensagem.setTexto(req.texto().trim());
 
-        return MensagemResponse.de(mensagemRepository.save(mensagem));
+        Mensagem salva = mensagemRepository.save(mensagem);
+        notificacaoService.criar(destinatario.getIdUsuario(), idAutenticado, "MENSAGEM", remetente.getNome() + " enviou uma mensagem.", salva.getIdMensagem());
+        return MensagemResponse.de(salva);
     }
 
     /** Marca como lida só o que foi enviado PARA quem está chamando. */

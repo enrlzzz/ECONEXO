@@ -1,0 +1,3 @@
+package com.econexo.controller;
+import com.econexo.dto.NotificacaoResponse; import com.econexo.service.NotificacaoService; import org.springframework.web.bind.annotation.*; import org.springframework.security.core.annotation.AuthenticationPrincipal; import java.util.List;
+@RestController @RequestMapping("/api/notificacoes") public class NotificacaoController { private final NotificacaoService service; public NotificacaoController(NotificacaoService s){service=s;} @GetMapping public List<NotificacaoResponse> listar(@AuthenticationPrincipal Integer id){return service.listar(id);} @PostMapping("/lidas") public void lidas(@AuthenticationPrincipal Integer id){service.marcarLidas(id);} }

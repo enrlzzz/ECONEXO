@@ -12,8 +12,14 @@ import { IoIosCheckmarkCircle } from "react-icons/io";
 import { PiMedalFill } from "react-icons/pi";
 import { ImUsers } from "react-icons/im";
 import { IoIosSunny } from "react-icons/io";
+import { useState } from "react";
+import { api } from "../../services/api";
 
 export default function Main() {
+  const [conta, setConta] = useState("");
+  const [analise, setAnalise] = useState("");
+  const [analisando, setAnalisando] = useState(false);
+  async function analisarConta(event) { event.preventDefault(); setAnalisando(true); setAnalise(""); try { const resposta = await api.post("/economia/analisar", { conta }); setAnalise(resposta.analise); } catch (e) { setAnalise(e.message || "Não foi possível analisar a conta."); } finally { setAnalisando(false); } }
   return (
     <main className="landing-main">
       <section className="introduction">
@@ -30,6 +36,12 @@ export default function Main() {
             <button className="buttonStart">Comece Agora</button>
           </Link>
         </div>
+      </section>
+
+      <section className="economy-validator" id="validador-economia">
+        <div><span className="economy-kicker">Economia solar inteligente</span><h2>Entenda sua conta CPFL</h2><p>Cole os dados ou o texto da conta e receba uma leitura visual dos custos, da economia possível e do que pode ter encarecido o mês.</p></div>
+        <form onSubmit={analisarConta}><textarea value={conta} onChange={e => setConta(e.target.value)} placeholder="Cole aqui os dados da sua conta de energia CPFL…" required /><button type="submit" disabled={analisando}>{analisando ? "Analisando…" : "Analisar economia"}</button></form>
+        {analise && <div className="economy-result"><strong>Resultado da análise</strong><p>{analise}</p></div>}
       </section>
 
       <section id="operation">

@@ -30,15 +30,17 @@ public class PostService {
     private final PostComentarioRepository comentarioRepository;
     private final PostCurtidaRepository curtidaRepository;
     private final UsuarioRepository usuarioRepository;
+    private final NotificacaoService notificacaoService;
 
     public PostService(PostRepository postRepository,
                        PostComentarioRepository comentarioRepository,
                        PostCurtidaRepository curtidaRepository,
-                       UsuarioRepository usuarioRepository) {
+                       UsuarioRepository usuarioRepository, NotificacaoService notificacaoService) {
         this.postRepository = postRepository;
         this.comentarioRepository = comentarioRepository;
         this.curtidaRepository = curtidaRepository;
         this.usuarioRepository = usuarioRepository;
+        this.notificacaoService = notificacaoService;
     }
 
     /**
@@ -116,7 +118,8 @@ public class PostService {
                     PostCurtida nova = new PostCurtida();
                     nova.setPost(post);
                     nova.setUsuario(usuario);
-                    curtidaRepository.save(nova);
+                curtidaRepository.save(nova);
+                    notificacaoService.criar(post.getAutor().getIdUsuario(), idAutenticado, "CURTIDA", usuario.getNome() + " curtiu sua publicação.", idPost);
                 });
 
         return montarUm(post, idAutenticado);
@@ -131,7 +134,9 @@ public class PostService {
         comentario.setAutor(usuarioAutenticado(idAutenticado));
         comentario.setTexto(req.texto().trim());
 
-        return ComentarioResponse.de(comentarioRepository.save(comentario));
+        PostComentario salvo = comentarioRepository.save(comentario);
+        notificacaoService.criar(post.getAutor().getIdUsuario(), idAutenticado, "COMENTARIO", comentario.getAutor().getNome() + " comentou na sua publicação.", idPost);
+        return ComentarioResponse.de(salvo);
     }
 
     /** Só o autor apaga o próprio post. Curtidas e comentários vão junto. */
