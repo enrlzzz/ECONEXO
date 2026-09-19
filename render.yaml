@@ -18,6 +18,7 @@ services:
     branch: main
     # Deploy automático a cada push na main
     autoDeployTrigger: commit
+    healthCheckPath: /health
 
     envVars:
       - key: SPRING_PROFILES_ACTIVE
