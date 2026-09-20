@@ -167,12 +167,12 @@
 
 .eco-badge--ok {
     background: var(--eco-green-soft);
-    color: var(--eco-green);
+    color: var(--eco-green-ink);
 }
 
 .eco-badge--warn {
     background: var(--eco-amber-soft);
-    color: var(--eco-amber);
+    color: var(--eco-amber-ink);
 }
 
 .eco-badge--danger {

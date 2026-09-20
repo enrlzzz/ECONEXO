@@ -4,7 +4,6 @@ import "/src/variables.css";
 import { Link } from "react-router-dom";
 
 import { useState } from "react";
-import { useEffect } from "react";
 
 import { useUserData } from "../../../useUserData";
 
@@ -20,11 +19,11 @@ import { FaUserEdit } from "react-icons/fa";
 
 export default function MainInterface() {
   const { nome, cidade, estado } = useUserData();
-  const [totalProjetos, setTotalProjetos] = useState(0);
-
-  useEffect(() => {
-    setTotalProjetos(localStorage.getItem("totalProjetos") || 0);
-  }, []);
+  // Lazy init em vez de setState num efeito: evita a renderização em
+  // cascata (0 -> valor real) e o erro de lint react-hooks/set-state-in-effect.
+  const [totalProjetos] = useState(
+    () => localStorage.getItem("totalProjetos") || 0,
+  );
 
   return (
     <main className="main-interface">

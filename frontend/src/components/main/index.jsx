@@ -12,6 +12,7 @@ import { PiMedalFill } from "react-icons/pi";
 import { ImUsers } from "react-icons/im";
 
 import EconomiaAnalise from "./economia-analise";
+import fundoHero from "../../assets/hero-projeto-eletrico.jpg";
 
 /*
   As seções antes eram .steps1/.steps2/.steps3 e .point1..point6 — classes
@@ -84,6 +85,30 @@ export default function Main() {
     <main className="landing-main">
       {/* ============================ HERO ============================ */}
       <section className="hero">
+        {/*
+          Fundo do hero em duas camadas, nesta ordem:
+
+          1. .hero-fundo — a foto, com máscara que a dissolve no topo e na
+             base. É o que faz a imagem "terminar" no mesmo #0B0C1A da
+             página em vez de cortar numa borda reta.
+          2. .hero-veu — o véu de cor que derruba o contraste da foto para
+             o texto ficar legível e puxa o tom quente da madeira para o
+             azul da marca.
+
+          A imagem entra por <img>, não por background-image em CSS: assim
+          o Vite versiona o arquivo e o navegador pode priorizar o
+          carregamento (fetchpriority) do que aparece na primeira dobra.
+        */}
+        <div className="hero-fundo" aria-hidden="true">
+          <img
+            src={fundoHero}
+            alt=""
+            decoding="async"
+            fetchPriority="high"
+          />
+        </div>
+        <div className="hero-veu" aria-hidden="true" />
+
         {/* Light Rays (porte do Spell UI): é o que dá profundidade ao
             fundo chapado sem transformá-lo num gradiente. */}
         <div className="eco-rays" aria-hidden="true" />

@@ -53,11 +53,14 @@ export default function DrawerValidacao({ tipoInicial = "crea", aoFechar, aoConc
   const [arquivo, setArquivo] = useState(null);
   const [arrastando, setArrastando] = useState(false);
 
+  // Sem campo de CPF: a consulta pública do CREA funciona com nome e
+  // registro, e o CPF é dado sensível guardado cifrado (CLAUDE.md §2.11).
+  // Ele existia aqui como estado morto — nunca renderizado, nunca enviado —
+  // o que é justamente o tipo de coisa que alguém religa sem perceber.
   const [crea, setCrea] = useState({
     nome: usuario.nome || "",
     registro: "",
     uf: "SP",
-    cpf: "",
   });
 
   const [nr, setNr] = useState({
@@ -523,7 +526,14 @@ export default function DrawerValidacao({ tipoInicial = "crea", aoFechar, aoConc
           {passo === 3 && resultado && (
             <>
               <h3 className="vr-fluxo-titulo">Resultado da verificação</h3>
-              <p className="vr-fluxo-sub">A evidência foi registrada no seu perfil.</p>
+              {/* Era uma frase fixa: mesmo quando a consulta falhava, a tela
+                  dizia "a evidência foi registrada" ao lado de "Consulta
+                  inconclusiva". Afirmava um registro que não aconteceu. */}
+              <p className="vr-fluxo-sub">
+                {resultado.vinculado
+                  ? "A evidência foi registrada no seu perfil."
+                  : "Nada foi vinculado ao seu perfil ainda — veja o que faltou abaixo."}
+              </p>
 
               <div className={`vr-resultado${resultado.revisao ? " revisao" : ""}`}>
                 <div className="vr-resultado-cabecalho">

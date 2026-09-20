@@ -6,6 +6,10 @@ import { useEffect, useState } from "react";
 
 import { logout } from "../../../userSession";
 import PerfilMenu from "../../shared/perfil-menu";
+import {
+  useLogoAoTopo,
+  useRolagemNoTopoAoTrocarDeRota,
+} from "../../../scrollSuave";
 
 import { BsLightning } from "react-icons/bs";
 import { IoIosMenu } from "react-icons/io";
@@ -23,6 +27,11 @@ export default function HeaderInterface() {
   const navigate = useNavigate();
 
   const [menuOpen, setMenuOpen] = useState(false);
+
+  useRolagemNoTopoAoTrocarDeRota();
+  // Na area logada o logo aponta para a home social (/menu-user), nao para
+  // a landing publica: quem esta logado quase nunca quer sair do produto.
+  const aoClicarLogo = useLogoAoTopo("/menu-user");
 
   useEffect(() => {
     document.body.style.backgroundColor = "var(--whitesmoke)";
@@ -53,7 +62,12 @@ export default function HeaderInterface() {
         <div className="header-left-profile">
           <PerfilMenu ancora="esquerda" />
 
-          <Link to="/" className="logos-menu-interface" title="Ir para a home">
+          <Link
+            to="/menu-user"
+            className="logos-menu-interface"
+            onClick={aoClicarLogo}
+            title="Ir para o topo do inicio"
+          >
             <span className="logo-title-menu-interface">
               <BsLightning />
             </span>

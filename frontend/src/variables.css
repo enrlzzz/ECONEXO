@@ -62,15 +62,27 @@
     --eco-red: #c2453f;
     --eco-red-soft: #fdf1f1;
 
+    /* Versões escuras das semânticas, para TEXTO e ÍCONE sobre os fundos
+       -soft. Medido: --eco-green sobre --eco-green-soft dá 3,64:1 e
+       --eco-amber sobre --eco-amber-soft dá 2,44:1 — os dois reprovam no
+       mínimo de 4,5:1 do WCAG AA. As cores de cima continuam valendo para
+       preenchimento e borda, onde contraste de texto não se aplica. */
+    --eco-green-ink: #0a6b45; /* 5,79:1 sobre green-soft */
+    --eco-amber-ink: #8a6210; /* 5,10:1 sobre amber-soft */
+    --eco-solar-ink: #8a5a08; /* estrelas e destaques sobre branco */
+
     /* ---------------------------------------------------------------
        TEXTO E SUPERFÍCIE (tema claro — área logada)
        --------------------------------------------------------------- */
     --eco-ink: #12141c;
     --eco-ink-2: #3a3f4e;
     --eco-ink-3: #5f6675; /* era #6b7180 */
-    /* --eco-ink-4 era #9aa0ae: ~2.6:1 sobre branco, reprovado no WCAG AA
-       (mínimo 4.5:1). Escurecido para 4.6:1 mantendo a leitura de "fraco". */
-    --eco-ink-4: #767d8c;
+    /* --eco-ink-4 era #9aa0ae: 2,6:1 sobre branco, reprovado no WCAG AA.
+       A primeira correção para #767d8c ainda dava 4,13:1 — passava a
+       impressão de resolvido sem estar. Medido de novo: #686f7e dá 5,04:1
+       sobre branco, 4,79:1 sobre --eco-surface e 4,63:1 sobre --eco-bg,
+       ou seja, acima de 4,5:1 em todas as superfícies claras do projeto. */
+    --eco-ink-4: #686f7e;
 
     --eco-line: #e7e9f1;
     --eco-line-2: #eef0f6;

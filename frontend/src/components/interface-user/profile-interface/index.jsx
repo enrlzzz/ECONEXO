@@ -81,8 +81,12 @@ export default function Profile() {
                   <IoLocation />
                 </span>
                 <div>
+                  {/* Sem cidade/estado (acesso direto à rota, sem vir da
+                      busca), a interpolação virava ", " pendurado. */}
                   <h3>
-                    {cidade}, {estado}
+                    {cidade && estado
+                      ? `${cidade}, ${estado}`
+                      : cidade || estado || "Não informada"}
                   </h3>
                   <p>Localização</p>
                 </div>

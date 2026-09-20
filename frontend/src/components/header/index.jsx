@@ -5,6 +5,10 @@ import "/src/variables.css";
 import { BsLightning } from "react-icons/bs";
 
 import PerfilMenu from "../shared/perfil-menu";
+import {
+  useLogoAoTopo,
+  useRolagemNoTopoAoTrocarDeRota,
+} from "../../scrollSuave";
 
 /**
  * Header da home pública.
@@ -14,9 +18,17 @@ import PerfilMenu from "../shared/perfil-menu";
  * Antes esta lógica vivia aqui dentro e não existia em nenhuma outra página.
  */
 export default function Header() {
+  useRolagemNoTopoAoTrocarDeRota();
+  const aoClicarLogo = useLogoAoTopo("/");
+
   return (
     <header className="landing-header">
-      <Link to="/" className="logos" aria-label="Ir para a home do EcoNexo">
+      <Link
+        to="/"
+        className="logos"
+        onClick={aoClicarLogo}
+        aria-label="Ir para o topo da home do EcoNexo"
+      >
         <span className="logo-title">
           <BsLightning />
         </span>

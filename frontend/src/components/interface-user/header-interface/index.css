@@ -361,13 +361,21 @@
 
     padding: 10rem 2rem 2rem 2rem;
 
-    transition: 0.3s ease;
+    transition: right 0.3s ease, visibility 0.3s;
 
     box-shadow: -5px 0 20px rgba(0,0,0,0.1);
+
+    /* Fechado, o menu só saía de vista com `right: -100%` — continuava
+       visível para o navegador, e portanto focável. No desktop, tabular
+       pelo header jogava o foco em ~10 links a 2300px da esquerda, fora
+       da tela, em toda rota /menu-user/**. `visibility: hidden` tira do
+       fluxo de foco e, por ser animável, não quebra a transição. */
+    visibility: hidden;
 }
 
 .mobile-menu.open {
     right: 0;
+    visibility: visible;
 }
 
 .mobile-menu a {

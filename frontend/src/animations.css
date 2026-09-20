@@ -295,4 +295,13 @@
         animation-iteration-count: 1 !important;
         transition-duration: 0.001ms !important;
     }
+
+    /* Faltava aqui: o bloco zerava animação e transição, mas não a
+       rolagem. E `scroll-behavior: smooth` no html não é animação nem
+       transição — sobrevivia ao reduced-motion e continuava animando
+       tanto os links de âncora quanto todo scrollTo({behavior:'auto'}),
+       que por especificação delega o comportamento justamente ao CSS. */
+    html {
+        scroll-behavior: auto !important;
+    }
 }

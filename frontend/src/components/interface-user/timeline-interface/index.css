@@ -263,17 +263,12 @@
     margin-top: 1.2rem;
 }
 
-.eco-badge {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.4rem;
-    font-size: 1.1rem;
-    font-weight: 800;
-    color: var(--eco-green);
-    background: var(--eco-green-soft);
-    padding: 0.4rem 0.9rem;
-    border-radius: 999px;
-}
+/* Havia aqui um `.eco-badge` verde, sem nenhum uso no JSX desta tela —
+   CSS morto. Como este arquivo carrega depois de components.css, e o
+   seletor tem a mesma especificidade dos modificadores, ele vencia o
+   cascade e pintava de verde TODO badge do produto: `--info`, `--warn`,
+   `--muted`, em qualquer tela. Removido. Um nome genérico em CSS global
+   é exatamente o problema que o prefixo vr- evita nas telas novas. */
 
 .eco-perfil-stats {
     display: flex;

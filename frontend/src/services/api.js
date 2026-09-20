@@ -82,7 +82,18 @@ function mensagemDe(payload, response) {
     if (primeiro) return primeiro;
   }
   if (payload?.mensagem) return payload.mensagem;
-  return `Erro ${response.status}`;
+
+  // Sem corpo JSON não há mensagem da aplicação — é o proxy, o Render
+  // hibernando ou a rede. Antes isto virava a string "Erro 502" exibida
+  // literalmente em quatro telas, que não diz nada a quem está do outro
+  // lado. O status continua em err.status para quem precisa dele no código.
+  if (response.status >= 500) {
+    return "O servidor não respondeu. Tente de novo em alguns instantes.";
+  }
+  if (response.status === 404) {
+    return "Não encontramos o que você procurava.";
+  }
+  return "Não foi possível completar a ação agora. Tente de novo.";
 }
 
 export const api = {

@@ -30,14 +30,84 @@
     position: relative;
     isolation: isolate;
     width: 100%;
+    /* Alto o bastante para a foto de fundo respirar e ainda sobrar contraste
+       para o texto. min() com um teto em px impede que num monitor
+       ultrawide o hero vire uma parede de imagem. */
+    min-height: min(92vh, 900px);
     /* min(), não margin fixo: em telas baixas o hero encolhe em vez de
        empurrar o resto da página para fora da dobra. O header agora é
        sticky (não fixed), então não há altura de header para compensar. */
-    padding: min(14vh, var(--eco-sp-8)) var(--eco-sp-5) var(--eco-sp-8);
+    padding: min(12vh, var(--eco-sp-8)) var(--eco-sp-5) var(--eco-sp-8);
     display: flex;
+    align-items: center;
     justify-content: center;
     text-align: center;
-    border-bottom: 1px dashed var(--eco-dark-line);
+    /* Sem divisor: a imagem já se dissolve no fundo da página, e uma linha
+       tracejada aqui criaria justamente a borda que a máscara evita. */
+}
+
+/* ---------------------------------------------------------------------
+   FUNDO DO HERO
+
+   O "encontro" entre a foto e o fundo chapado é feito por máscara, não
+   por gradiente sobreposto: a imagem fica de fato transparente nas
+   pontas, então ela termina no #0B0C1A exato da página — em qualquer
+   tamanho de tela e sem depender de acertar a cor do gradiente.
+   --------------------------------------------------------------------- */
+.hero-fundo {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    overflow: hidden;
+    pointer-events: none;
+
+    --recorte: linear-gradient(
+        180deg,
+        transparent 0%,
+        rgba(0, 0, 0, 0.55) 14%,
+        #000 42%,
+        #000 62%,
+        transparent 100%
+    );
+    -webkit-mask-image: var(--recorte);
+    mask-image: var(--recorte);
+}
+
+.hero-fundo img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    /* A foto é quente (madeira/sépia) e a página é azul-fria. Dessaturar e
+       esfriar um pouco faz as duas parecerem a mesma cena em vez de duas
+       imagens coladas. */
+    filter: saturate(0.5) brightness(0.8) contrast(1.05) hue-rotate(-10deg);
+    opacity: 0.72;
+}
+
+/* Véu de cor: garante o contraste do texto e tinge o resto de azul. */
+.hero-veu {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    background:
+        /* Mancha escura sob o texto, clareando nas bordas onde não há
+           nada escrito: o contraste do título é garantido sem apagar a
+           planta elétrica nos cantos. */
+        radial-gradient(
+            85% 65% at 50% 50%,
+            rgba(11, 12, 26, 0.82) 0%,
+            rgba(11, 12, 26, 0.55) 55%,
+            rgba(11, 12, 26, 0.2) 100%
+        ),
+        /* Tingimento azul + fechamento nas pontas. */
+        linear-gradient(
+            180deg,
+            var(--eco-dark-bg) 0%,
+            rgba(11, 12, 26, 0.45) 26%,
+            rgba(11, 12, 26, 0.45) 70%,
+            var(--eco-dark-bg) 100%
+        );
 }
 
 .hero-conteudo {
@@ -231,7 +301,37 @@
 
 @media (max-width: 640px) {
     .hero {
-        padding: var(--eco-sp-6) var(--eco-sp-4);
+        /* No telefone o teto de 92vh empurraria todo o resto para baixo da
+           dobra sem ganho nenhum: a foto vira uma faixa, nao um cenario. */
+        min-height: 68vh;
+        padding: var(--eco-sp-7) var(--eco-sp-4);
+    }
+
+    /* Num viewport estreito o raio de 85% do véu cobria a tela inteira e
+       apagava a foto: sobrava uma textura fantasma, e o usuário de celular
+       baixava 433 kB de imagem para não ver quase nada. Aqui o escurecido
+       encolhe para caber só atrás do texto e a foto ganha presença nas
+       bordas — o contraste do título fica preservado porque a mancha
+       central continua na mesma opacidade. */
+    .hero-veu {
+        background:
+            radial-gradient(
+                62% 42% at 50% 50%,
+                rgba(11, 12, 26, 0.86) 0%,
+                rgba(11, 12, 26, 0.6) 60%,
+                rgba(11, 12, 26, 0.12) 100%
+            ),
+            linear-gradient(
+                180deg,
+                var(--eco-dark-bg) 0%,
+                rgba(11, 12, 26, 0.32) 22%,
+                rgba(11, 12, 26, 0.32) 74%,
+                var(--eco-dark-bg) 100%
+            );
+    }
+
+    .hero-fundo img {
+        opacity: 0.85;
     }
 
     .hero h1 {

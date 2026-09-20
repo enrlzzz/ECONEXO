@@ -1,6 +1,7 @@
 import "./index.css";
 
 import { useEffect, useRef, useState } from "react";
+import { Link } from "react-router-dom";
 import { FiFileText, FiTrash2, FiUploadCloud } from "react-icons/fi";
 import { FiAlertTriangle, FiCheck, FiLock } from "react-icons/fi";
 
@@ -323,9 +324,11 @@ export default function EconomiaAnalise() {
               EcoNexo. Seus PDFs continuam no seu navegador — só o texto
               extraído é enviado.
             </p>
-            <a className="eco-btn eco-btn--outline-dark" href="/login">
+            {/* Link, não <a>: SPA inteira usa navegação client-side — um
+                <a> aqui recarregaria a página à toa. */}
+            <Link className="eco-btn eco-btn--outline-dark" to="/login">
               Entrar
-            </a>
+            </Link>
           </div>
         </div>
       )}

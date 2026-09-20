@@ -280,7 +280,9 @@
 
 .economia-etapas li.concluida .economia-etapa-marca {
     background: rgba(14, 143, 90, 0.2);
-    color: #56d9a3;
+    /* Fundo escuro aqui, então o verde CLARO é o que dá contraste —
+       o oposto do que vale nas telas claras. */
+    color: #6fe0b1;
 }
 
 .economia-etapas strong {

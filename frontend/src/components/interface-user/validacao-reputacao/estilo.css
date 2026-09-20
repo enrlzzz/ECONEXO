@@ -19,6 +19,10 @@
 .vr-pagina {
     min-height: 100vh;
     background: var(--eco-bg);
+    /* .header-interface é position:fixed (10rem de altura) — sem essa
+       folga as abas de módulo nasciam por baixo do header, cortadas.
+       Mesma convenção usada em main-interface, project-interface etc. */
+    padding-top: 10rem;
 }
 
 /* ---------------------------------------------------------------------
@@ -106,6 +110,12 @@
 .vr-perfil-corpo {
     padding: 0 1.6rem 1.8rem;
     position: relative;
+    /* Sem padding-top/border-top aqui, o margin-top do <h3> (primeiro
+       filho no fluxo, já que o avatar é position:absolute) colapsava com
+       a margem do pai e "vazava" para fora do card — o nome nascia colado
+       no topo, embaixo do avatar. flow-root cria um novo bloco de
+       formatação e contém a margem onde ela deveria ficar. */
+    display: flow-root;
 }
 
 .vr-avatar {
@@ -317,14 +327,17 @@
     color: var(--eco-blue-600);
 }
 
+/* -ink em vez das cores cheias: aqui a cor é o "10"/"35" escrito dentro
+   do quadrado, ou seja, texto — e sobre o fundo -soft as cores cheias
+   davam 3,64:1 e 2,44:1, abaixo do mínimo de 4,5:1. */
 .vr-cred-icone.nr10 {
     background: var(--eco-green-soft);
-    color: var(--eco-green);
+    color: var(--eco-green-ink);
 }
 
 .vr-cred-icone.nr35 {
     background: var(--eco-amber-soft);
-    color: var(--eco-amber);
+    color: var(--eco-amber-ink);
 }
 
 .vr-cred-principal {
@@ -429,7 +442,7 @@
 
 .vr-ponto.ok {
     background: var(--eco-green-soft);
-    color: var(--eco-green);
+    color: var(--eco-green-ink);
 }
 
 .vr-trilha-copy strong {
@@ -697,8 +710,10 @@
     font-size: var(--eco-text-xs);
 }
 
+/* As estrelas carregam a nota, não são enfeite: --eco-solar-500 sobre
+   branco dá 2,47:1, abaixo até do mínimo de 3:1 para elemento gráfico. */
 .vr-estrelas {
-    color: var(--eco-solar-500);
+    color: var(--eco-solar-ink);
     font-size: var(--eco-text-base);
     letter-spacing: 0.05em;
     white-space: nowrap;
@@ -836,12 +851,12 @@
 }
 
 .vr-passo.concluido {
-    color: var(--eco-green);
+    color: var(--eco-green-ink);
 }
 
 .vr-passo.concluido i {
     background: var(--eco-green-soft);
-    color: var(--eco-green);
+    color: var(--eco-green-ink);
 }
 
 .vr-drawer-corpo {
@@ -906,12 +921,12 @@
 
 .vr-tipo-icone.nr10 {
     background: var(--eco-green-soft);
-    color: var(--eco-green);
+    color: var(--eco-green-ink);
 }
 
 .vr-tipo-icone.nr35 {
     background: var(--eco-amber-soft);
-    color: var(--eco-amber);
+    color: var(--eco-amber-ink);
 }
 
 .vr-tipo strong {
@@ -1050,12 +1065,12 @@
 
 .vr-check.ok .vr-check-ponto {
     background: var(--eco-green-soft);
-    color: var(--eco-green);
+    color: var(--eco-green-ink);
 }
 
 .vr-check.atencao .vr-check-ponto {
     background: var(--eco-amber-soft);
-    color: var(--eco-amber);
+    color: var(--eco-amber-ink);
 }
 
 .vr-check strong {
@@ -1094,7 +1109,7 @@
     height: 40px;
     border-radius: 14px;
     background: var(--eco-green-soft);
-    color: var(--eco-green);
+    color: var(--eco-green-ink);
     display: grid;
     place-items: center;
     flex: 0 0 auto;
@@ -1103,7 +1118,7 @@
 
 .vr-resultado.revisao .vr-resultado-icone {
     background: var(--eco-amber-soft);
-    color: var(--eco-amber);
+    color: var(--eco-amber-ink);
 }
 
 .vr-resultado-cabecalho strong {

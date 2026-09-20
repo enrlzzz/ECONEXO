@@ -17,19 +17,20 @@ export default function PortfolioInterface() {
     foto: "",
   });
 
-  const [projetos, setProjetos] = useState([]);
-
-  /* =========================
-     CARREGAR LOCAL STORAGE
-  ========================= */
-
-  useEffect(() => {
+  // Lazy init em vez de setState num efeito: evita a renderização em
+  // cascata ([] -> dados salvos) e o erro de lint react-hooks/set-state-in-effect.
+  const [projetos, setProjetos] = useState(() => {
     const dados = localStorage.getItem("portfolio");
 
-    if (dados) {
-      setProjetos(JSON.parse(dados));
+    if (!dados) return [];
+
+    try {
+      return JSON.parse(dados);
+    } catch {
+      // JSON corrompido não deve derrubar a tela inteira.
+      return [];
     }
-  }, []);
+  });
 
   /* =========================
      SALVAR LOCAL STORAGE
