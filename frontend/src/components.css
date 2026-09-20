@@ -1,0 +1,473 @@
+/* =====================================================================
+   ECONEXO — Camada de componentes compartilhados
+   ---------------------------------------------------------------------
+   Antes desta camada existia UM componente compartilhado (perfil-menu) e
+   8.145 linhas de CSS para ~18 telas: botão, card, selo, campo e modal
+   estavam reimplementados em cada index.css.
+
+   Os padrões de movimento aqui são portes em CSS puro dos componentes do
+   Spell UI (spell.sh): Pop Button, Rich Button, Shimmer Text, Blur
+   Reveal, Words Stagger, Gradient Wave, Light Rays, Tilt Card, Spinner e
+   Bars Spinner.
+
+   Por que porte e não a biblioteca: Spell UI é React + Tailwind + motion,
+   e o ECONEXO é CSS puro. Instalar o stack para usar oito efeitos
+   significaria Tailwind + PostCSS + motion e todas as transitivas — o
+   oposto do piso de CVEs do CLAUDE.md. Efeito idêntico, zero dependência.
+   ===================================================================== */
+
+/* ---------------------------------------------------------------------
+   BOTÃO
+   --------------------------------------------------------------------- */
+.eco-btn {
+    border: 1px solid transparent;
+    border-radius: var(--eco-r-pill);
+    padding: 1.1rem 1.8rem;
+    font-size: var(--eco-text-base);
+    font-weight: 700;
+    line-height: 1;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.8rem;
+    transition: background 0.18s var(--eco-ease),
+        border-color 0.18s var(--eco-ease), color 0.18s var(--eco-ease),
+        transform 0.12s var(--eco-ease), box-shadow 0.18s var(--eco-ease);
+}
+
+/* Pop Button: a compressão no :active é o que dá a sensação física.
+   Sem ela o botão "acende" mas não parece ter sido apertado. */
+.eco-btn:active:not(:disabled) {
+    transform: scale(0.965);
+}
+
+.eco-btn:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+}
+
+.eco-btn--primary {
+    background: var(--eco-blue-600);
+    color: #fff;
+}
+
+.eco-btn--primary:hover:not(:disabled) {
+    background: var(--eco-blue-700);
+}
+
+.eco-btn--light {
+    background: var(--eco-surface);
+    border-color: var(--eco-line);
+    color: var(--eco-ink-2);
+}
+
+.eco-btn--light:hover:not(:disabled) {
+    background: var(--eco-bg-2);
+}
+
+.eco-btn--ghost {
+    background: transparent;
+    border-color: var(--eco-line);
+    color: var(--eco-ink-2);
+}
+
+.eco-btn--ghost:hover:not(:disabled) {
+    background: var(--eco-blue-50);
+    border-color: var(--eco-blue-200);
+    color: var(--eco-blue-700);
+}
+
+/* Variantes para a home escura. */
+.eco-btn--on-dark {
+    background: var(--eco-dark-accent);
+    color: #fff;
+}
+
+.eco-btn--on-dark:hover:not(:disabled) {
+    background: var(--eco-blue-400);
+}
+
+.eco-btn--outline-dark {
+    background: transparent;
+    border-color: var(--eco-dark-line);
+    color: var(--eco-dark-ink);
+}
+
+.eco-btn--outline-dark:hover:not(:disabled) {
+    border-color: var(--eco-dark-accent);
+    background: var(--eco-dark-accent-soft);
+}
+
+/* Rich Button: brilho que atravessa a superfície no hover. Puro
+   ::after com translate — nada de JS nem de biblioteca de animação. */
+.eco-btn--rich {
+    position: relative;
+    overflow: hidden;
+    isolation: isolate;
+}
+
+.eco-btn--rich::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+        110deg,
+        transparent 25%,
+        rgba(255, 255, 255, 0.34) 48%,
+        transparent 72%
+    );
+    transform: translateX(-120%);
+    transition: transform 0.65s var(--eco-ease);
+    pointer-events: none;
+}
+
+.eco-btn--rich:hover::after {
+    transform: translateX(120%);
+}
+
+/* ---------------------------------------------------------------------
+   CARD / SUPERFÍCIE
+   --------------------------------------------------------------------- */
+.eco-card {
+    background: var(--eco-card);
+    border: 1px solid var(--eco-line);
+    border-radius: var(--eco-r-lg);
+    box-shadow: var(--eco-shadow-sm);
+}
+
+.eco-card--flat {
+    box-shadow: none;
+}
+
+/* Tilt Card: inclina para o cursor. A inclinação vem de duas custom
+   properties que o JS atualiza; sem JS o card fica simplesmente reto. */
+.eco-tilt {
+    --tilt-x: 0deg;
+    --tilt-y: 0deg;
+    transform: perspective(900px) rotateX(var(--tilt-x)) rotateY(var(--tilt-y));
+    transition: transform 0.25s var(--eco-ease);
+    will-change: transform;
+}
+
+/* ---------------------------------------------------------------------
+   SELO E CHIP
+   --------------------------------------------------------------------- */
+.eco-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.4rem 0.8rem;
+    border-radius: var(--eco-r-pill);
+    font-size: 0.9rem;
+    font-weight: 900;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    white-space: nowrap;
+}
+
+.eco-badge--ok {
+    background: var(--eco-green-soft);
+    color: var(--eco-green);
+}
+
+.eco-badge--warn {
+    background: var(--eco-amber-soft);
+    color: var(--eco-amber);
+}
+
+.eco-badge--danger {
+    background: var(--eco-red-soft);
+    color: var(--eco-red);
+}
+
+.eco-badge--info {
+    background: var(--eco-blue-50);
+    color: var(--eco-blue-600);
+}
+
+.eco-badge--muted {
+    background: #f0f2f7;
+    color: var(--eco-ink-3);
+}
+
+.eco-chip {
+    padding: 0.9rem 1.2rem;
+    border-radius: var(--eco-r-pill);
+    background: var(--eco-surface);
+    border: 1px solid var(--eco-line);
+    font-size: var(--eco-text-xs);
+    font-weight: 800;
+    color: var(--eco-ink-2);
+}
+
+/* ---------------------------------------------------------------------
+   CAMPO DE FORMULÁRIO
+   --------------------------------------------------------------------- */
+.eco-field {
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+}
+
+.eco-field > label {
+    font-size: var(--eco-text-xs);
+    font-weight: 800;
+    color: var(--eco-ink-2);
+}
+
+.eco-field input,
+.eco-field select,
+.eco-field textarea {
+    border: 1px solid #dfe3ec;
+    border-radius: 12px;
+    padding: 1.1rem 1.2rem;
+    background: #fff;
+    font-size: var(--eco-text-base);
+    outline: none;
+    transition: border-color 0.16s var(--eco-ease),
+        box-shadow 0.16s var(--eco-ease);
+}
+
+.eco-field input:focus,
+.eco-field select:focus,
+.eco-field textarea:focus {
+    border-color: var(--eco-blue-400);
+    box-shadow: var(--eco-ring);
+}
+
+/* ---------------------------------------------------------------------
+   ESTADOS DE CARREGAMENTO
+   O projeto não tinha nenhum: zero skeletons, e "carregando" era a
+   palavra trocando dentro do label de um botão.
+   --------------------------------------------------------------------- */
+
+/* Skeleton com o shimmer do Spell UI. */
+.eco-skeleton {
+    position: relative;
+    overflow: hidden;
+    border-radius: var(--eco-r-sm);
+    background: var(--eco-bg-2);
+}
+
+.eco-skeleton::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+        90deg,
+        transparent,
+        rgba(255, 255, 255, 0.72),
+        transparent
+    );
+    transform: translateX(-100%);
+    animation: eco-shimmer 1.4s infinite;
+}
+
+.eco-skeleton--text {
+    height: 1.2rem;
+    margin-block: 0.5rem;
+}
+
+/* Barra de progresso. Com --valor definido é determinada; sem ele,
+   a classe --indeterminada mostra um pulso que percorre a trilha. */
+.eco-progress {
+    height: 8px;
+    border-radius: var(--eco-r-pill);
+    background: var(--eco-bg-2);
+    overflow: hidden;
+}
+
+.eco-progress > span {
+    display: block;
+    height: 100%;
+    width: var(--valor, 0%);
+    border-radius: inherit;
+    background: linear-gradient(
+        90deg,
+        var(--eco-blue-600),
+        var(--eco-blue-500)
+    );
+    transition: width 0.45s var(--eco-ease);
+}
+
+.eco-progress--indeterminada > span {
+    width: 38%;
+    animation: eco-progress-slide 1.15s ease-in-out infinite;
+}
+
+.eco-spinner {
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    border: 4px solid var(--eco-line);
+    border-top-color: var(--eco-blue-600);
+    animation: eco-spin 1s linear infinite;
+    flex: 0 0 auto;
+}
+
+.eco-spinner--sm {
+    width: 18px;
+    height: 18px;
+    border-width: 2px;
+}
+
+/* Bars Spinner: oito hastes girando por opacidade, não por rotação. */
+.eco-bars {
+    position: relative;
+    width: 20px;
+    height: 20px;
+    flex: 0 0 auto;
+}
+
+.eco-bars > i {
+    position: absolute;
+    left: 45%;
+    top: 4%;
+    width: 10%;
+    height: 28%;
+    border-radius: var(--eco-r-pill);
+    background: currentColor;
+    transform-origin: center 168%;
+    animation: eco-bars-fade 1s linear infinite;
+}
+
+.eco-bars > i:nth-child(1) { transform: rotate(0deg);   animation-delay: -0.875s; }
+.eco-bars > i:nth-child(2) { transform: rotate(45deg);  animation-delay: -0.75s; }
+.eco-bars > i:nth-child(3) { transform: rotate(90deg);  animation-delay: -0.625s; }
+.eco-bars > i:nth-child(4) { transform: rotate(135deg); animation-delay: -0.5s; }
+.eco-bars > i:nth-child(5) { transform: rotate(180deg); animation-delay: -0.375s; }
+.eco-bars > i:nth-child(6) { transform: rotate(225deg); animation-delay: -0.25s; }
+.eco-bars > i:nth-child(7) { transform: rotate(270deg); animation-delay: -0.125s; }
+.eco-bars > i:nth-child(8) { transform: rotate(315deg); animation-delay: 0s; }
+
+/* ---------------------------------------------------------------------
+   TEXTO ANIMADO
+   --------------------------------------------------------------------- */
+
+/* Shimmer Text: o brilho que percorre a palavra. */
+.eco-shimmer-text {
+    background: linear-gradient(
+            90deg,
+            var(--shimmer-base, var(--eco-ink-3)) 0%,
+            var(--shimmer-base, var(--eco-ink-3)) 40%,
+            var(--shimmer-glow, var(--eco-ink)) 50%,
+            var(--shimmer-base, var(--eco-ink-3)) 60%,
+            var(--shimmer-base, var(--eco-ink-3)) 100%
+        )
+        0 0 / 220% 100%;
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    animation: eco-shimmer-sweep 2.6s linear infinite;
+}
+
+/* Gradient Wave Text: gradiente que desliza pela palavra. */
+.eco-gradient-text {
+    background: linear-gradient(
+            100deg,
+            var(--eco-blue-400),
+            var(--eco-sky),
+            var(--eco-solar-300),
+            var(--eco-blue-400)
+        )
+        0 0 / 280% 100%;
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    animation: eco-gradient-wave 9s linear infinite;
+}
+
+/* Blur Reveal: entra desfocado e se resolve. */
+.eco-blur-reveal {
+    animation: eco-blur-in 0.75s var(--eco-ease) both;
+}
+
+/* Words Stagger: cada filho entra um pouco depois do anterior.
+   O atraso é calculado por --i, que o JSX passa inline. */
+.eco-stagger > * {
+    animation: eco-fade-up 0.6s var(--eco-ease) both;
+    animation-delay: calc(var(--i, 0) * 70ms);
+}
+
+/* ---------------------------------------------------------------------
+   LIGHT RAYS — feixes de luz saindo do topo.
+   Dois cones cônicos sobrepostos, girando muito devagar. É o que dá
+   profundidade ao fundo chapado da home escura sem virar gradiente.
+   --------------------------------------------------------------------- */
+.eco-rays {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+    pointer-events: none;
+    z-index: 0;
+}
+
+.eco-rays::before,
+.eco-rays::after {
+    content: "";
+    position: absolute;
+    left: 50%;
+    top: -55%;
+    width: 130vmax;
+    height: 130vmax;
+    translate: -50% 0;
+    background: conic-gradient(
+        from 180deg at 50% 0%,
+        transparent 0deg,
+        var(--eco-dark-accent-soft) 12deg,
+        transparent 26deg,
+        transparent 334deg,
+        var(--eco-dark-accent-soft) 348deg,
+        transparent 360deg
+    );
+    filter: blur(28px);
+    opacity: 0.9;
+    animation: eco-rays-drift 26s ease-in-out infinite alternate;
+}
+
+.eco-rays::after {
+    background: conic-gradient(
+        from 180deg at 50% 0%,
+        transparent 0deg,
+        rgba(216, 234, 250, 0.1) 18deg,
+        transparent 38deg
+    );
+    animation-duration: 34s;
+    animation-direction: alternate-reverse;
+}
+
+/* ---------------------------------------------------------------------
+   DROPZONE
+   --------------------------------------------------------------------- */
+.eco-dropzone {
+    border: 1.6px dashed #cfd5e4;
+    border-radius: var(--eco-r);
+    background: #fbfcff;
+    padding: 1.8rem;
+    text-align: center;
+    transition: border-color 0.16s var(--eco-ease),
+        background 0.16s var(--eco-ease);
+}
+
+.eco-dropzone--drag {
+    border-color: var(--eco-blue-600);
+    background: var(--eco-blue-50);
+}
+
+/* ---------------------------------------------------------------------
+   UTILITÁRIOS
+   --------------------------------------------------------------------- */
+
+/* Visível só para leitor de tela. Usado em rótulo de botão-ícone e em
+   região "live" de progresso. */
+.eco-sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+    border: 0;
+}

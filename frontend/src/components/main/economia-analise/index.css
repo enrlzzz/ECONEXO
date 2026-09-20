@@ -1,0 +1,430 @@
+/* =====================================================================
+   Validador de economia — vive na home, logo em tema escuro.
+   ===================================================================== */
+
+.economia {
+    width: min(var(--eco-maxw), 100%);
+    margin-inline: auto;
+    padding: var(--eco-sp-7) var(--eco-sp-5);
+    display: flex;
+    flex-direction: column;
+    gap: var(--eco-sp-5);
+    position: relative;
+    z-index: 1;
+}
+
+.economia-cabecalho {
+    display: flex;
+    flex-direction: column;
+    gap: var(--eco-sp-3);
+    max-width: 62ch;
+}
+
+.economia-kicker {
+    align-self: flex-start;
+    padding: 0.6rem 1.2rem;
+    border-radius: var(--eco-r-pill);
+    border: 1px solid var(--eco-dark-line);
+    background: var(--eco-dark-accent-soft);
+    color: var(--eco-blue-300);
+    font-size: var(--eco-text-xs);
+    font-weight: 800;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+}
+
+.economia-cabecalho h2 {
+    font-size: var(--eco-text-xl);
+    font-weight: 800;
+    line-height: var(--eco-leading-snug);
+    letter-spacing: -0.02em;
+    color: var(--eco-dark-ink);
+}
+
+.economia-cabecalho p {
+    font-size: var(--eco-text-md);
+    line-height: var(--eco-leading);
+    color: var(--eco-dark-ink-2);
+}
+
+/* ---------------------------------------------------------------------
+   FORMULÁRIO
+   --------------------------------------------------------------------- */
+.economia-form {
+    background: var(--eco-dark-surface);
+    border: 1px solid var(--eco-dark-line);
+    border-radius: var(--eco-r-lg);
+    padding: var(--eco-sp-5);
+    display: flex;
+    flex-direction: column;
+    gap: var(--eco-sp-4);
+}
+
+/* Reescreve .eco-dropzone (que é clara) para o fundo escuro. */
+.economia-dropzone.eco-dropzone {
+    border-color: var(--eco-dark-line);
+    background: var(--eco-dark-surface-2);
+    padding: var(--eco-sp-6) var(--eco-sp-4);
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--eco-sp-2);
+}
+
+.economia-dropzone.eco-dropzone:hover,
+.economia-dropzone.eco-dropzone--drag {
+    border-color: var(--eco-dark-accent);
+    background: var(--eco-dark-accent-soft);
+}
+
+.economia-upload-icone {
+    width: 48px;
+    height: 48px;
+    border-radius: 14px;
+    display: grid;
+    place-items: center;
+    background: var(--eco-dark-accent-soft);
+    color: var(--eco-blue-300);
+    font-size: 2.2rem;
+}
+
+.economia-dropzone strong {
+    font-size: var(--eco-text-base);
+    font-weight: 700;
+    color: var(--eco-dark-ink);
+}
+
+.economia-dropzone-dica {
+    font-size: var(--eco-text-sm);
+    color: var(--eco-dark-ink-3);
+}
+
+/* ---------------------------------------------------------------------
+   LISTA DE ARQUIVOS
+   --------------------------------------------------------------------- */
+.economia-lista {
+    list-style: none;
+    display: grid;
+    gap: var(--eco-sp-2);
+}
+
+.economia-item {
+    display: grid;
+    grid-template-columns: 38px 1fr auto;
+    align-items: center;
+    gap: var(--eco-sp-3);
+    padding: var(--eco-sp-3);
+    border: 1px solid var(--eco-dark-line);
+    border-radius: var(--eco-r);
+    background: var(--eco-dark-surface-2);
+    animation: eco-fade-up 0.3s var(--eco-ease) both;
+}
+
+.economia-item-icone {
+    width: 38px;
+    height: 38px;
+    border-radius: 12px;
+    display: grid;
+    place-items: center;
+    background: var(--eco-dark-accent-soft);
+    color: var(--eco-blue-300);
+    font-size: 1.7rem;
+}
+
+.economia-item-texto {
+    min-width: 0;
+}
+
+.economia-item-texto strong {
+    display: block;
+    font-size: var(--eco-text-base);
+    font-weight: 600;
+    color: var(--eco-dark-ink);
+    /* Nome de PDF de conta é longo; truncar evita quebrar o grid. */
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.economia-item-texto span {
+    font-size: var(--eco-text-sm);
+    color: var(--eco-dark-ink-3);
+}
+
+.economia-remover {
+    width: 38px;
+    height: 38px;
+    border-radius: 12px;
+    border: 1px solid var(--eco-dark-line);
+    background: transparent;
+    color: var(--eco-dark-ink-3);
+    display: grid;
+    place-items: center;
+    font-size: 1.6rem;
+    transition: color 0.16s var(--eco-ease), border-color 0.16s var(--eco-ease);
+}
+
+.economia-remover:hover:not(:disabled) {
+    color: #ff9c9c;
+    border-color: #6b3438;
+}
+
+.economia-remover:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
+/* ---------------------------------------------------------------------
+   RODAPÉ DO FORM
+   --------------------------------------------------------------------- */
+.economia-rodape {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--eco-sp-3);
+    flex-wrap: wrap;
+}
+
+.economia-contador {
+    font-size: var(--eco-text-sm);
+    font-weight: 600;
+    color: var(--eco-dark-ink-3);
+}
+
+.economia-contador em {
+    font-style: normal;
+    color: var(--eco-solar-300);
+}
+
+/* ---------------------------------------------------------------------
+   PROGRESSO
+   --------------------------------------------------------------------- */
+.economia-progresso {
+    background: var(--eco-dark-surface);
+    border: 1px solid var(--eco-dark-line);
+    border-radius: var(--eco-r-lg);
+    padding: var(--eco-sp-5);
+    display: flex;
+    flex-direction: column;
+    gap: var(--eco-sp-4);
+    animation: eco-fade-up 0.35s var(--eco-ease) both;
+}
+
+.economia-progresso-topo {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: var(--eco-sp-3);
+}
+
+.economia-progresso-topo strong {
+    font-size: var(--eco-text-md);
+    font-weight: 700;
+    color: var(--eco-dark-ink);
+}
+
+.economia-progresso-topo span {
+    font-size: var(--eco-text-base);
+    font-weight: 800;
+    color: var(--eco-blue-300);
+    font-variant-numeric: tabular-nums;
+}
+
+.economia-progresso .eco-progress {
+    background: var(--eco-dark-surface-2);
+}
+
+.economia-etapas {
+    list-style: none;
+    display: grid;
+    gap: var(--eco-sp-2);
+}
+
+.economia-etapas li {
+    display: grid;
+    grid-template-columns: 26px 1fr;
+    gap: var(--eco-sp-3);
+    align-items: center;
+    padding: var(--eco-sp-2) var(--eco-sp-3);
+    border-radius: var(--eco-r-sm);
+    opacity: 0.45;
+    transition: opacity 0.3s var(--eco-ease), background 0.3s var(--eco-ease);
+}
+
+.economia-etapas li.atual {
+    opacity: 1;
+    background: var(--eco-dark-accent-soft);
+}
+
+.economia-etapas li.concluida {
+    opacity: 0.85;
+}
+
+.economia-etapa-marca {
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    display: grid;
+    place-items: center;
+    background: var(--eco-dark-surface-2);
+    color: var(--eco-dark-ink-3);
+    font-size: var(--eco-text-xs);
+    font-weight: 900;
+}
+
+.economia-etapas li.atual .economia-etapa-marca {
+    background: var(--eco-dark-accent);
+    color: #fff;
+}
+
+.economia-etapas li.concluida .economia-etapa-marca {
+    background: rgba(14, 143, 90, 0.2);
+    color: #56d9a3;
+}
+
+.economia-etapas strong {
+    display: block;
+    font-size: var(--eco-text-base);
+    font-weight: 600;
+    color: var(--eco-dark-ink);
+}
+
+.economia-etapas span {
+    font-size: var(--eco-text-sm);
+    color: var(--eco-dark-ink-3);
+}
+
+/* Prévia do formato da resposta enquanto ela não chega. */
+.economia-esqueleto .eco-skeleton {
+    background: var(--eco-dark-surface-2);
+}
+
+.economia-esqueleto .eco-skeleton::after {
+    background: linear-gradient(
+        90deg,
+        transparent,
+        rgba(255, 255, 255, 0.07),
+        transparent
+    );
+}
+
+/* ---------------------------------------------------------------------
+   AVISOS
+   --------------------------------------------------------------------- */
+.economia-aviso {
+    display: grid;
+    grid-template-columns: 40px 1fr;
+    gap: var(--eco-sp-3);
+    padding: var(--eco-sp-4);
+    border-radius: var(--eco-r-lg);
+    border: 1px solid var(--eco-dark-line);
+    background: var(--eco-dark-surface);
+    animation: eco-fade-up 0.3s var(--eco-ease) both;
+}
+
+.economia-aviso > span {
+    width: 40px;
+    height: 40px;
+    border-radius: 13px;
+    display: grid;
+    place-items: center;
+    font-size: 1.9rem;
+}
+
+.economia-aviso--erro {
+    border-color: #6b3438;
+}
+
+.economia-aviso--erro > span {
+    background: rgba(194, 69, 63, 0.18);
+    color: #ff9c9c;
+}
+
+.economia-aviso--login > span {
+    background: var(--eco-dark-accent-soft);
+    color: var(--eco-blue-300);
+}
+
+.economia-aviso strong {
+    display: block;
+    font-size: var(--eco-text-md);
+    font-weight: 700;
+    color: var(--eco-dark-ink);
+}
+
+.economia-aviso p {
+    margin-top: 0.4rem;
+    font-size: var(--eco-text-base);
+    line-height: var(--eco-leading);
+    color: var(--eco-dark-ink-2);
+}
+
+.economia-aviso .eco-btn {
+    margin-top: var(--eco-sp-3);
+}
+
+/* ---------------------------------------------------------------------
+   RESULTADO
+   --------------------------------------------------------------------- */
+.economia-resultado {
+    background: var(--eco-dark-surface);
+    border: 1px solid var(--eco-dark-line);
+    border-radius: var(--eco-r-lg);
+    padding: var(--eco-sp-5);
+    display: flex;
+    flex-direction: column;
+    gap: var(--eco-sp-3);
+    align-items: flex-start;
+    animation: eco-blur-in 0.6s var(--eco-ease) both;
+}
+
+.economia-resultado header {
+    display: flex;
+    align-items: center;
+    gap: var(--eco-sp-3);
+    flex-wrap: wrap;
+}
+
+.economia-resultado header strong {
+    font-size: var(--eco-text-lg);
+    font-weight: 800;
+    color: var(--eco-dark-ink);
+}
+
+.economia-resultado .eco-badge--info {
+    background: var(--eco-dark-accent-soft);
+    color: var(--eco-blue-300);
+}
+
+.economia-resultado p {
+    font-size: var(--eco-text-md);
+    line-height: var(--eco-leading);
+    color: var(--eco-dark-ink-2);
+    /* A IA responde em texto corrido com quebras de linha. */
+    white-space: pre-wrap;
+}
+
+/* ---------------------------------------------------------------------
+   RESPONSIVO — breakpoints canônicos (md 1024 / sm 640)
+   --------------------------------------------------------------------- */
+@media (max-width: 640px) {
+    .economia {
+        padding: var(--eco-sp-6) var(--eco-sp-4);
+    }
+
+    .economia-form,
+    .economia-progresso,
+    .economia-resultado {
+        padding: var(--eco-sp-4);
+    }
+
+    .economia-rodape {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .economia-rodape .eco-btn {
+        width: 100%;
+    }
+}

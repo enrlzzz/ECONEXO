@@ -5,16 +5,71 @@
 }
 
 :root {
+    /* 62.5% = base 10px, então 1rem = 10px em todo o projeto.
+       É o que faz --eco-text-base: 1.4rem valer 14px. */
     font-size: 62.5%;
-    font-family: "Montserrat", sans-serif;
+    font-family: "Montserrat", ui-sans-serif, system-ui, -apple-system,
+        "Segoe UI", Roboto, Arial, sans-serif;
     font-weight: 500;
+
+    /* Impede o navegador de "ajudar" com um dark mode automático em cima
+       de superfícies que já são claras por decisão de design. */
+    color-scheme: light;
 }
 
 html {
-  scroll-behavior: smooth;
+    scroll-behavior: smooth;
+}
+
+body {
+    color: var(--eco-ink);
+    -webkit-font-smoothing: antialiased;
 }
 
 a {
     text-decoration: none;
-    color: black;
+    /* Era `color: black`, o que apagava a distinção entre link e texto no
+       projeto inteiro. `inherit` deixa cada contexto decidir — e a home
+       escura não fica com links pretos ilegíveis sobre fundo near-black. */
+    color: inherit;
+}
+
+/* Foco visível global.
+   O projeto inteiro tinha UM :focus-visible. Sem isto, quem navega por
+   teclado não enxerga onde está — o foco existe e é invisível. */
+:focus-visible {
+    outline: 2px solid var(--eco-blue-500);
+    outline-offset: 2px;
+    border-radius: 4px;
+}
+
+/* Some com o anel só para quem clica com o mouse, mantendo-o no teclado. */
+:focus:not(:focus-visible) {
+    outline: none;
+}
+
+img,
+svg,
+video {
+    max-width: 100%;
+}
+
+button,
+input,
+textarea,
+select {
+    font: inherit;
+    color: inherit;
+}
+
+button {
+    cursor: pointer;
+}
+
+/* Alvo de toque mínimo confortável em telas de dedo. */
+@media (pointer: coarse) {
+    button,
+    a[role="button"] {
+        min-height: 44px;
+    }
 }

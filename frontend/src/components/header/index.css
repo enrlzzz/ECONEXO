@@ -3,16 +3,25 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    position: fixed;
+    /* sticky, nao fixed: continua colado no topo ao rolar, mas segue
+       ocupando espaco no fluxo. Era fixed, e por isso a home precisava de
+       um margin-top: 20rem cravado no hero para nao ficar por baixo dele
+       — que quebrava em qualquer altura de tela diferente. */
+    position: sticky;
+    top: 0;
 
     width: 100%;
     padding: 0 4rem;
 
-    border: var(--graybutton) solid 1px;
+    /* Home escura: a barra acompanha o fundo em vez de ser uma faixa
+       branca flutuando sobre ele. */
+    border: none;
+    border-bottom: 1px solid var(--eco-dark-line);
 
-    background: rgba(255, 255, 255, 0.75);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
+    background: rgba(11, 12, 26, 0.72);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    color: var(--eco-dark-ink);
 
     z-index: 999;
 }
@@ -33,7 +42,7 @@ header .logos {
 
 .logo-title {
     margin-top: 0.25rem;
-    color: var(--blue);
+    color: var(--eco-blue-300);
 }
 
 /* LINKS */
@@ -45,12 +54,12 @@ header .links {
 }
 
 .links a {
-    color: var(--black);
-    transition: 0.2s ease;
+    color: var(--eco-dark-ink-2);
+    transition: color 0.2s var(--eco-ease);
 }
 
 .links a:hover {
-    color: var(--gray);
+    color: var(--eco-dark-ink);
 }
 
 /* BUTTONS */
@@ -62,18 +71,19 @@ header .buttons {
 }
 
 header .login-btn {
-    border: none;
+    border: 1px solid transparent;
     padding: 1rem 2.5rem;
     font-size: 1.4rem;
-    font-weight: 500;
-    border-radius: 15px;
+    font-weight: 600;
+    border-radius: var(--eco-r-pill);
     background: none;
-    color: var(--black);
-    transition: 0.2s ease;
+    color: var(--eco-dark-ink);
+    transition: 0.2s var(--eco-ease);
 }
 
 .login-btn:hover {
-    background: var(--graybutton);
+    border-color: var(--eco-dark-line);
+    background: var(--eco-dark-accent-soft);
     cursor: pointer;
 }
 
@@ -81,15 +91,15 @@ header .register-btn {
     border: none;
     padding: 1rem 2rem;
     font-size: 1.4rem;
-    font-weight: 500;
-    border-radius: 15px;
-    background: var(--blue);
-    color: var(--whitesmoke);
-    transition: 0.2s ease;
+    font-weight: 700;
+    border-radius: var(--eco-r-pill);
+    background: var(--eco-dark-accent);
+    color: #fff;
+    transition: 0.2s var(--eco-ease);
 }
 
 .register-btn:hover {
-    background: #3b40d0;
+    background: var(--eco-blue-400);
     cursor: pointer;
 }
 
@@ -181,17 +191,17 @@ header .register-btn {
 
     padding: 0.5rem 1.2rem 0.5rem 0.5rem;
 
-    background: var(--white);
-    border: 1px solid var(--eco-line, #e4e8ef);
+    background: var(--eco-dark-surface);
+    border: 1px solid var(--eco-dark-line);
     border-radius: 999px;
 
     cursor: pointer;
-    transition: 0.18s ease;
+    transition: 0.18s var(--eco-ease);
 }
 
 .header-user-chip:hover {
-    border-color: var(--eco-blue-100, #c9dcf7);
-    background: var(--eco-blue-050, #f2f7fe);
+    border-color: var(--eco-dark-accent);
+    background: var(--eco-dark-surface-2);
 }
 
 .header-user-avatar {
@@ -222,12 +232,12 @@ header .register-btn {
 .header-user-name {
     font-size: 1.4rem;
     font-weight: 800;
-    color: var(--black);
+    color: var(--eco-dark-ink);
 }
 
 .header-user-meta {
     font-size: 1.1rem;
-    color: var(--eco-ink-3, #6b7280);
+    color: var(--eco-dark-ink-3);
     font-weight: 600;
     margin-top: 0.2rem;
 
@@ -341,4 +351,35 @@ header .register-btn {
     text-decoration: none;
     color: inherit;
     cursor: pointer;
+}
+
+/* ===================================== */
+/* PERFIL-MENU SOBRE A HOME ESCURA       */
+/*                                       */
+/* O componente e compartilhado com a    */
+/* area logada, que e clara — entao o    */
+/* tema escuro entra escopado aqui, sem  */
+/* tocar no CSS do componente.           */
+/* ===================================== */
+
+.landing-header .perfil-menu-chip {
+    background: var(--eco-dark-surface);
+    border-color: var(--eco-dark-line);
+}
+
+.landing-header .perfil-menu-chip:hover {
+    background: var(--eco-dark-surface-2);
+    border-color: var(--eco-dark-accent);
+}
+
+.landing-header .perfil-menu-chip:focus-visible {
+    outline-color: var(--eco-blue-300);
+}
+
+.landing-header .perfil-menu-nome {
+    color: var(--eco-dark-ink);
+}
+
+.landing-header .perfil-menu-meta {
+    color: var(--eco-dark-ink-3);
 }

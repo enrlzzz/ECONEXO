@@ -17,6 +17,7 @@ import { IoIosNotificationsOutline } from "react-icons/io";
 import { FaArrowTrendUp } from "react-icons/fa6";
 import { FiLogOut } from "react-icons/fi";
 import { MdSpaceDashboard } from "react-icons/md";
+import { FiCheckCircle, FiTrendingUp } from "react-icons/fi";
 
 export default function HeaderInterface() {
   const navigate = useNavigate();
@@ -97,6 +98,18 @@ export default function HeaderInterface() {
               <FaArrowTrendUp /> Portfólio
             </span>
           </Link>
+
+          <Link to="/menu-user/validacao">
+            <span>
+              <FiCheckCircle /> Validação
+            </span>
+          </Link>
+
+          <Link to="/menu-user/reputacao">
+            <span>
+              <FiTrendingUp /> Reputação
+            </span>
+          </Link>
         </nav>
 
         {/* RIGHT SIDE — só o botão mobile */}
@@ -149,6 +162,14 @@ export default function HeaderInterface() {
 
         <Link to="/menu-user/portfolio" onClick={() => setMenuOpen(false)}>
           <FaArrowTrendUp /> Portfólio
+        </Link>
+
+        <Link to="/menu-user/validacao" onClick={() => setMenuOpen(false)}>
+          <FiCheckCircle /> Validação
+        </Link>
+
+        <Link to="/menu-user/reputacao" onClick={() => setMenuOpen(false)}>
+          <FiTrendingUp /> Reputação
         </Link>
 
         <button

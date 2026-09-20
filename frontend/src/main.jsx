@@ -3,6 +3,7 @@ import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import "./reset.css";
 import "./variables.css";
 import "./animations.css";
+import "./components.css";
 import App from "./App.jsx";
 import Cadastro from "./components/cadastro/index.jsx";
 import Login from "./components/login/index.jsx";
@@ -12,6 +13,8 @@ import ProjectInterface from "./components/interface-user/project-interface/inde
 import MessageInterface from "./components/interface-user/message-interface/index.jsx";
 import NotificationInterface from "./components/interface-user/notification-interface/index.jsx";
 import PortfolioInterface from "./components/interface-user/portfolio-interface/index.jsx";
+import ValidacaoInterface from "./components/interface-user/validacao-interface/index.jsx";
+import ReputacaoInterface from "./components/interface-user/reputacao-interface/index.jsx";
 import Search from "./components/interface-user/search-interface/index.jsx";
 import Profile from "./components/interface-user/profile-interface/index.jsx";
 import Settings from "./components/interface-user/settings-interface/index.jsx";
@@ -80,6 +83,18 @@ const router = createBrowserRouter([
   {
     path: "/menu-user/buscar",
     element: protect(<Search />),
+  },
+
+  // Os dois modulos de confianca. Rotas separadas em vez das abas locais
+  // do prototipo: o link vira compartilhavel e o botao "voltar" funciona.
+  {
+    path: "/menu-user/validacao",
+    element: protect(<ValidacaoInterface />),
+  },
+
+  {
+    path: "/menu-user/reputacao",
+    element: protect(<ReputacaoInterface />),
   },
 
   {

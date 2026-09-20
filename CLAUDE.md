@@ -17,7 +17,7 @@ vulnerabilidade já conhecida e é considerado regressão — não passa em revi
 | `vite` | **8.2.1** | Bypass de `server.fs.deny` em paths alternativos do Windows; NTLMv2 hash disclosure via `launch-editor` |
 | `postcss` | **8.5.23** | Path traversal via `sourceMappingURL` → leitura arbitrária de `.map` |
 | `nanoid` | **3.3.17** | Loop infinito com size zero/negativo |
-| `js-yaml` | **4.3.1** | Consumo quadrático de CPU em `!!omap` e merge keys |
+| `js-yaml` | **4.3.2** | Consumo quadrático de CPU em `!!omap` e merge keys; `maxTotalMergeKeys` não limitava CPU com merge de fonte vazia (GHSA-2883-xcg3-v3hh, atinge **até a 4.3.1 inclusive** — por isso o piso é 4.3.2) |
 | `brace-expansion` | **1.1.18** | DoS por expansão ilimitada → OOM |
 | `@babel/core` | **7.29.6** | Leitura arbitrária de arquivo via comentário `sourceMappingURL` |
 
@@ -29,7 +29,7 @@ no `package.json` — não deixe passar:
 "overrides": {
   "postcss": ">=8.5.23",
   "nanoid": ">=3.3.17",
-  "js-yaml": ">=4.3.1",
+  "js-yaml": ">=4.3.2",
   "brace-expansion": ">=1.1.18",
   "@babel/core": ">=7.29.6"
 }

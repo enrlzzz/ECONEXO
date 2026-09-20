@@ -199,6 +199,91 @@
 }
 
 /* ===================================== */
+/* Portes do Spell UI (spell.sh)          */
+/* Usados por components.css.             */
+/* ===================================== */
+
+/* Shimmer do skeleton: a faixa clara cruzando a superfície. */
+@keyframes eco-shimmer {
+    100% {
+        transform: translateX(100%);
+    }
+}
+
+/* Shimmer Text: o brilho anda pelo próprio gradiente do texto. */
+@keyframes eco-shimmer-sweep {
+    0% {
+        background-position: 200% 0;
+    }
+    100% {
+        background-position: -20% 0;
+    }
+}
+
+/* Gradient Wave Text. */
+@keyframes eco-gradient-wave {
+    0% {
+        background-position: 0% 0;
+    }
+    100% {
+        background-position: 280% 0;
+    }
+}
+
+/* Blur Reveal. */
+@keyframes eco-blur-in {
+    from {
+        opacity: 0;
+        filter: blur(10px);
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        filter: blur(0);
+        transform: none;
+    }
+}
+
+/* Spinner circular. */
+@keyframes eco-spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* Bars Spinner: a haste apaga e reacende no lugar. */
+@keyframes eco-bars-fade {
+    0% {
+        opacity: 1;
+    }
+    100% {
+        opacity: 0.15;
+    }
+}
+
+/* Progresso indeterminado: o pulso percorre a trilha e volta. */
+@keyframes eco-progress-slide {
+    0% {
+        transform: translateX(-100%);
+    }
+    100% {
+        transform: translateX(320%);
+    }
+}
+
+/* Light Rays: o feixe respira de leve em vez de ficar parado. */
+@keyframes eco-rays-drift {
+    from {
+        transform: rotate(-4deg) scale(1);
+        opacity: 0.7;
+    }
+    to {
+        transform: rotate(4deg) scale(1.06);
+        opacity: 1;
+    }
+}
+
+/* ===================================== */
 /* prefers-reduced-motion                 */
 /* ===================================== */
 

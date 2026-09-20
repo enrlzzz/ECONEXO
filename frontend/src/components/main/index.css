@@ -1,443 +1,262 @@
+/* =====================================================================
+   HOME — tema escuro
+   ---------------------------------------------------------------------
+   Estrutura emprestada da referência do refero (fundo chapado near-black,
+   sem gradiente de página, elevação por cor de superfície e não por
+   sombra, divisores tracejados de 1px, respiro generoso entre seções,
+   raios de borda deliberados), aplicada sobre a NOSSA paleta: o azul
+   --eco-blue continua sendo a marca.
+
+   O que saiu daqui:
+   - .steps1/.steps2/.steps3 e .point1..point6 (CSS repetido 6x) viraram
+     um .cartao só dentro de .grade;
+   - margin-top: 20rem cravado no hero virou padding relativo à viewport;
+   - os oito breakpoints locais viraram os dois canônicos (1024 / 640).
+   ===================================================================== */
+
 .landing-main {
-    background: var(--lightblue);
-    height: 100%;
+    background: var(--eco-dark-bg);
+    color: var(--eco-dark-ink);
     display: flex;
     flex-direction: column;
     align-items: center;
-    overflow-x: hidden;
+    overflow-x: clip;
 }
 
-/* ===================================== */
-/* HERO SECTION */
-/* ===================================== */
-
-.introduction {
-    margin-top: 20rem;
+/* ---------------------------------------------------------------------
+   HERO
+   --------------------------------------------------------------------- */
+.hero {
+    position: relative;
+    isolation: isolate;
+    width: 100%;
+    /* min(), não margin fixo: em telas baixas o hero encolhe em vez de
+       empurrar o resto da página para fora da dobra. O header agora é
+       sticky (não fixed), então não há altura de header para compensar. */
+    padding: min(14vh, var(--eco-sp-8)) var(--eco-sp-5) var(--eco-sp-8);
     display: flex;
-    flex-direction: column;
-    align-items: center;
+    justify-content: center;
     text-align: center;
-    padding: 0 2rem;
+    border-bottom: 1px dashed var(--eco-dark-line);
 }
 
-.introduction h1,
-.introduction span {
-    font-size: 6rem;
+.hero-conteudo {
+    position: relative;
+    z-index: 1;
+    width: min(var(--eco-maxw), 100%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--eco-sp-4);
+}
+
+.hero-kicker {
+    padding: 0.7rem 1.4rem;
+    border-radius: var(--eco-r-pill);
+    border: 1px solid var(--eco-dark-line);
+    background: var(--eco-dark-surface);
+    color: var(--eco-dark-ink-2);
+    font-size: var(--eco-text-sm);
     font-weight: 700;
-    color: var(--black);
-    line-height: 1.2;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
 }
 
-.introduction span {
-    color: var(--blue);
+.hero h1 {
+    /* clamp(): o título acompanha a largura sem precisar de media query,
+       e sem <br /> decidindo onde a frase quebra. */
+    font-size: var(--eco-text-3xl);
+    font-weight: 800;
+    line-height: var(--eco-leading-tight);
+    letter-spacing: -0.035em;
+    max-width: 18ch;
+    text-wrap: balance;
 }
 
-.introduction p {
-    font-size: 1.9rem;
-    font-weight: 500;
-    text-align: center;
-    color: var(--black);
-    margin-top: 3rem;
-    line-height: 1.6;
+.hero-descricao {
+    font-size: var(--eco-text-lg);
+    line-height: var(--eco-leading);
+    color: var(--eco-dark-ink-2);
+    /* Antes a medida de leitura era definida por dois <br /> no JSX.
+       Em qualquer largura diferente da que foi desenhada, quebrava errado. */
+    max-width: 58ch;
+    text-wrap: pretty;
 }
 
-.introduction .buttons {
+.hero-acoes {
     display: flex;
-    gap: 1rem;
-    margin-top: 5rem;
-    margin-bottom: 10rem;
-    justify-content: center;
+    gap: var(--eco-sp-3);
     flex-wrap: wrap;
-}
-
-.introduction .buttonStart {
-    border: none;
-    padding: 1rem 3rem;
-    font-size: 1.7rem;
-    font-weight: 500;
-    border-radius: 15px;
-    background: var(--blue);
-    color: var(--whitesmoke);
-    transition: 0.2s ease;
-}
-
-.buttonStart:hover {
-    background: #3b40d0;
-    cursor: pointer;
-}
-
-.introduction .buttonSearch {
-    border: 1px solid var(--graybutton);
-    padding: 1rem 3rem;
-    font-size: 1.7rem;
-    font-weight: 500;
-    border-radius: 15px;
-    background: var(--whitesmoke);
-    color: var(--black);
-    transition: 0.2s ease;
-}
-
-.introduction .buttonSearch:hover {
-    background: var(--graybutton);
-    cursor: pointer;
-}
-
-/* ===================================== */
-/* OPERATION */
-/* ===================================== */
-
-#operation {
-    width: 100%;
-    background: var(--white);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-}
-
-.introduction-operation {
-    margin-top: 3rem;
-    padding: 5rem;
-    display: flex;
-    flex-direction: column;
-    text-align: center;
-    gap: 2rem;
-}
-
-.introduction-operation h2 {
-    font-size: 3.5rem;
-    color: var(--black);
-}
-
-.introduction-operation p {
-    font-size: 1.7rem;
-    color: var(--gray);
-    text-align: center;
-}
-
-.steps-operation {
-    display: flex;
     justify-content: center;
-    gap: 2rem;
-    margin-bottom: 8rem;
-    width: 100%;
-    padding: 0 2rem;
-    flex-wrap: wrap;
+    margin-top: var(--eco-sp-3);
 }
 
-.steps1,
-.steps2,
-.steps3 {
+.hero-acoes .eco-btn {
+    padding: 1.4rem 2.6rem;
+    font-size: var(--eco-text-md);
+}
+
+/* ---------------------------------------------------------------------
+   SEÇÕES DE CONTEÚDO
+   --------------------------------------------------------------------- */
+.secao {
+    width: min(var(--eco-maxw), 100%);
+    padding: var(--eco-sp-8) var(--eco-sp-5);
     display: flex;
     flex-direction: column;
-    align-items: center;
-    gap: 1.8rem;
-    padding: 5rem 3rem;
-    border-radius: 20px;
-    max-width: 40rem;
+    gap: var(--eco-sp-6);
 }
 
-.steps1 span,
-.steps2 span,
-.steps3 span {
-    font-size: 5rem;
-    color: var(--blue);
-    border-radius: 50%;
-    background: var(--lightblue);
-
-    width: 90px;
-    height: 90px;
-
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.steps1 h3,
-.steps2 h3,
-.steps3 h3 {
-    font-size: 1.8rem;
-    color: var(--black);
-    font-weight: 600;
-    text-align: center;
-}
-
-.steps1 p,
-.steps2 p,
-.steps3 p {
-    font-size: 1.5rem;
-    color: var(--gray);
-    text-align: center;
-    line-height: 1.6;
-}
-
-/* ===================================== */
-/* POINTS */
-/* ===================================== */
-
-#points {
-    background: var(--whitesmoke);
-    width: 100%;
+.secao-cabecalho {
     display: flex;
     flex-direction: column;
-    align-items: center;
-    padding: 5rem 2rem;
-}
-
-.introduction-points {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 2rem;
-}
-
-.introduction-points h2 {
-    font-size: 3.5rem;
-    margin-top: 3rem;
-    color: var(--black);
+    gap: var(--eco-sp-2);
     text-align: center;
+    align-items: center;
 }
 
-.introduction-points p {
-    font-size: 1.7rem;
-    color: var(--gray);
-    text-align: center;
-    margin-bottom: 3rem;
+.secao-cabecalho h2 {
+    font-size: var(--eco-text-xl);
+    font-weight: 800;
+    letter-spacing: -0.025em;
+    line-height: var(--eco-leading-snug);
 }
 
-.points-list {
+.secao-cabecalho p {
+    font-size: var(--eco-text-md);
+    line-height: var(--eco-leading);
+    color: var(--eco-dark-ink-2);
+    max-width: 56ch;
+}
+
+/* ---------------------------------------------------------------------
+   GRADE DE CARTÕES — um componente, não seis classes posicionais
+   --------------------------------------------------------------------- */
+.grade {
+    list-style: none;
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 2rem;
+    gap: var(--eco-sp-4);
+}
 
+/* auto-fit + minmax faz a grade decidir sozinha quantas colunas cabem.
+   É o que elimina a necessidade de uma media query por breakpoint. */
+.grade--3 {
+    grid-template-columns: repeat(auto-fit, minmax(28rem, 1fr));
+}
+
+.cartao {
+    background: var(--eco-dark-surface);
+    border: 1px solid var(--eco-dark-line);
+    border-radius: var(--eco-r-lg);
+    padding: var(--eco-sp-5);
+    display: flex;
+    flex-direction: column;
+    gap: var(--eco-sp-3);
+    /* Sem box-shadow: na referência a elevação vem da cor da superfície. */
+    transition: border-color 0.2s var(--eco-ease),
+        background 0.2s var(--eco-ease), transform 0.2s var(--eco-ease);
+}
+
+.cartao:hover {
+    border-color: var(--eco-dark-accent);
+    background: var(--eco-dark-surface-2);
+    transform: translateY(-2px);
+}
+
+.cartao-icone {
+    width: 46px;
+    height: 46px;
+    border-radius: 14px;
+    display: grid;
+    place-items: center;
+    background: var(--eco-dark-accent-soft);
+    color: var(--eco-blue-300);
+    font-size: 2.1rem;
+}
+
+.cartao h3 {
+    font-size: var(--eco-text-lg);
+    font-weight: 700;
+    letter-spacing: -0.01em;
+}
+
+.cartao p {
+    font-size: var(--eco-text-base);
+    line-height: var(--eco-leading);
+    color: var(--eco-dark-ink-2);
+}
+
+/* ---------------------------------------------------------------------
+   CHAMADA FINAL
+   --------------------------------------------------------------------- */
+.chamada-final {
     width: 100%;
-    max-width: 1400px;
-
-    margin-bottom: 3rem;
-    padding: 2rem;
-}
-
-.box-point1,
-.box-point2 {
-    display: contents;
-}
-
-.point1,
-.point2,
-.point3,
-.point4,
-.point5,
-.point6 {
+    padding: var(--eco-sp-8) var(--eco-sp-5);
+    border-top: 1px dashed var(--eco-dark-line);
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 2rem;
-
-    padding: 3rem 2rem;
-
-    border: 1px solid var(--graybutton);
-    border-radius: 16px;
-
-    background: var(--white);
-
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-
-    transition: 0.2s ease;
-}
-
-.point1:hover,
-.point2:hover,
-.point3:hover,
-.point4:hover,
-.point5:hover,
-.point6:hover {
-    transform: translateY(-5px);
-}
-
-.point1 span,
-.point2 span,
-.point3 span,
-.point4 span,
-.point5 span,
-.point6 span {
-    font-size: 7rem;
-    color: var(--blue);
-}
-
-.point1 h3,
-.point2 h3,
-.point3 h3,
-.point4 h3,
-.point5 h3,
-.point6 h3 {
-    font-size: 1.8rem;
-    color: var(--black);
-    font-weight: 600;
     text-align: center;
+    gap: var(--eco-sp-4);
 }
 
-.point1 p,
-.point2 p,
-.point3 p,
-.point4 p,
-.point5 p,
-.point6 p {
-    font-size: 1.5rem;
-    color: var(--gray);
-    text-align: center;
-    line-height: 1.6;
+.chamada-final h2 {
+    font-size: var(--eco-text-2xl);
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    line-height: var(--eco-leading-tight);
 }
 
-/* ===================================== */
-/* FINAL SECTION */
-/* ===================================== */
-
-.final-main {
-    background: var(--blue);
-    width: 100%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    padding: 6rem 2rem;
+.chamada-final p {
+    font-size: var(--eco-text-md);
+    line-height: var(--eco-leading);
+    color: var(--eco-dark-ink-2);
+    max-width: 52ch;
 }
 
-.final-content {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 3rem;
-    text-align: center;
+.chamada-final .eco-btn {
+    padding: 1.4rem 2.8rem;
+    font-size: var(--eco-text-md);
+    margin-top: var(--eco-sp-2);
 }
 
-.final-content h2 {
-    font-size: 3.5rem;
-    color: var(--whitesmoke);
+/* ---------------------------------------------------------------------
+   RESPONSIVO — md (1024) e sm (640). Só esses dois.
+   --------------------------------------------------------------------- */
+@media (max-width: 1024px) {
+    .secao {
+        padding: var(--eco-sp-7) var(--eco-sp-5);
+    }
 }
 
-.final-content p {
-    font-size: 1.7rem;
-    color: var(--graybutton);
-    text-align: center;
-    line-height: 1.6;
-    max-width: 70rem;
-}
-
-.btn-primary {
-    border: none;
-    padding: 1rem 3rem;
-    font-size: 1.7rem;
-    font-weight: 500;
-    border-radius: 15px;
-    background: var(--whitesmoke);
-    color: var(--black);
-    transition: 0.2s ease;
-    margin-bottom: 3rem;
-}
-
-.btn-primary:hover {
-    background: var(--graybutton);
-    cursor: pointer;
-}
-
-/* ===================================== */
-/* MOBILE */
-/* ===================================== */
-
-@media (max-width: 500px) {
-
-    .introduction {
-        margin-top: 22rem;
+@media (max-width: 640px) {
+    .hero {
+        padding: var(--eco-sp-6) var(--eco-sp-4);
     }
 
-    .introduction h1,
-    .introduction span {
-        font-size: 3.5rem;
+    .hero h1 {
+        max-width: none;
     }
 
-    .introduction p {
-        font-size: 1.5rem;
-    }
-
-    .introduction .buttons {
+    .hero-acoes {
+        width: 100%;
         flex-direction: column;
+    }
+
+    .hero-acoes .eco-btn {
         width: 100%;
     }
 
-    .introduction .buttonStart,
-    .introduction .buttonSearch {
-        width: 100%;
-        font-size: 1.5rem;
-        padding: 1.2rem;
+    .secao,
+    .chamada-final {
+        padding: var(--eco-sp-6) var(--eco-sp-4);
     }
 
-    .introduction-operation {
-        padding: 2rem;
-    }
-
-    .introduction-operation h2,
-    .introduction-points h2,
-    .final-content h2 {
-        font-size: 2.8rem;
-    }
-
-    .introduction-operation p,
-    .introduction-points p,
-    .final-content p {
-        font-size: 1.5rem;
-    }
-
-    .steps1,
-    .steps2,
-    .steps3 {
-        width: 100%;
-        padding: 3rem 2rem;
-    }
-
-    .steps1 span,
-    .steps2 span,
-    .steps3 span {
-        width: 75px;
-        height: 75px;
-        font-size: 4rem;
-    }
-
-    .points-list {
+    .grade--3 {
         grid-template-columns: 1fr;
-        padding: 1rem;
     }
 
-    .point1 span,
-    .point2 span,
-    .point3 span,
-    .point4 span,
-    .point5 span,
-    .point6 span {
-        font-size: 5rem;
-    }
-
-    .btn-primary {
-        width: 100%;
+    .cartao {
+        padding: var(--eco-sp-4);
     }
 }
-
-/* ===================================== */
-/* TABLET */
-/* ===================================== */
-
-@media (min-width: 501px) and (max-width: 1279px) {
-
-    .introduction h1,
-    .introduction span {
-        font-size: 5rem;
-    }
-
-    .points-list {
-        grid-template-columns: repeat(2, 1fr);
-    }
-
-    .steps1,
-    .steps2,
-    .steps3 {
-        width: 45%;
-    }
-}
-.economy-validator { width:min(1100px, calc(100% - 48px)); margin:70px auto; padding:34px; border-radius:24px; background:linear-gradient(135deg,#eef0ff,#fff); border:1px solid #e0e2fb; }.economy-kicker { color:#2f36c8; font-size:12px; font-weight:800; text-transform:uppercase; letter-spacing:.08em; }.economy-validator h2 { margin:8px 0; color:#1f2430; font-size:28px; }.economy-validator p { color:#68707f; line-height:1.55; }.economy-validator form { display:grid; gap:12px; margin-top:20px; }.economy-validator textarea { min-height:130px; resize:vertical; padding:14px; border:1px solid #dfe3ec; border-radius:14px; font:inherit; }.economy-validator button { justify-self:start; border:0; border-radius:12px; background:#2f36c8; color:#fff; padding:12px 18px; font-weight:800; cursor:pointer; }.economy-validator button:disabled { opacity:.6; }.economy-result { margin-top:18px; padding:18px; border-radius:16px; background:#fff; border:1px solid #dfe3ec; white-space:pre-wrap; }.economy-result p { margin-bottom:0; }
