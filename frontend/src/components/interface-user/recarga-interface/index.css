@@ -1,0 +1,73 @@
+.recarga-page { min-height: 100vh; background: var(--whitesmoke); }
+
+.recarga-container {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    padding: 10rem 4rem 4rem;
+}
+
+.recarga-titulo h1 { margin: 0; font-size: 2.8rem; color: var(--black); }
+.recarga-titulo p { margin: 0.6rem 0 0; font-size: 1.4rem; color: #68707f; max-width: 70ch; }
+
+.recarga-aviso {
+    margin: 0;
+    padding: 1.2rem 1.6rem;
+    border-radius: 12px;
+    font-size: 1.4rem;
+    background: var(--eco-sky-100);
+    color: var(--eco-blue-800);
+}
+.recarga-aviso--erro { background: var(--eco-red-soft); color: var(--eco-red); }
+
+.recarga-mapa {
+    height: 60vh;
+    min-height: 360px;
+    border-radius: 18px;
+    overflow: hidden;
+    border: 1px solid #e7e9f2;
+    box-shadow: 0 3px 14px rgba(41, 48, 83, 0.08);
+}
+.recarga-mapa .leaflet-container { height: 100%; width: 100%; font-family: inherit; }
+
+.recarga-pino {
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    border: 3px solid #fff;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.4);
+    vertical-align: middle;
+}
+.recarga-pino-wrap { display: grid; place-items: center; background: none; border: 0; }
+.recarga-pino--operacional { background: var(--eco-green); }
+.recarga-pino--fora_do_ar { background: var(--eco-red); }
+.recarga-pino--desconhecido { background: var(--eco-amber); }
+
+.recarga-popup { display: flex; flex-direction: column; gap: 4px; font-size: 13px; min-width: 190px; }
+.recarga-popup strong { font-size: 14px; }
+.recarga-popup ul { margin: 2px 0; padding-left: 16px; }
+.recarga-popup a { color: var(--eco-blue-600); font-weight: 700; margin-top: 4px; }
+.recarga-status { font-weight: 700; }
+.recarga-status--operacional { color: var(--eco-green); }
+.recarga-status--fora_do_ar { color: var(--eco-red); }
+.recarga-status--desconhecido { color: var(--eco-solar-700); }
+
+.recarga-legenda {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1.6rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    font-size: 1.3rem;
+    color: #68707f;
+}
+.recarga-legenda li { display: flex; align-items: center; gap: 0.6rem; }
+.recarga-total { margin-left: auto; font-weight: 700; }
+
+@media (max-width: 700px) {
+    .recarga-container { padding: 9rem 1.6rem 3rem; }
+    .recarga-titulo h1 { font-size: 2.2rem; }
+    .recarga-mapa { height: 55vh; }
+}

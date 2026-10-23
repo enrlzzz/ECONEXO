@@ -515,6 +515,24 @@ class SegurancaIntegrationTest {
                 .isEqualTo(semTimestamp(senhaErrada));
     }
 
+    // ---------- Mapa de recarga: autenticado e sem vazar a chave ----------
+
+    @Test
+    @DisplayName("Pontos de recarga exigem autenticação")
+    void pontosDeRecargaExigemToken() throws Exception {
+        mvc.perform(get("/api/recarga/pontos")).andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    @DisplayName("Pontos de recarga logado responde 200 e não expõe chave")
+    void pontosDeRecargaLogado() throws Exception {
+        String token = cadastrar();
+        MvcResult r = mvc.perform(get("/api/recarga/pontos").header("Authorization", "Bearer " + token))
+                .andExpect(status().isOk())
+                .andReturn();
+        assertThat(r.getResponse().getContentAsString()).doesNotContain("X-API-Key", "api-key");
+    }
+
     private String semTimestamp(MvcResult r) throws Exception {
         return r.getResponse().getContentAsString()
                 .replaceAll("\"momento\":\"[^\"]+\"", "\"momento\":\"-\"");

@@ -15,6 +15,7 @@ import NotificationInterface from "./components/interface-user/notification-inte
 import PortfolioInterface from "./components/interface-user/portfolio-interface/index.jsx";
 import ValidacaoInterface from "./components/interface-user/validacao-interface/index.jsx";
 import ReputacaoInterface from "./components/interface-user/reputacao-interface/index.jsx";
+import RecargaInterface from "./components/interface-user/recarga-interface/index.jsx";
 import Search from "./components/interface-user/search-interface/index.jsx";
 import Profile from "./components/interface-user/profile-interface/index.jsx";
 import Settings from "./components/interface-user/settings-interface/index.jsx";
@@ -95,6 +96,11 @@ const router = createBrowserRouter([
   {
     path: "/menu-user/reputacao",
     element: protect(<ReputacaoInterface />),
+  },
+
+  {
+    path: "/menu-user/recarga",
+    element: protect(<RecargaInterface />),
   },
 
   {

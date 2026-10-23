@@ -22,6 +22,7 @@ import { FaArrowTrendUp } from "react-icons/fa6";
 import { FiLogOut } from "react-icons/fi";
 import { MdSpaceDashboard } from "react-icons/md";
 import { FiCheckCircle, FiTrendingUp } from "react-icons/fi";
+import { MdEvStation } from "react-icons/md";
 
 export default function HeaderInterface() {
   const navigate = useNavigate();
@@ -124,6 +125,12 @@ export default function HeaderInterface() {
               <FiTrendingUp /> Reputação
             </span>
           </Link>
+
+          <Link to="/menu-user/recarga">
+            <span>
+              <MdEvStation /> Recarga
+            </span>
+          </Link>
         </nav>
 
         {/* RIGHT SIDE — só o botão mobile */}
@@ -184,6 +191,10 @@ export default function HeaderInterface() {
 
         <Link to="/menu-user/reputacao" onClick={() => setMenuOpen(false)}>
           <FiTrendingUp /> Reputação
+        </Link>
+
+        <Link to="/menu-user/recarga" onClick={() => setMenuOpen(false)}>
+          <MdEvStation /> Recarga
         </Link>
 
         <button
