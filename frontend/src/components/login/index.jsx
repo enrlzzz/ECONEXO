@@ -6,6 +6,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { BsLightning } from "react-icons/bs";
 import { useEffect, useState } from "react";
 
+import { aquecerApi } from "../../services/api";
 import { usuariosService } from "../../services/usuarios";
 import { isLoggedIn, persistSession } from "../../userSession";
 
@@ -14,6 +15,13 @@ export default function Login() {
   const [form, setForm] = useState({ email: "", senha: "" });
   const [erro, setErro] = useState("");
   const [enviando, setEnviando] = useState(false);
+  const [demorando, setDemorando] = useState(false);
+
+  // Enquanto a pessoa digita, o servidor (plano gratuito, dorme após alguns
+  // minutos parado) já pode estar acordando.
+  useEffect(() => {
+    aquecerApi();
+  }, []);
 
   // Login persistente: se já houver sessão, vai direto para a área logada
   useEffect(() => {
@@ -32,6 +40,10 @@ export default function Login() {
     setErro("");
     setEnviando(true);
 
+    // Passou de 5 s: quase certamente o servidor estava dormindo. Sem este
+    // aviso o botão parece travado e a pessoa clica de novo, ou desiste.
+    const aviso = setTimeout(() => setDemorando(true), 5000);
+
     try {
       // Resposta: { token, expiraEmSegundos, usuario }
       const sessao = await usuariosService.login(form.email, form.senha);
@@ -46,6 +58,8 @@ export default function Login() {
             : `Falha ao entrar: ${e.message}`,
       );
     } finally {
+      clearTimeout(aviso);
+      setDemorando(false);
       setEnviando(false);
     }
   };
@@ -92,6 +106,13 @@ export default function Login() {
           />
 
           {erro && <p style={{ color: "red" }}>{erro}</p>}
+
+          {demorando && (
+            <p className="login-demora" role="status">
+              O servidor estava em repouso e está acordando — na primeira vez
+              isso pode levar até 1 minuto. Aguarde, não precisa clicar de novo.
+            </p>
+          )}
 
           <div className="submit-container">
             <span className="no-password">Esqueceu a senha?</span>

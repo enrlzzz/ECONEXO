@@ -531,3 +531,12 @@
         font-size: 2.8rem;
     }
 }
+
+
+/* Análise de economia (IA) dentro da área logada. */
+.main-economia {
+    margin-top: 3rem;
+    border-radius: 2rem;
+    overflow: hidden;
+    background: var(--eco-dark-bg, #0b0c1a);
+}

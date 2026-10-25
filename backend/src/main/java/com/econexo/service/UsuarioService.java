@@ -1,23 +1,35 @@
 package com.econexo.service;
 
+import com.econexo.dto.ProfissionalBuscaResponse;
 import com.econexo.dto.ProfissionalResponse;
 import com.econexo.dto.UsuarioRequest;
 import com.econexo.dto.UsuarioResponse;
 import com.econexo.exception.AcessoNegadoException;
 import com.econexo.exception.ValidacaoException;
 import com.econexo.model.Usuario;
+import com.econexo.repository.AvaliacaoRepository;
+import com.econexo.repository.CredencialCreaRepository;
 import com.econexo.repository.UsuarioRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 @Service
 public class UsuarioService {
+
+    private static final Logger log = LoggerFactory.getLogger(UsuarioService.class);
 
     /**
      * Hash descartável de uma senha qualquer, usado só para gastar tempo
@@ -26,14 +38,23 @@ public class UsuarioService {
     private static final String HASH_FALSO =
             "$2a$12$C6UzMDM.H6dfI/f/IKcEe.4XHf/BbXFLhLLKgBAUpCH0e4fBJZ0Zq";
 
+    /** Teto de resultados da busca: a tela não pagina, e 50 cartões já enchem a tela. */
+    private static final int MAX_RESULTADOS_BUSCA = 50;
+
     private final UsuarioRepository usuarioRepository;
+    private final AvaliacaoRepository avaliacaoRepository;
+    private final CredencialCreaRepository credencialCreaRepository;
     private final PasswordEncoder passwordEncoder;
     private final String versaoPolitica;
 
     public UsuarioService(UsuarioRepository usuarioRepository,
+                          AvaliacaoRepository avaliacaoRepository,
+                          CredencialCreaRepository credencialCreaRepository,
                           PasswordEncoder passwordEncoder,
                           @Value("${econexo.lgpd.versao-politica:1.0}") String versaoPolitica) {
         this.usuarioRepository = usuarioRepository;
+        this.avaliacaoRepository = avaliacaoRepository;
+        this.credencialCreaRepository = credencialCreaRepository;
         this.passwordEncoder = passwordEncoder;
         this.versaoPolitica = versaoPolitica;
     }
@@ -81,21 +102,34 @@ public class UsuarioService {
      * "senha errada" em ~250ms (custo do BCrypt) — e essa diferença de tempo,
      * sozinha, revela quais e-mails têm conta na plataforma.
      */
-    @Transactional(readOnly = true)
     public Optional<Usuario> validarLogin(String email, String senha) {
+        // De propósito SEM @Transactional: o findByEmail do repositório já abre
+        // e fecha a sua própria transação. Com a anotação aqui, a conexão do
+        // banco ficava presa durante o BCrypt inteiro (centenas de ms, ou
+        // segundos num servidor com pouca CPU) — e com um pool de poucas
+        // conexões, alguns logins simultâneos travavam o resto da API.
+        long inicio = System.nanoTime();
         Optional<Usuario> encontrado =
                 usuarioRepository.findByEmail(email == null ? "" : email.trim().toLowerCase());
+        long consultaMs = (System.nanoTime() - inicio) / 1_000_000;
 
+        String senhaInformada = senha == null ? "" : senha;
+
+        long antesBcrypt = System.nanoTime();
+        boolean confere;
         if (encontrado.isEmpty()) {
-            passwordEncoder.matches(senha == null ? "" : senha, HASH_FALSO);
-            return Optional.empty();
+            passwordEncoder.matches(senhaInformada, HASH_FALSO);
+            confere = false;
+        } else {
+            confere = passwordEncoder.matches(senhaInformada, encontrado.get().getSenha());
         }
+        long bcryptMs = (System.nanoTime() - antesBcrypt) / 1_000_000;
 
-        Usuario usuario = encontrado.get();
-        if (!passwordEncoder.matches(senha == null ? "" : senha, usuario.getSenha())) {
-            return Optional.empty();
-        }
-        return Optional.of(usuario);
+        // Medição para achar o gargalo do login em produção. Sem e-mail nem
+        // qualquer dado do usuário no log — só os tempos.
+        log.info("login: consulta ao banco={}ms, bcrypt={}ms", consultaMs, bcryptMs);
+
+        return confere ? encontrado : Optional.empty();
     }
 
     /**
@@ -161,37 +195,56 @@ public class UsuarioService {
     /**
      * Busca de profissionais.
      *
-     * Devolve ProfissionalResponse, não UsuarioResponse: o diretório é visível
-     * a qualquer usuário logado, e e-mail/telefone de terceiros não têm por que
-     * trafegar numa listagem de busca.
+     * Devolve ProfissionalBuscaResponse, não UsuarioResponse: o diretório é
+     * visível a qualquer usuário logado, e e-mail/telefone de terceiros não
+     * têm por que trafegar numa listagem de busca. O próprio usuário não
+     * aparece no resultado.
      *
-     * Filtros vazios são ignorados — sem nenhum filtro, lista todo mundo.
+     * Filtros vazios são ignorados. O filtro roda no banco e a reputação e o
+     * selo de CREA vêm em UMA consulta cada (não uma por profissional).
      */
     @Transactional(readOnly = true)
-    public List<ProfissionalResponse> buscarProfissionais(String nome, String cidade,
-                                                          String estado, String tipo) {
-        String nomeFiltro = normalizar(nome);
-        String cidadeFiltro = normalizar(cidade);
-        String estadoFiltro = normalizar(estado);
-        String tipoFiltro = normalizar(tipo);
+    public List<ProfissionalBuscaResponse> buscarProfissionais(Integer idAutenticado, String nome,
+                                                               String cidade, String estado, String tipo) {
+        List<Usuario> encontrados = usuarioRepository.buscar(
+                idAutenticado == null ? -1 : idAutenticado,
+                filtroBusca(nome).toLowerCase(),
+                filtroBusca(cidade).toLowerCase(),
+                filtroBusca(estado).toUpperCase(),
+                filtroBusca(tipo).toUpperCase(),
+                PageRequest.of(0, MAX_RESULTADOS_BUSCA));
 
-        return usuarioRepository.findAll().stream()
-                .filter(u -> nomeFiltro == null
-                        || (u.getNome() != null
-                            && u.getNome().toLowerCase().contains(nomeFiltro)))
-                .filter(u -> cidadeFiltro == null
-                        || (u.getCidade() != null
-                            && u.getCidade().toLowerCase().contains(cidadeFiltro)))
-                .filter(u -> estadoFiltro == null
-                        || estadoFiltro.equalsIgnoreCase(u.getEstado()))
-                .filter(u -> tipoFiltro == null
-                        || tipoFiltro.equalsIgnoreCase(u.getTipoProfissional()))
-                .map(ProfissionalResponse::de)
-                .toList();
+        if (encontrados.isEmpty()) return List.of();
+
+        List<Integer> ids = encontrados.stream().map(Usuario::getIdUsuario).toList();
+
+        Map<Integer, AvaliacaoRepository.Resumo> resumos = avaliacaoRepository.resumoPorUsuario(ids).stream()
+                .collect(Collectors.toMap(AvaliacaoRepository.Resumo::getIdUsuario, Function.identity()));
+
+        Set<Integer> comCreaVerificado = credencialCreaRepository
+                .findByUsuarioIdUsuarioInAndStatus(ids, ValidacaoService.VERIFICADA).stream()
+                .map(c -> c.getUsuario().getIdUsuario())
+                .collect(Collectors.toSet());
+
+        return encontrados.stream().map(u -> {
+            AvaliacaoRepository.Resumo r = resumos.get(u.getIdUsuario());
+            return new ProfissionalBuscaResponse(
+                    u.getIdUsuario(), u.getNome(), u.getCidade(), u.getEstado(),
+                    u.getTipoProfissional(),
+                    r == null || r.getMedia() == null ? null : Math.round(r.getMedia() * 10.0) / 10.0,
+                    r == null || r.getTotal() == null ? 0L : r.getTotal(),
+                    comCreaVerificado.contains(u.getIdUsuario()));
+        }).toList();
     }
 
-    private String normalizar(String valor) {
-        return (valor == null || valor.isBlank()) ? null : valor.trim().toLowerCase();
+    /**
+     * Texto de busca seguro para o LIKE: tira os curingas (% _ \) que a
+     * pessoa digitou, para "100%" não virar "qualquer coisa". Vazio vira "".
+     */
+    private String filtroBusca(String valor) {
+        if (valor == null) return "";
+        String limpo = valor.trim().replaceAll("[%_\\\\]", "");
+        return limpo.length() > 100 ? limpo.substring(0, 100) : limpo;
     }
 
     /**

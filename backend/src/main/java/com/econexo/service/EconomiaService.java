@@ -15,7 +15,12 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.time.Duration;
+import java.time.Instant;
+import java.util.ArrayDeque;
+import java.util.Deque;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 @Service
 public class EconomiaService {
@@ -37,11 +42,46 @@ public class EconomiaService {
     @Value("${econexo.gemini.api-key:}")
     private String apiKey;
 
+    /**
+     * Quantas análises cada usuário pode pedir por hora.
+     *
+     * Cada análise é uma chamada paga/limitada à API do Gemini. Sem teto, uma
+     * única conta logada, ou um script com um token roubado, esgotaria a cota
+     * da plataforma inteira.
+     */
+    @Value("${econexo.economia.max-por-hora:5}")
+    private int maxPorHora;
+
+    /**
+     * Pedidos recentes por usuário. Fica em memória, como o RateLimitService:
+     * reiniciar o backend zera, e com mais de uma instância cada uma conta a
+     * sua. Para o free tier do Render (instância única) está correto.
+     */
+    private final Map<Integer, Deque<Instant>> usoRecente = new ConcurrentHashMap<>();
+
     private final HttpClient client = HttpClient.newBuilder()
             .connectTimeout(Duration.ofSeconds(10))
             .build();
 
     private final ObjectMapper mapper = new ObjectMapper();
+
+    /** true se o usuário ainda pode pedir uma análise agora (e já conta o pedido). */
+    public boolean permitir(Integer idUsuario) {
+        Instant agora = Instant.now();
+        Instant corte = agora.minus(Duration.ofHours(1));
+
+        Deque<Instant> fila = usoRecente.computeIfAbsent(idUsuario, k -> new ArrayDeque<>());
+        synchronized (fila) {
+            while (!fila.isEmpty() && fila.peekFirst().isBefore(corte)) {
+                fila.pollFirst();
+            }
+            if (fila.size() >= maxPorHora) {
+                return false;
+            }
+            fila.addLast(agora);
+            return true;
+        }
+    }
 
     public EconomiaResponse analisar(EconomiaRequest request) {
         if (apiKey == null || apiKey.isBlank()) {
@@ -51,8 +91,11 @@ public class EconomiaService {
         }
 
         try {
-            HttpRequest req = HttpRequest.newBuilder(URI.create(ENDPOINT + "?key=" + apiKey))
+            // A chave vai no header, não na query string: URL aparece em log de
+            // proxy e em mensagem de erro de cliente HTTP, header não.
+            HttpRequest req = HttpRequest.newBuilder(URI.create(ENDPOINT))
                     .header("Content-Type", "application/json")
+                    .header("x-goog-api-key", apiKey)
                     .timeout(Duration.ofSeconds(60))
                     .POST(HttpRequest.BodyPublishers.ofString(corpo(montarPrompt(request.contas()))))
                     .build();
@@ -90,6 +133,8 @@ public class EconomiaService {
           .append("3. Estimativa de economia com geração solar, em R$ por mês e em percentual,\n")
           .append("   partindo da média de consumo observada.\n")
           .append("4. Três ações práticas, em ordem de impacto.\n\n")
+          .append("Formatação: use '## ' só para subtítulos, '- ' para listas e **negrito** para\n")
+          .append("destacar valores. Não use tabelas, blocos de código nem links.\n\n")
           .append("Regras: não invente nenhum número que não esteja nas contas. Se um dado não\n")
           .append("aparecer, diga explicitamente que não foi encontrado. Não repita nome, CPF nem\n")
           .append("endereço do titular na resposta.\n");

@@ -59,6 +59,10 @@ public class SecurityConfig {
                     // nada: responde {"status":"ok"} sem tocar no banco.
                     .requestMatchers(HttpMethod.GET, "/health").permitAll()
 
+                    // Igual ao /health, mas com um SELECT 1 — usado pelo
+                    // keep-alive para manter o pool de conexões aquecido.
+                    .requestMatchers(HttpMethod.GET, "/health/db").permitAll()
+
                     // As duas únicas portas abertas: entrar e criar conta.
                     .requestMatchers(HttpMethod.POST, "/api/auth/login").permitAll()
                     .requestMatchers(HttpMethod.POST, "/api/usuarios").permitAll()

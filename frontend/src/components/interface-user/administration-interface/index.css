@@ -796,3 +796,11 @@
     max-width: 46rem;
     line-height: 1.6;
 }
+
+
+/* Links para a consulta pública do CREA usam as mesmas classes dos botões. */
+a.btn-visualizar,
+a.btn-visualizar-pdf {
+    display: inline-block;
+    text-decoration: none;
+}

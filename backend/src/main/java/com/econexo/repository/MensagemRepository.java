@@ -15,6 +15,8 @@ public interface MensagemRepository extends JpaRepository<Mensagem, Integer> {
      */
     @Query("""
            SELECT m FROM Mensagem m
+           JOIN FETCH m.remetente
+           JOIN FETCH m.destinatario
            WHERE m.remetente.idUsuario = :idUsuario
               OR m.destinatario.idUsuario = :idUsuario
            ORDER BY m.criadoEm ASC
@@ -24,6 +26,8 @@ public interface MensagemRepository extends JpaRepository<Mensagem, Integer> {
     /** Conversa entre duas pessoas, nos dois sentidos. */
     @Query("""
            SELECT m FROM Mensagem m
+           JOIN FETCH m.remetente
+           JOIN FETCH m.destinatario
            WHERE (m.remetente.idUsuario = :a AND m.destinatario.idUsuario = :b)
               OR (m.remetente.idUsuario = :b AND m.destinatario.idUsuario = :a)
            ORDER BY m.criadoEm ASC

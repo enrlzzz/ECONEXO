@@ -7,6 +7,7 @@ import { FiAlertTriangle, FiCheck, FiLock } from "react-icons/fi";
 
 import { economiaService } from "../../../services/economia";
 import { extrairTextoDoPdf } from "./extrairPdf";
+import TextoAnalise from "./TextoAnalise";
 
 export const MIN_CONTAS = 2;
 const MAX_CONTAS = 6;
@@ -351,7 +352,7 @@ export default function EconomiaAnalise() {
             <strong>Resultado da análise</strong>
             {resultado.fonte && <span className="eco-badge eco-badge--info">{resultado.fonte}</span>}
           </header>
-          <p>{resultado.analise}</p>
+          <TextoAnalise texto={resultado.analise} />
           <button type="button" className="eco-btn eco-btn--outline-dark" onClick={limparResultado}>
             Analisar outras contas
           </button>

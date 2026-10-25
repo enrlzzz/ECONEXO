@@ -41,6 +41,8 @@ class SegurancaIntegrationTest {
     @Autowired com.econexo.repository.PostRepository postRepository;
     @Autowired com.econexo.repository.MensagemRepository mensagemRepository;
     @Autowired com.econexo.repository.ProjetoRepository projetoRepository;
+    @Autowired com.econexo.repository.NotificacaoRepository notificacaoRepository;
+    @Autowired com.econexo.repository.CredencialCreaRepository credencialCreaRepository;
     @Autowired ObjectMapper json;
     @Autowired RateLimitService rateLimitService;
     @Autowired jakarta.persistence.EntityManager entityManager;
@@ -54,6 +56,9 @@ class SegurancaIntegrationTest {
         // CASCADE (ver database/schema.sql), mas no H2 quem cria o schema é o
         // Hibernate, e ele gera as FKs sem cascade — apagar usuário direto
         // estoura violação de integridade.
+        // Notificação e credencial CREA apontam para usuário: saem antes dele.
+        notificacaoRepository.deleteAll();
+        credencialCreaRepository.deleteAll();
         postCurtidaRepository.deleteAll();
         postComentarioRepository.deleteAll();
         postRepository.deleteAll();
@@ -518,5 +523,125 @@ class SegurancaIntegrationTest {
     private String semTimestamp(MvcResult r) throws Exception {
         return r.getResponse().getContentAsString()
                 .replaceAll("\"momento\":\"[^\"]+\"", "\"momento\":\"-\"");
+    }
+
+    // ---------- Reputação, notificações, busca e CREA ----------
+
+    private static final String EMAIL_B = "avaliado@econexo.test";
+    private static final String SENHA_B = "SenhaAv123";
+
+    /** Cadastra o segundo usuário e devolve o id dele. */
+    private Integer cadastrarSegundoUsuario() throws Exception {
+        String corpo = """
+                {"nome":"Avaliado","email":"%s","senha":"%s",
+                 "cpf":"98765432100","telefone":"15988887777","dataNascimento":"1992-03-15",
+                 "consentimentoLgpd":true}
+                """.formatted(EMAIL_B, SENHA_B);
+
+        mvc.perform(post("/api/usuarios").contentType(MediaType.APPLICATION_JSON).content(corpo))
+                .andExpect(status().isCreated());
+        return usuarioRepository.findByEmail(EMAIL_B).orElseThrow().getIdUsuario();
+    }
+
+    @Test
+    @DisplayName("Reputação - a mesma pessoa não avalia o mesmo profissional duas vezes")
+    void avaliacaoDuplicadaEhBloqueada() throws Exception {
+        String tokenA = cadastrar();
+        Integer idB = cadastrarSegundoUsuario();
+        String corpo = "{\"avaliadoId\":%d,\"estrelas\":5,\"comentario\":\"Otimo\"}".formatted(idB);
+
+        mvc.perform(post("/api/avaliacoes").header("Authorization", "Bearer " + tokenA)
+                .contentType(MediaType.APPLICATION_JSON).content(corpo))
+                .andExpect(status().isCreated());
+
+        mvc.perform(post("/api/avaliacoes").header("Authorization", "Bearer " + tokenA)
+                .contentType(MediaType.APPLICATION_JSON).content(corpo))
+                .andExpect(status().isConflict());
+    }
+
+    @Test
+    @DisplayName("Notificações - avaliar gera aviso só para o avaliado, e cada um lê as suas")
+    void notificacaoVaiSoParaODestinatario() throws Exception {
+        String tokenA = cadastrar();
+        Integer idB = cadastrarSegundoUsuario();
+
+        mvc.perform(post("/api/avaliacoes").header("Authorization", "Bearer " + tokenA)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("{\"avaliadoId\":%d,\"estrelas\":4}".formatted(idB)))
+                .andExpect(status().isCreated());
+
+        String tokenB = logar(EMAIL_B, SENHA_B);
+
+        String deB = mvc.perform(get("/api/notificacoes").header("Authorization", "Bearer " + tokenB))
+                .andExpect(status().isOk()).andReturn().getResponse().getContentAsString();
+        assertThat(json.readTree(deB)).hasSize(1);
+        assertThat(json.readTree(deB).get(0).get("tipo").asText()).isEqualTo("AVALIACAO");
+
+        String deA = mvc.perform(get("/api/notificacoes").header("Authorization", "Bearer " + tokenA))
+                .andExpect(status().isOk()).andReturn().getResponse().getContentAsString();
+        assertThat(json.readTree(deA)).isEmpty();
+
+        String contador = mvc.perform(get("/api/notificacoes/nao-lidas")
+                        .header("Authorization", "Bearer " + tokenB))
+                .andExpect(status().isOk()).andReturn().getResponse().getContentAsString();
+        assertThat(json.readTree(contador).get("total").asInt()).isEqualTo(1);
+
+        mvc.perform(post("/api/notificacoes/lidas").header("Authorization", "Bearer " + tokenB))
+                .andExpect(status().isOk());
+
+        String depois = mvc.perform(get("/api/notificacoes/nao-lidas")
+                        .header("Authorization", "Bearer " + tokenB))
+                .andReturn().getResponse().getContentAsString();
+        assertThat(json.readTree(depois).get("total").asInt()).isZero();
+    }
+
+    @Test
+    @DisplayName("Busca - não lista o próprio usuário e não expõe contato")
+    void buscaNaoListaOProprioUsuarioNemExpoeContato() throws Exception {
+        String tokenA = cadastrar();
+        cadastrarSegundoUsuario();
+
+        String corpo = mvc.perform(get("/api/usuarios/busca").header("Authorization", "Bearer " + tokenA))
+                .andExpect(status().isOk()).andReturn().getResponse().getContentAsString();
+
+        assertThat(json.readTree(corpo)).hasSize(1);
+        assertThat(json.readTree(corpo).get(0).get("nome").asText()).isEqualTo("Avaliado");
+        assertThat(corpo).doesNotContain("email", "telefone", "cpf", "senha");
+    }
+
+    @Test
+    @DisplayName("CREA - o profissional só pede a verificação; não se aprova sozinho")
+    void creaFicaPendenteENaoEhAutoVerificada() throws Exception {
+        String tokenA = cadastrar();
+
+        String corpo = mvc.perform(post("/api/validacoes/crea")
+                        .header("Authorization", "Bearer " + tokenA)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"nome\":\"Ricardo Teste\",\"registro\":\"5061234567\",\"uf\":\"SP\"}"))
+                .andExpect(status().isOk()).andReturn().getResponse().getContentAsString();
+        assertThat(json.readTree(corpo).get("status").asText()).isEqualTo("PENDENTE");
+
+        // Usuário comum não vê a fila nem decide.
+        mvc.perform(get("/api/validacoes/crea/pendentes").header("Authorization", "Bearer " + tokenA))
+                .andExpect(status().isForbidden());
+
+        Integer idCredencial = credencialCreaRepository.findAll().get(0).getIdCredencial();
+        mvc.perform(post("/api/validacoes/crea/%d/decisao".formatted(idCredencial))
+                        .header("Authorization", "Bearer " + tokenA)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"aprovada\":true}"))
+                .andExpect(status().isForbidden());
+
+        String minha = mvc.perform(get("/api/validacoes/crea/minha").header("Authorization", "Bearer " + tokenA))
+                .andExpect(status().isOk()).andReturn().getResponse().getContentAsString();
+        assertThat(json.readTree(minha).get("status").asText()).isEqualTo("PENDENTE");
+    }
+
+    @Test
+    @DisplayName("CREA - sem token não há consulta")
+    void creaExigeAutenticacao() throws Exception {
+        mvc.perform(post("/api/validacoes/crea").contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"nome\":\"X\",\"registro\":\"123456\",\"uf\":\"SP\"}"))
+                .andExpect(status().isUnauthorized());
     }
 }

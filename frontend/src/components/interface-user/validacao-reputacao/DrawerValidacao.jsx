@@ -36,11 +36,12 @@ const espera = (ms) => new Promise((r) => setTimeout(r, ms));
 /**
  * Drawer de validação de credencial — os três passos do protótipo.
  *
- * Diferença em relação ao HTML: o passo 3 do CREA chama de verdade
- * POST /api/validacoes/crea. O protótipo simulava sempre sucesso; aqui a
- * consulta pode voltar INCONCLUSIVO, e nesse caso a tela diz isso em vez
- * de fingir que o registro foi confirmado. As NRs seguem documentais —
- * não existe base pública para conferi-las.
+ * O passo 3 do CREA chama de verdade POST /api/validacoes/crea, que GRAVA a
+ * solicitação como PENDENTE. Quem verifica é um administrador, conferindo
+ * nome e registro na consulta pública do conselho da UF — por isso esta
+ * tela nunca diz "verificado" no ato do envio: ela diz "enviado para
+ * conferência" e só mostra o selo quando o servidor responde VERIFICADA.
+ * As NRs seguem simuladas (protótipo): não há base pública para conferi-las.
  */
 export default function DrawerValidacao({ tipoInicial = "crea", aoFechar, aoConcluir, avisar }) {
   const usuario = useUserData();
@@ -87,7 +88,7 @@ export default function DrawerValidacao({ tipoInicial = "crea", aoFechar, aoConc
   }, [aoFechar]);
 
   const rotulosCheck = ehCrea
-    ? ["Identidade e registro", "Situação cadastral", "Evidência e rastreabilidade"]
+    ? ["Dados do registro", "Formato e UF", "Conferência pela equipe"]
     : ["Estrutura do certificado", "Carga horária e reciclagem", "Emissor e responsáveis"];
 
   const [detalhesCheck, setDetalhesCheck] = useState(["Aguardando…", "Aguardando…", "Aguardando…"]);
@@ -113,38 +114,59 @@ export default function DrawerValidacao({ tipoInicial = "crea", aoFechar, aoConc
         }));
 
       await espera(650);
-      marcar(0, "ok", "Nome e registro enviados para consulta");
+      marcar(0, "ok", "Nome e registro enviados");
       await espera(650);
-      marcar(1, "ok", "Consultando a fonte pública do conselho");
+      marcar(1, "ok", "Formato do registro e UF conferidos");
 
       const resposta = await consulta;
 
-      const encontrado = resposta.status === "ATIVO";
-      marcar(2, encontrado ? "ok" : "atencao", encontrado
-        ? "Origem e horário registrados na auditoria"
-        : "Consulta inconclusiva — confira na fonte oficial");
+      const verificada = resposta.status === "VERIFICADA";
+      const erro = resposta.status === "ERRO";
+      const rejeitada = resposta.status === "REJEITADA";
+
+      marcar(
+        2,
+        verificada ? "ok" : "atencao",
+        verificada
+          ? "Conferido por um administrador"
+          : erro
+            ? "Não foi possível enviar"
+            : rejeitada
+              ? "Não aprovado pela equipe"
+              : "Aguardando conferência da equipe",
+      );
 
       await espera(380);
 
+      const titulos = {
+        VERIFICADA: "Registro verificado",
+        REJEITADA: "Registro não aprovado",
+        ERRO: "Não foi possível enviar",
+      };
+
       setResultado({
-        revisao: !encontrado,
-        titulo: encontrado
-          ? "Registro encontrado e compatível"
-          : "Consulta inconclusiva",
-        meta: encontrado
-          ? "Consulta oficial • verificado agora"
-          : "Consulta oficial • sem confirmação automática",
-        rotuloOficial: "Resultado da consulta pública",
+        revisao: !verificada,
+        titulo: titulos[resposta.status] || "Enviado para conferência",
+        meta: verificada
+          ? "Conferido na consulta pública do CREA"
+          : erro
+            ? "Nada foi gravado"
+            : "A equipe confere na consulta pública do CREA",
+        rotuloOficial: "Situação",
         valorOficial: resposta.mensagem,
         fonte: resposta.fonte,
         celulas: [
           ["Registro", resposta.registro || crea.registro],
           ["Conselho", `CREA-${resposta.uf || crea.uf}`],
-          ["Situação", encontrado ? "Localizado" : "Não confirmado"],
-          ["Status EcoNexo", encontrado ? "Vinculado" : "Pendente"],
+          [
+            "Situação",
+            verificada ? "Verificado" : rejeitada ? "Não aprovado" : erro ? "Não enviado" : "Em conferência",
+          ],
+          ["Status EcoNexo", verificada ? "Vinculado" : erro ? "Não vinculado" : "Pendente"],
         ],
-        nota: "A consulta pública do CREA é informativa e não substitui uma certidão quando ela for exigida como comprovação oficial.",
-        vinculado: encontrado,
+        nota: "A conferência é feita na consulta pública do conselho e não substitui uma certidão quando ela for exigida como comprovação oficial.",
+        vinculado: verificada,
+        statusCrea: resposta.status,
       });
     } else {
       const rotulo = tipo === "nr10" ? "NR-10" : "NR-35";
@@ -289,7 +311,8 @@ export default function DrawerValidacao({ tipoInicial = "crea", aoFechar, aoConc
                 <div>
                   <strong>Dois tipos de verificação</strong>
                   <p>
-                    CREA por consulta oficial. NRs por evidência documental:
+                    CREA conferido por um administrador na consulta pública do
+                    conselho. NRs por evidência documental:
                     datas, emissor, carga horária e revisão humana quando
                     necessário.
                   </p>
@@ -345,10 +368,11 @@ export default function DrawerValidacao({ tipoInicial = "crea", aoFechar, aoConc
               <div className="vr-info">
                 <span aria-hidden="true"><FiExternalLink /></span>
                 <div>
-                  <strong>Consulta prevista: CREA-{crea.uf}</strong>
+                  <strong>Conferência no CREA-{crea.uf}</strong>
                   <p>
-                    O resultado vira evidência no seu perfil, com origem e
-                    horário registrados na trilha de auditoria.
+                    Seu pedido fica pendente até um administrador conferir nome
+                    e registro na consulta pública do conselho. Só depois disso
+                    o selo de CREA aparece no seu perfil e na busca.
                   </p>
                 </div>
               </div>

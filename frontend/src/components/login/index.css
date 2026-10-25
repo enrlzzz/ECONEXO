@@ -210,3 +210,18 @@ label {
         max-width: 60rem;
     }
 }
+
+
+/* Aviso de servidor acordando (primeiro acesso depois de um tempo parado). */
+.login-demora {
+    margin-top: 1rem;
+    padding: 1rem 1.2rem;
+
+    border-radius: 8px;
+
+    background: var(--eco-blue-50, #f2f2fe);
+    color: var(--eco-blue-800, #191880);
+
+    font-size: 1.3rem;
+    line-height: 1.5;
+}

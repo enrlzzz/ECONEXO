@@ -551,3 +551,25 @@
         font-size: 3.2rem;
     }
 }
+
+
+/* Contador de notificações não lidas, ao lado de "Notificações". */
+.notif-selo {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    min-width: 1.8rem;
+    height: 1.8rem;
+    padding-inline: 0.5rem;
+    margin-left: 0.6rem;
+
+    border-radius: 999px;
+
+    background: var(--eco-solar-500, #e8911b);
+    color: #fff;
+
+    font-size: 1.1rem;
+    font-weight: 700;
+    line-height: 1;
+}

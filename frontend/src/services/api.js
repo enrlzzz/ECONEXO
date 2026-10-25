@@ -12,6 +12,26 @@ function ehRotaPublica(path, method) {
   return path === "/usuarios" && method === "POST";
 }
 
+let apiAquecida = false;
+
+/**
+ * Acorda a API sem esperar ninguém clicar em nada.
+ *
+ * O backend roda no plano gratuito do Render, que desliga a instância após
+ * ~15 min sem tráfego; religar leva 1 a 1,5 min. Chamamos isto quando a
+ * pessoa abre a home ou a tela de login: enquanto ela digita e-mail e senha
+ * o servidor já está subindo, e o clique em "Entrar" não paga o boot inteiro.
+ *
+ * mode "no-cors" porque só importa que a requisição CHEGUE — a resposta é
+ * descartada, e assim o navegador não reclama de CORS no console.
+ */
+export function aquecerApi() {
+  // Em dev o proxy do Vite aponta para o backend local: nada a acordar.
+  if (!API_HOST || apiAquecida) return;
+  apiAquecida = true;
+  fetch(`${API_HOST}/health`, { method: "GET", mode: "no-cors", cache: "no-store" }).catch(() => {});
+}
+
 async function request(path, { method = "GET", body, params, headers } = {}) {
   const url = new URL(`${BASE_URL}${path}`, window.location.origin);
   if (params) {
@@ -40,11 +60,14 @@ async function request(path, { method = "GET", body, params, headers } = {}) {
   if (!response.ok) {
     const payload = await lerCorpo(response);
 
-    // Token expirado ou inválido numa rota protegida: encerra a sessão e
-    // manda para o login, em vez de deixar a interface quebrada mostrando erro.
+    // Token expirado ou inválido: encerra a sessão. E só manda para o login
+    // quando a pessoa está na ÁREA LOGADA. Na home pública (onde um visitante
+    // sem conta pode clicar em "Analisar minha conta") um 401 não é "sessão
+    // caiu" — é "entre para usar", e quem trata isso é a própria tela. Antes
+    // qualquer 401 jogava o visitante no /login sem explicação.
     if (response.status === 401 && !ehRotaPublica(path, method)) {
       logout();
-      if (window.location.pathname !== "/login") {
+      if (window.location.pathname.startsWith("/menu-user")) {
         window.location.assign("/login");
       }
     }
