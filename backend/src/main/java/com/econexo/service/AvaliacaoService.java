@@ -3,6 +3,7 @@ package com.econexo.service;
 import com.econexo.dto.AvaliacaoRequest;
 import com.econexo.dto.AvaliacaoResponse;
 import com.econexo.exception.AcessoNegadoException;
+import com.econexo.exception.RegraNegocioException;
 import com.econexo.exception.ValidacaoException;
 import com.econexo.model.Avaliacao;
 import com.econexo.model.Usuario;
@@ -20,13 +21,16 @@ public class AvaliacaoService {
     private final AvaliacaoRepository repository;
     private final UsuarioRepository usuarioRepository;
     private final ProjetoRepository projetoRepository;
+    private final NotificacaoService notificacaoService;
 
     public AvaliacaoService(AvaliacaoRepository repository,
                             UsuarioRepository usuarioRepository,
-                            ProjetoRepository projetoRepository) {
+                            ProjetoRepository projetoRepository,
+                            NotificacaoService notificacaoService) {
         this.repository = repository;
         this.usuarioRepository = usuarioRepository;
         this.projetoRepository = projetoRepository;
+        this.notificacaoService = notificacaoService;
     }
 
     /** Reputação de um profissional — informação pública por natureza. */
@@ -43,6 +47,9 @@ public class AvaliacaoService {
      * Antes o controller recebia a entidade Avaliacao inteira, então bastava
      * mandar {"avaliador":{"idUsuario":9}} para fabricar uma nota assinada por
      * outra pessoa. Num sistema cujo produto é reputação, esse é o pior caso.
+     *
+     * Pelo mesmo motivo, cada pessoa avalia a outra UMA vez (por projeto):
+     * sem isso, bastava clicar cinco vezes para empurrar a média de um amigo.
      */
     @Transactional
     public AvaliacaoResponse avaliar(Integer idAutenticado, AvaliacaoRequest req) {
@@ -56,6 +63,18 @@ public class AvaliacaoService {
         Usuario avaliado = usuarioRepository.findById(req.avaliadoId())
                 .orElseThrow(() -> new ValidacaoException("Profissional avaliado não encontrado."));
 
+        boolean jaAvaliou = req.projetoId() != null
+                ? repository.existsByAvaliadorIdUsuarioAndAvaliadoIdUsuarioAndProjetoIdProjeto(
+                        idAutenticado, req.avaliadoId(), req.projetoId())
+                : repository.existsByAvaliadorIdUsuarioAndAvaliadoIdUsuarioAndProjetoIsNull(
+                        idAutenticado, req.avaliadoId());
+
+        if (jaAvaliou) {
+            throw new RegraNegocioException(req.projetoId() != null
+                    ? "Você já avaliou este profissional neste projeto."
+                    : "Você já avaliou este profissional.");
+        }
+
         Avaliacao avaliacao = new Avaliacao();
         avaliacao.setAvaliador(avaliador);
         avaliacao.setAvaliado(avaliado);
@@ -67,6 +86,14 @@ public class AvaliacaoService {
                     .orElseThrow(() -> new ValidacaoException("Projeto não encontrado.")));
         }
 
-        return AvaliacaoResponse.de(repository.save(avaliacao));
+        Avaliacao salva = repository.save(avaliacao);
+
+        notificacaoService.criar(
+                avaliado.getIdUsuario(), idAutenticado, "AVALIACAO",
+                avaliador.getNome() + " avaliou você com " + req.estrelas()
+                        + (req.estrelas() == 1 ? " estrela." : " estrelas."),
+                salva.getIdAvaliacao());
+
+        return AvaliacaoResponse.de(salva);
     }
 }

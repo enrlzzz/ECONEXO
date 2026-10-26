@@ -31,14 +31,14 @@ concurrency:
 
 jobs:
   ping:
-    name: Ping /health
+    name: Ping /health e /health/db
     runs-on: ubuntu-latest
     timeout-minutes: 5
 
     steps:
       - name: Ping no health check
         env:
-          HEALTH_URL: https://econexo-api.onrender.com/health
+          API_URL: https://econexo-api.onrender.com
         run: |
           set -euo pipefail
 
@@ -51,7 +51,7 @@ jobs:
           resposta=$(curl --silent --show-error --fail-with-body \
                           --location --max-time 120 \
                           --write-out '\nHTTP %{http_code} em %{time_total}s\n' \
-                          "$HEALTH_URL")
+                          "$API_URL/health")
 
           echo "$resposta"
 
@@ -59,3 +59,15 @@ jobs:
           # corpo certo prova que quem respondeu foi o Spring, não o Render.
           # Falhar aqui pinta a Action de vermelho e serve de alerta.
           echo "$resposta" | grep -q '"status":"ok"'
+
+          # Segundo ping, agora COM banco: mantém as conexões do pool vivas.
+          # Só /health deixava a API acordada e o pool dormindo — e o primeiro
+          # login depois de um tempo pagava a reconexão TLS com o MySQL.
+          # "bancoMs" no log mostra a latência Render -> Hostinger.
+          resposta_db=$(curl --silent --show-error --fail-with-body \
+                             --location --max-time 60 \
+                             --write-out '\nHTTP %{http_code} em %{time_total}s\n' \
+                             "$API_URL/health/db")
+
+          echo "$resposta_db"
+          echo "$resposta_db" | grep -q '"banco":"ok"'

@@ -1,6 +1,7 @@
 package com.econexo.controller;
 
 import com.econexo.dto.ErroResponse;
+import com.econexo.dto.ProfissionalBuscaResponse;
 import com.econexo.dto.ProfissionalResponse;
 import com.econexo.dto.UsuarioRequest;
 import com.econexo.dto.UsuarioResponse;
@@ -73,13 +74,14 @@ public class UsuarioController {
      * Filtros em branco são ignorados.
      */
     @GetMapping("/busca")
-    public List<ProfissionalResponse> buscar(
+    public List<ProfissionalBuscaResponse> buscar(
+            @AuthenticationPrincipal Integer idAutenticado,
             @RequestParam(required = false) String nome,
             @RequestParam(required = false) String cidade,
             @RequestParam(required = false) String estado,
             @RequestParam(required = false) String tipo) {
 
-        return usuarioService.buscarProfissionais(nome, cidade, estado, tipo);
+        return usuarioService.buscarProfissionais(idAutenticado, nome, cidade, estado, tipo);
     }
 
     /**

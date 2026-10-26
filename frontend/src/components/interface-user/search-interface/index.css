@@ -631,3 +631,197 @@
     background: var(--eco-bg, #f6f8fb);
     color: var(--black);
 }
+
+
+/* =====================================================================
+   Reputação, selo de CREA e estrelas (busca de profissionais)
+   ===================================================================== */
+
+.instalador-reputacao {
+    margin-top: 0.8rem;
+    font-size: 1.4rem;
+    color: var(--black);
+}
+
+.instalador-reputacao--vazia {
+    color: var(--gray);
+}
+
+.instalador-reputacao .stars-icon {
+    color: var(--eco-solar-500, #e8911b);
+}
+
+.selo-crea {
+    display: inline-block;
+    margin-top: 0.8rem;
+    padding: 0.3rem 1rem;
+
+    border-radius: 999px;
+
+    background: #e6f6ee;
+    color: #0b6b43;
+
+    font-size: 1.2rem;
+    font-weight: 700;
+}
+
+.selo-crea--pendente {
+    background: var(--whitesmoke);
+    color: var(--gray);
+}
+
+/* ------------------------- painel de reputação ------------------------- */
+
+.rep-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 1000;
+
+    display: flex;
+    justify-content: flex-end;
+
+    background: rgba(0, 0, 0, 0.45);
+}
+
+.rep-painel {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+
+    width: min(48rem, 100%);
+    height: 100%;
+    padding: 2.4rem;
+    overflow-y: auto;
+
+    background: var(--white);
+}
+
+.rep-topo {
+    display: flex;
+    align-items: center;
+    gap: 1.4rem;
+}
+
+.rep-topo h2 {
+    margin: 0;
+    font-size: 2rem;
+    color: var(--black);
+}
+
+.rep-fechar {
+    margin-left: auto;
+
+    display: grid;
+    place-items: center;
+
+    width: 3.6rem;
+    height: 3.6rem;
+
+    border: 1px solid var(--graybutton);
+    border-radius: 50%;
+    background: var(--white);
+
+    font-size: 1.8rem;
+    cursor: pointer;
+}
+
+.rep-resumo {
+    display: flex;
+    align-items: baseline;
+    gap: 1rem;
+
+    padding: 1.6rem 2rem;
+    border-radius: 1.6rem;
+
+    background: var(--whitesmoke);
+    font-size: 1.4rem;
+    color: var(--gray);
+}
+
+.rep-resumo strong {
+    font-size: 3.2rem;
+    color: var(--black);
+}
+
+.rep-estrelas {
+    color: var(--eco-solar-500, #e8911b);
+    letter-spacing: 0.1rem;
+}
+
+.rep-estrelas-vazias {
+    color: var(--graybutton);
+}
+
+.rep-form,
+.rep-lista {
+    display: flex;
+    flex-direction: column;
+    gap: 1.2rem;
+}
+
+.rep-form h3,
+.rep-lista h3 {
+    margin: 0;
+    font-size: 1.6rem;
+    color: var(--black);
+}
+
+.rep-form textarea {
+    padding: 1.2rem;
+
+    border: 1px solid var(--graybutton);
+    border-radius: 1.2rem;
+
+    font: inherit;
+    font-size: 1.4rem;
+    resize: vertical;
+}
+
+.rep-nota {
+    display: flex;
+    gap: 0.4rem;
+}
+
+.rep-nota button {
+    border: none;
+    background: none;
+
+    font-size: 3rem;
+    line-height: 1;
+    color: var(--graybutton);
+    cursor: pointer;
+}
+
+.rep-nota button.ligada {
+    color: var(--eco-solar-500, #e8911b);
+}
+
+.rep-ok {
+    padding: 1.2rem 1.4rem;
+    border-radius: 1.2rem;
+
+    background: #e6f6ee;
+    color: #0b6b43;
+    font-size: 1.4rem;
+}
+
+.rep-item {
+    padding: 1.4rem 1.6rem;
+
+    border: 1px solid var(--graybutton);
+    border-radius: 1.4rem;
+}
+
+.rep-item-topo {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    font-size: 1.4rem;
+}
+
+.rep-item p {
+    margin-top: 0.8rem;
+    font-size: 1.4rem;
+    color: var(--gray);
+    overflow-wrap: anywhere;
+}

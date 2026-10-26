@@ -1,6 +1,7 @@
 package com.econexo.repository;
 
 import com.econexo.model.PostCurtida;
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
@@ -11,6 +12,7 @@ public interface PostCurtidaRepository extends JpaRepository<PostCurtida, Intege
     Optional<PostCurtida> findByPostIdPostAndUsuarioIdUsuario(Integer idPost, Integer idUsuario);
 
     /** Todas as curtidas dos posts listados — evita N+1 ao montar a timeline. */
+    @EntityGraph(attributePaths = "usuario")
     List<PostCurtida> findByPostIdPostIn(List<Integer> idsPost);
 
     void deleteByPostIdPost(Integer idPost);

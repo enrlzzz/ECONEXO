@@ -1,6 +1,7 @@
 package com.econexo.repository;
 
 import com.econexo.model.PostComentario;
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
@@ -14,6 +15,7 @@ public interface PostComentarioRepository extends JpaRepository<PostComentario, 
      * timeline faria uma consulta por post (N+1) — com 50 posts na tela, 50
      * idas ao banco a cada carregamento.
      */
+    @EntityGraph(attributePaths = "autor")
     List<PostComentario> findByPostIdPostInOrderByCriadoEmAsc(List<Integer> idsPost);
 
     void deleteByPostIdPost(Integer idPost);

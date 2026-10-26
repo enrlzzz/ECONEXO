@@ -6,6 +6,7 @@ import { Link } from "react-router-dom";
 import { useState } from "react";
 
 import { useUserData } from "../../../useUserData";
+import EconomiaAnalise from "../../main/economia-analise";
 
 import { IoStarSharp } from "react-icons/io5";
 import { GoProjectRoadmap } from "react-icons/go";
@@ -173,6 +174,12 @@ export default function MainInterface() {
           </div>
         </div>
       </div>
+
+      {/* A análise é pensada para o tema escuro da home: o painel carrega
+          esse tema junto, em vez de reescrever o componente. */}
+      <section className="main-economia" aria-label="Análise de economia">
+        <EconomiaAnalise />
+      </section>
     </main>
   );
 }

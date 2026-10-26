@@ -5,6 +5,7 @@ import { useEffect, useMemo, useState } from "react";
 import { FiAward, FiCheck, FiClock, FiPlus } from "react-icons/fi";
 
 import HeaderInterface from "../header-interface";
+import { validacaoService } from "../../../services/validacao";
 import DrawerValidacao from "../validacao-reputacao/DrawerValidacao";
 import {
   AbasModulo,
@@ -28,6 +29,24 @@ import { useToasts } from "../validacao-reputacao/useToasts";
 
 const CHAVE = "econexo:credenciais";
 
+/**
+ * Como cada situação do CREA (vinda do servidor) aparece no cartão.
+ * O selo de CREA NÃO é guardado no navegador: antes ele vivia no
+ * localStorage e qualquer pessoa se marcava como verificada pelo DevTools.
+ */
+function aparenciaCrea(status) {
+  switch (status) {
+    case "VERIFICADA":
+      return { status: "verificada", selo: "Verificada", acao: "Detalhes" };
+    case "PENDENTE":
+      return { status: "atencao", selo: "Em conferência", acao: "Detalhes" };
+    case "REJEITADA":
+      return { status: "atencao", selo: "Não aprovada", acao: "Reenviar" };
+    default:
+      return { status: "pendente", selo: "Não vinculado", acao: "Vincular" };
+  }
+}
+
 const CREDENCIAIS_INICIAIS = [
   {
     id: "crea",
@@ -36,8 +55,8 @@ const CREDENCIAIS_INICIAIS = [
     descricao: "Registro profissional",
     status: "pendente",
     selo: "Não vinculado",
-    extra: "Consulta oficial",
-    meta: [["Fonte", "Conselho da UF"], ["Conferência", "Automática"]],
+    extra: "Conferência da equipe",
+    meta: [["Fonte", "Conselho da UF"], ["Conferência", "Administrador"]],
     acao: "Vincular",
   },
   {
@@ -76,7 +95,11 @@ export default function ValidacaoInterface() {
   const [credenciais, setCredenciais] = useState(() => {
     try {
       const salvo = localStorage.getItem(CHAVE);
-      return salvo ? JSON.parse(salvo) : CREDENCIAIS_INICIAIS;
+      if (!salvo) return CREDENCIAIS_INICIAIS;
+      // O CREA sempre começa "do zero" e é preenchido pelo servidor logo abaixo.
+      return JSON.parse(salvo).map((c) =>
+        c.id === "crea" ? CREDENCIAIS_INICIAIS[0] : c,
+      );
     } catch {
       return CREDENCIAIS_INICIAIS;
     }
@@ -86,6 +109,26 @@ export default function ValidacaoInterface() {
   const [filtro, setFiltro] = useState("todas");
   const [busca, setBusca] = useState("");
   const [drawer, setDrawer] = useState(null); // null | tipo
+
+  // Situação real do meu CREA, vinda do servidor.
+  useEffect(() => {
+    let vivo = true;
+    validacaoService
+      .creaMinha()
+      .then((r) => {
+        if (!vivo) return;
+        const aparencia = aparenciaCrea(r?.status);
+        setCredenciais((atuais) =>
+          atuais.map((c) => (c.id === "crea" ? { ...c, ...aparencia } : c)),
+        );
+      })
+      .catch(() => {
+        // Sem resposta: o cartão fica como "Não vinculado" — nunca "verificado".
+      });
+    return () => {
+      vivo = false;
+    };
+  }, []);
 
   useEffect(() => {
     try {
@@ -124,22 +167,35 @@ export default function ValidacaoInterface() {
 
     const vinculado = resultado.vinculado;
 
+    // Envio que falhou (ERRO) não muda nada: nada foi gravado.
+    if (tipo === "crea" && resultado.statusCrea === "ERRO") {
+      avisar("Não foi possível enviar o CREA agora. Tente de novo.");
+      return;
+    }
+
     setCredenciais((atuais) =>
-      atuais.map((c) =>
-        c.id !== tipo
-          ? c
-          : {
-              ...c,
-              status: vinculado ? "verificada" : "atencao",
-              selo: vinculado ? "Verificada" : "Em revisão",
-              acao: "Detalhes",
-            },
-      ),
+      atuais.map((c) => {
+        if (c.id !== tipo) return c;
+        if (tipo === "crea") return { ...c, ...aparenciaCrea(resultado.statusCrea) };
+        return {
+          ...c,
+          status: vinculado ? "verificada" : "atencao",
+          selo: vinculado ? "Verificada" : "Em revisão",
+          acao: "Detalhes",
+        };
+      }),
     );
 
     const nome = tipo === "crea" ? "Registro CREA" : tipo.toUpperCase();
 
-    if (vinculado) {
+    if (tipo === "crea" && !vinculado) {
+      registrarTrilha(
+        "Registro CREA enviado para conferência",
+        "Um administrador confere na consulta pública do conselho antes de liberar o selo.",
+        false,
+      );
+      avisar("CREA enviado. Aguarde a conferência da equipe.", "↗");
+    } else if (vinculado) {
       registrarTrilha(`${nome} vinculado`, "Consulta oficial concluída e evidência adicionada ao perfil.");
       avisar(`${nome} vinculado ao perfil.`);
     } else {

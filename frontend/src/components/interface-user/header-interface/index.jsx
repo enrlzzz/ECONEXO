@@ -5,6 +5,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 
 import { logout } from "../../../userSession";
+import { useNotificacoesNaoLidas } from "../../../useNotificacoesNaoLidas";
 import PerfilMenu from "../../shared/perfil-menu";
 import {
   useLogoAoTopo,
@@ -27,6 +28,7 @@ export default function HeaderInterface() {
   const navigate = useNavigate();
 
   const [menuOpen, setMenuOpen] = useState(false);
+  const naoLidas = useNotificacoesNaoLidas();
 
   useRolagemNoTopoAoTrocarDeRota();
   // Na area logada o logo aponta para a home social (/menu-user), nao para
@@ -104,6 +106,14 @@ export default function HeaderInterface() {
           <Link to="/menu-user/notifications">
             <span>
               <IoIosNotificationsOutline /> Notificações
+              {naoLidas > 0 && (
+                <b
+                  className="notif-selo"
+                  aria-label={`${naoLidas} não lidas`}
+                >
+                  {naoLidas > 99 ? "99+" : naoLidas}
+                </b>
+              )}
             </span>
           </Link>
 
@@ -172,6 +182,11 @@ export default function HeaderInterface() {
           onClick={() => setMenuOpen(false)}
         >
           <IoIosNotificationsOutline /> Notificações
+          {naoLidas > 0 && (
+            <b className="notif-selo" aria-label={`${naoLidas} não lidas`}>
+              {naoLidas > 99 ? "99+" : naoLidas}
+            </b>
+          )}
         </Link>
 
         <Link to="/menu-user/portfolio" onClick={() => setMenuOpen(false)}>

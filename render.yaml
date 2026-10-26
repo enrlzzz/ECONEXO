@@ -38,6 +38,13 @@ services:
       - key: DB_PASS
         sync: false
 
+      # Chave da API do Gemini (análise de economia da conta de luz).
+      # Sem ela a análise responde "indisponível" — era o caso em produção,
+      # porque a variável nunca esteve declarada aqui. sync: false = você cola
+      # o valor no painel do Render; nada de chave no Git.
+      - key: GEMINI_API_KEY
+        sync: false
+
       # Domínios autorizados a chamar a API (CORS).
       # Ex: https://econexo.com,https://www.econexo.com
       # Sem valor, o backend se RECUSA a subir — em produção é melhor falhar
