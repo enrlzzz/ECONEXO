@@ -17,6 +17,7 @@ import { MdAccessTime } from "react-icons/md";
 import { FiPlus } from "react-icons/fi";
 import { FaUserGroup } from "react-icons/fa6";
 import { FaUserEdit } from "react-icons/fa";
+import { MdEvStation } from "react-icons/md";
 
 export default function MainInterface() {
   const { nome, cidade, estado } = useUserData();
@@ -169,6 +170,15 @@ export default function MainInterface() {
                   <FaUserEdit />
                 </span>
                 Administração
+              </button>
+            </Link>
+
+            <Link to="/menu-user/pontos-recarga">
+              <button>
+                <span>
+                  <MdEvStation />
+                </span>
+                Pontos de Recarga EV
               </button>
             </Link>
           </div>

@@ -11,10 +11,12 @@
   },
   "dependencies": {
     "@tabler/icons-react": "^3.41.1",
+    "leaflet": "^1.9.4",
     "pdfjs-dist": "^6.3.289",
     "react": "^19.2.4",
     "react-dom": "^19.2.4",
     "react-icons": "^5.6.0",
+    "react-leaflet": "^5.0.0",
     "react-router-dom": "^7.18.2"
   },
   "devDependencies": {
