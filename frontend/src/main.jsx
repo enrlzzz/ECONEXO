@@ -1,5 +1,6 @@
 import { createRoot } from "react-dom/client";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import "leaflet/dist/leaflet.css";
 import "./reset.css";
 import "./variables.css";
 import "./animations.css";
@@ -19,6 +20,7 @@ import Search from "./components/interface-user/search-interface/index.jsx";
 import Profile from "./components/interface-user/profile-interface/index.jsx";
 import Settings from "./components/interface-user/settings-interface/index.jsx";
 import Administration from "./components/interface-user/administration-interface/index.jsx";
+import PontosRecarga from "./components/interface-user/pontos-recarga/index.jsx";
 import PoliticaPrivacidade from "./components/politica-privacidade/index.jsx";
 import ProtectedRoute from "./components/auth/ProtectedRoute.jsx";
 import AdminRoute from "./components/auth/AdminRoute.jsx";
@@ -105,6 +107,11 @@ const router = createBrowserRouter([
   {
     path: "/menu-user/settings",
     element: protect(<Settings />),
+  },
+
+  {
+    path: "/menu-user/pontos-recarga",
+    element: protect(<PontosRecarga />),
   },
 
   {
