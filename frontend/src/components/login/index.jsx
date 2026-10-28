@@ -110,7 +110,8 @@ export default function Login() {
           {demorando && (
             <p className="login-demora" role="status">
               O servidor estava em repouso e está acordando — na primeira vez
-              isso pode levar até 1 minuto. Aguarde, não precisa clicar de novo.
+              isso pode levar até 3 minutos. Aguarde, não precisa clicar de
+              novo.
             </p>
           )}
 
