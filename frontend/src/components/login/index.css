@@ -36,7 +36,9 @@
 
 .auth-linha-2 {
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    /* minmax(0, 1fr): sem o 0, a coluna não encolhe abaixo da largura
+       intrínseca do input e o segundo campo vaza do card. */
+    grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 1.8rem 1.4rem;
 }
 

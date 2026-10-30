@@ -3,6 +3,7 @@ import "./index.css";
 import { Link } from "react-router-dom";
 
 import Carrossel from "../carrossel";
+import Equipe from "../equipe";
 
 const PASSOS = [
   {
@@ -96,7 +97,9 @@ export default function Main() {
         </div>
       </section>
 
-      <section className="eco-faixa eco-faixa--nevoa" id="profissionais" aria-labelledby="pro-titulo">
+      <Equipe />
+
+      <section className="eco-faixa" id="profissionais" aria-labelledby="pro-titulo">
         <div className="eco-container">
           <p className="eco-kicker">Para profissionais</p>
           <h2 className="eco-titulo-secao" id="pro-titulo">Sua certificação vira confiança.</h2>
