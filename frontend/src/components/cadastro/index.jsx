@@ -4,8 +4,8 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 
 import PaginaPublica from "../layout/PaginaPublica";
-import { criarConta, entrarComGoogle } from "../../auth/sessao";
-import { BotaoEnviar, ConfirmarEmail, IconeGoogle } from "../login/conta";
+import { criarConta } from "../../auth/sessao";
+import { BotaoEnviar } from "../login/conta";
 import { useAposEntrar } from "../login/useAposEntrar";
 import { CamposCadastro } from "../login/CamposCadastro";
 import { DADOS_INICIAIS, paraApi } from "../login/cadastroDados";
@@ -17,7 +17,6 @@ export default function Cadastro() {
   const [erro, setErro] = useState("");
   const [erroSenha, setErroSenha] = useState("");
   const [enviando, setEnviando] = useState(null);
-  const [confirmacao, setConfirmacao] = useState(null);
 
   const alterar = (parcial) => setDados((d) => ({ ...d, ...parcial }));
 
@@ -43,21 +42,9 @@ export default function Cadastro() {
     }
     setEnviando("email");
     try {
-      seguir(await criarConta(conta.email, conta.senha, paraApi(conta.nome, dados)), setConfirmacao);
+      seguir(await criarConta(conta.email, conta.senha, paraApi(conta.nome, dados)));
     } catch (e2) {
       setErro(e2.message);
-    } finally {
-      setEnviando(null);
-    }
-  }
-
-  async function comGoogle() {
-    setErro("");
-    setEnviando("google");
-    try {
-      seguir(await entrarComGoogle(), setConfirmacao);
-    } catch (e) {
-      setErro(e.message);
     } finally {
       setEnviando(null);
     }
@@ -67,22 +54,11 @@ export default function Cadastro() {
     <PaginaPublica>
       <section className="auth-pagina">
         <div className="auth-card auth-card--largo">
-          {confirmacao !== null ? (
-            <ConfirmarEmail mensagem={confirmacao} aoConcluir={(r) => seguir(r, setConfirmacao)} />
-          ) : (
-            <>
+          <>
               <div>
                 <h1>Criar conta</h1>
                 <p className="eco-pequeno eco-mudo">Leva um minuto. Os dados profissionais podem ser completados depois.</p>
               </div>
-
-              <button type="button" className="eco-btn eco-btn--ghost" onClick={comGoogle}
-                disabled={enviando !== null} aria-busy={enviando === "google" || undefined}>
-                {enviando === "google" ? <span className="eco-giro" aria-hidden="true" /> : <IconeGoogle />}
-                Continuar com Google
-              </button>
-
-              <div className="eco-divisor">ou com e-mail</div>
 
               <form onSubmit={aoEnviar} noValidate>
                 <div className="eco-field">
@@ -122,8 +98,7 @@ export default function Cadastro() {
               <p className="auth-rodape">
                 Já tem conta? <Link className="eco-link" to="/login">Entrar</Link>
               </p>
-            </>
-          )}
+          </>
         </div>
       </section>
     </PaginaPublica>

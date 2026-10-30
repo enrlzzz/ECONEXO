@@ -3,7 +3,7 @@ import { useLogado } from "../../useUserData";
 
 /**
  * Conveniência de UX, não segurança (regra 5 do CLAUDE.md): quem autoriza é
- * o backend, validando o ID token do Firebase em cada chamada.
+ * o backend, validando o JWT em cada chamada.
  *
  * useLogado() é reativo: se a sessão cair com a tela aberta, redireciona.
  */

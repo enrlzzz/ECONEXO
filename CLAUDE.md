@@ -98,7 +98,11 @@ Não faça merge "consertando o teste" — conserte o código.
 
 ### Contrato da API de autenticação
 
-- **Login é pelo Firebase Authentication** (front). O `<token>` é o ID token do
+- **DECISÃO (30/out/2026): o front voltou a usar login/cadastro do backend
+  próprio (Render)** — `POST /api/auth/login` (JWT) e `POST /api/usuarios`. O
+  Firebase foi removido do front; o código do `/api/auth/firebase` continua no
+  backend, inativo, para uma eventual volta. O texto abaixo descreve esse modo.
+- **(Modo Firebase, desativado no front)** Login pelo Firebase Authentication. O `<token>` é o ID token do
   Firebase, validado no backend (`FirebaseTokenService`: assinatura do Google,
   `iss`/`aud` = `FIREBASE_PROJECT_ID`). Senha não passa mais pelo backend.
 - `POST /api/auth/firebase` — header `Authorization: Bearer <ID token>`, corpo

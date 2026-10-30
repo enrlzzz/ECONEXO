@@ -4,10 +4,10 @@ import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 
 import PaginaPublica from "../layout/PaginaPublica";
-import { entrar, entrarComGoogle } from "../../auth/sessao";
+import { entrar } from "../../auth/sessao";
 import { aquecerApi } from "../../services/api";
 import { isLoggedIn } from "../../userSession";
-import { BotaoEnviar, ConfirmarEmail, IconeGoogle } from "./conta";
+import { BotaoEnviar } from "./conta";
 import { useAposEntrar } from "./useAposEntrar";
 
 export default function Login() {
@@ -15,9 +15,8 @@ export default function Login() {
   const seguir = useAposEntrar();
   const [form, setForm] = useState({ email: "", senha: "" });
   const [erro, setErro] = useState("");
-  const [enviando, setEnviando] = useState(null); // null | "email" | "google"
+  const [enviando, setEnviando] = useState(null); // null | "email"
   const [demorando, setDemorando] = useState(false);
-  const [confirmacao, setConfirmacao] = useState(null);
 
   // O backend (plano gratuito do Render) dorme; acorda enquanto a pessoa digita.
   useEffect(() => {
@@ -30,7 +29,7 @@ export default function Login() {
     setEnviando(tipo);
     const aviso = setTimeout(() => setDemorando(true), 5000);
     try {
-      seguir(await acao(), setConfirmacao);
+      seguir(await acao());
     } catch (e) {
       setErro(e.message);
     } finally {
@@ -53,27 +52,11 @@ export default function Login() {
     <PaginaPublica>
       <section className="auth-pagina">
         <div className="auth-card">
-          {confirmacao !== null ? (
-            <ConfirmarEmail mensagem={confirmacao} aoConcluir={(r) => seguir(r, setConfirmacao)} />
-          ) : (
-            <>
+          <>
               <div>
                 <h1>Entrar</h1>
                 <p className="eco-pequeno eco-mudo">Acesse seu histórico de análises e o painel profissional.</p>
               </div>
-
-              <button
-                type="button"
-                className="eco-btn eco-btn--ghost"
-                onClick={() => executar("google", entrarComGoogle)}
-                disabled={enviando !== null}
-                aria-busy={enviando === "google" || undefined}
-              >
-                {enviando === "google" ? <span className="eco-giro" aria-hidden="true" /> : <IconeGoogle />}
-                Continuar com Google
-              </button>
-
-              <div className="eco-divisor">ou com e-mail</div>
 
               <form onSubmit={aoEnviar} noValidate>
                 <div className="eco-field">
@@ -82,10 +65,7 @@ export default function Login() {
                     value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} />
                 </div>
                 <div className="eco-field">
-                  <div className="auth-rotulo-linha">
-                    <label htmlFor="senha">Senha</label>
-                    <Link className="eco-link eco-pequeno" to="/recuperar-senha">Esqueceu a senha?</Link>
-                  </div>
+                  <label htmlFor="senha">Senha</label>
                   <input id="senha" type="password" autoComplete="current-password" required
                     value={form.senha} onChange={(e) => setForm({ ...form, senha: e.target.value })} />
                 </div>
@@ -103,8 +83,7 @@ export default function Login() {
               <p className="auth-rodape">
                 Ainda não tem conta? <Link className="eco-link" to="/register">Criar conta</Link>
               </p>
-            </>
-          )}
+          </>
         </div>
       </section>
     </PaginaPublica>

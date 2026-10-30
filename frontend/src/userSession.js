@@ -1,6 +1,5 @@
 // Centraliza leitura/escrita da sessão do usuário no localStorage.
-// Login persistente: enquanto houver userId, considera-se logado (o Firebase
-// confirma ao carregar e limpa o cache se a sessão dele tiver acabado).
+// Login persistente: enquanto o JWT não expirar, considera-se logado.
 
 // Cores de avatar: todas com texto branco acima de 4,5:1.
 const PALETTE = [
@@ -28,15 +27,41 @@ export function colorFor(seed) {
   return PALETTE[h % PALETTE.length];
 }
 
-// Tokens do login antigo (JWT próprio). Não são mais gravados — o login é
-// pelo Firebase —, mas logout() ainda os apaga de quem vinha da versão anterior.
-const CHAVES_LEGADAS = ["authToken", "authTokenExpiraEm"];
+const TOKEN_KEY = "authToken";
+const TOKEN_EXP_KEY = "authTokenExpiraEm";
 
 /**
- * Cache do usuário para a interface desenhar nome e avatar sem perguntar à
- * API a cada tela. NÃO é a credencial: quem autoriza é o ID token do
- * Firebase, que o SDK guarda e o api.js anexa a cada chamada.
+ * Guarda o JWT devolvido pelo login.
+ *
+ * É esse token que autoriza de verdade — o backend rejeita qualquer chamada
+ * sem ele. Os demais campos são só para a interface desenhar nome e avatar.
  */
+export function persistSession({ token, expiraEmSegundos, usuario }) {
+  if (token) {
+    localStorage.setItem(TOKEN_KEY, token);
+    localStorage.setItem(
+      TOKEN_EXP_KEY,
+      String(Date.now() + (expiraEmSegundos ?? 8 * 3600) * 1000),
+    );
+  }
+  persistUser(usuario);
+}
+
+export function getToken() {
+  const token = localStorage.getItem(TOKEN_KEY);
+  if (!token) return null;
+
+  // Expirado: limpa aqui para a interface não continuar se achando logada
+  // enquanto toda chamada à API volta 401.
+  const expiraEm = Number(localStorage.getItem(TOKEN_EXP_KEY) || 0);
+  if (expiraEm && Date.now() > expiraEm) {
+    logout();
+    return null;
+  }
+  return token;
+}
+
+/** Cache do usuário para a interface desenhar nome e avatar sem perguntar à API a cada tela. */
 export function persistUser(usuario) {
   if (!usuario) return;
   const id = String(usuario.idUsuario ?? usuario.id ?? "");
@@ -82,7 +107,7 @@ export function getUser() {
  * o backend, que valida a assinatura do token a cada requisição.
  */
 export function isLoggedIn() {
-  return Boolean(localStorage.getItem("userId"));
+  return Boolean(getToken());
 }
 
 /**
@@ -93,10 +118,10 @@ export function isAdmin() {
   return isLoggedIn() && localStorage.getItem("userAdmin") === "1";
 }
 
-/** Limpa o cache local. Para sair de verdade (Firebase também), use sair() de auth/sessao. */
 export function logout() {
   [
-    ...CHAVES_LEGADAS,
+    TOKEN_KEY,
+    TOKEN_EXP_KEY,
     "userId",
     "userName",
     "userEmail",

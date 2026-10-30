@@ -2,8 +2,8 @@ import { Link } from "react-router-dom";
 import { ESTADOS } from "../../estados";
 
 /**
- * Campos do cadastro que vivem no backend (o Firebase guarda só e-mail e
- * senha). Usado em "Criar conta" e em "Concluir cadastro" (Google).
+ * Campos do cadastro enviados ao backend junto com e-mail e senha.
+ * Usado em "Criar conta".
  *
  * `dados` tem: tipo ("cliente" | "PROJETISTA" | "INSTALADOR"), cidade,
  * estado, cpf, telefone, dataNascimento, consentimentoLgpd.

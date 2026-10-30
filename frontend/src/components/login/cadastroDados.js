@@ -9,7 +9,7 @@ export const DADOS_INICIAIS = {
   consentimentoLgpd: false,
 };
 
-/** Formato que POST /api/auth/firebase espera. Vazio vira null. */
+/** Formato que POST /api/usuarios espera. Vazio vira null. */
 export function paraApi(nome, dados) {
   const ou = (v) => (v && String(v).trim()) || null;
   return {

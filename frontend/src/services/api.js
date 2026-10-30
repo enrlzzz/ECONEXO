@@ -1,6 +1,6 @@
 // Em dev: proxy do Vite encaminha /api para localhost:8080
 // Em prod: VITE_API_URL aponta para a API no Render (domínio separado da Hostinger)
-import { obterIdToken, sair } from "../auth/sessao";
+import { getToken, logout } from "../userSession";
 
 const API_HOST = (import.meta.env.VITE_API_URL || "").replace(/\/$/, "");
 const BASE_URL = `${API_HOST}/api`;
@@ -43,9 +43,7 @@ async function request(path, { method = "GET", body, params, headers } = {}) {
 
   const fetchUrl = API_HOST ? url.toString() : url.pathname + url.search;
 
-  // ID token do Firebase. O SDK renova sozinho quando está perto de
-  // expirar (1 h), então pedir a cada chamada não custa rede à toa.
-  const token = await obterIdToken();
+  const token = getToken();
 
   const response = await fetch(fetchUrl, {
     method,
@@ -69,7 +67,7 @@ async function request(path, { method = "GET", body, params, headers } = {}) {
     // caiu" — é "entre para usar", e quem trata isso é a própria tela. Antes
     // qualquer 401 jogava o visitante no /login sem explicação.
     if (response.status === 401 && !ehRotaPublica(path, method)) {
-      await sair();
+      logout();
       if (/^\/(menu-user|perfil)/.test(window.location.pathname)) {
         window.location.assign("/login");
       }

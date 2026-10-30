@@ -25,9 +25,6 @@ import PoliticaPrivacidade from "./components/politica-privacidade/index.jsx";
 import Analisar from "./components/analisar/index.jsx";
 import Perfil from "./components/perfil/index.jsx";
 import DetalheAnalise from "./components/perfil/DetalheAnalise.jsx";
-import RecuperarSenha from "./components/recuperar-senha/index.jsx";
-import ConcluirCadastro from "./components/concluir-cadastro/index.jsx";
-import { observarSessao } from "./auth/sessao";
 import ProtectedRoute from "./components/auth/ProtectedRoute.jsx";
 import AdminRoute from "./components/auth/AdminRoute.jsx";
 import AreaLogada from "./components/layout/AreaLogada.jsx";
@@ -47,17 +44,6 @@ const router = createBrowserRouter([
   {
     path: "/login",
     element: <Login />,
-  },
-
-  {
-    path: "/recuperar-senha",
-    element: <RecuperarSenha />,
-  },
-
-  {
-    // Primeira entrada com Google: falta nome e consentimento LGPD.
-    path: "/concluir-cadastro",
-    element: <ConcluirCadastro />,
   },
 
   {
@@ -102,10 +88,6 @@ const router = createBrowserRouter([
     ],
   },
 ]);
-
-// Se a sessão do Firebase acabar (expirou, saiu em outra aba), o cache da
-// interface é limpo e as rotas protegidas voltam para /login.
-observarSessao();
 
 createRoot(document.getElementById("root")).render(
   <RouterProvider router={router} />,
