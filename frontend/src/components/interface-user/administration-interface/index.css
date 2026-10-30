@@ -4,7 +4,7 @@
 }
 
 .admin-content {
-    width: 82%;
+    width: min(var(--eco-maxw), 100% - 3.2rem);
     margin: 0 auto;
     padding-top: var(--eco-pagina-topo);
     display: flex;
@@ -24,14 +24,12 @@
     color: var(--blue);
     padding: 1rem;
     border-radius: 12px;
-    margin-top: 4rem;
 }
 
 .admin-title-row h2 {
     font-size: 3rem;
     font-weight: 700;
     color: var(--black);
-    margin-top: 4rem;
 }
 
 .admin-title-row p {

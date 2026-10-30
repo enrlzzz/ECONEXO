@@ -28,7 +28,7 @@
    ABAS DE MÓDULO
    --------------------------------------------------------------------- */
 .vr-abas-wrap {
-    width: min(var(--eco-maxw-wide), calc(100% - 3.4rem));
+    width: min(var(--eco-maxw), calc(100% - 3.2rem));
     margin: 1.8rem auto 0;
     display: flex;
     justify-content: center;
@@ -71,7 +71,7 @@
    LAYOUT DE TRÊS COLUNAS
    --------------------------------------------------------------------- */
 .vr-container {
-    width: min(var(--eco-maxw-wide), calc(100% - 3.4rem));
+    width: min(var(--eco-maxw), calc(100% - 3.2rem));
     margin: 1.8rem auto 0;
     padding-bottom: var(--eco-sp-6);
 }

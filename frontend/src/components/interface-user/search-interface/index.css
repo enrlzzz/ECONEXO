@@ -163,7 +163,7 @@
 }
 
 .bus-nota svg {
-    color: #c77700;
+    color: var(--eco-solar-ink);
 }
 
 .bus-nota strong {

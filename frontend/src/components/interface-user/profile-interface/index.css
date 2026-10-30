@@ -54,7 +54,7 @@
 }
 
 .perf-estrela {
-    color: #c77700;
+    color: var(--eco-solar-ink);
 }
 
 .perf-acoes {
@@ -110,7 +110,7 @@
 }
 
 .perf-estrelas {
-    color: #c77700;
+    color: var(--eco-solar-ink);
     letter-spacing: 0.1rem;
 }
 
