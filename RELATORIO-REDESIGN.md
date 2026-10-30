@@ -9,7 +9,7 @@
 | Área logada | Barra de navegação nova (mesma linguagem da pública); menu de perfil novo. Conteúdo das telas preservado — só estilo. |
 | Login | Firebase Authentication (e-mail/senha, Google, logout, recuperação, sessão persistente). O front não chama mais `/api/auth/login` nem `/api/usuarios` para entrar/cadastrar. |
 | Backend | Valida o ID token do Firebase (assinatura do Google, `iss`/`aud`); `POST /api/auth/firebase` acha/vincula/cria o cadastro (vínculo de conta antiga só com e-mail verificado; cadastro novo exige LGPD). JWT antigo continua aceito na transição — nada foi apagado. |
-| Análise | Pública (visitante analisa sem salvar). O Gemini agora devolve JSON com números por mês; logado → salvo em `analise_conta`. |
+| Análise | Pública (visitante analisa sem salvar). A IA (Groq, `openai/gpt-oss-120b`, plano grátis — antes Gemini) devolve JSON com números por mês; logado → salvo em `analise_conta`. |
 | Perfil | `/perfil`: total de análises, consumo e valor médios, última análise, tendência, lista e detalhe (com excluir). Estados carregando, erro e vazio. |
 | Carrossel | 3 slides (bateria, crescimento Brasil/Sorocaba, limpeza da placa) com fonte, data e link em cada um. |
 
@@ -53,7 +53,7 @@ Arquivos principais: `frontend/src/variables.css`, `components.css`, `auth/`, `c
 ## Limitações e pendências
 
 - **Contas antigas** precisam "criar conta" de novo com o mesmo e-mail e confirmar o link; aí o cadastro antigo é vinculado. Senhas antigas não migram (estão em BCrypt, o Firebase não importa sem o hash bruto exportado).
-- **Análise sem limite** (decisão do produto). Um script pode consumir a cota do Gemini; se virar problema, o ponto para um limite por IP está comentado no `EconomiaController`.
+- **Análise sem limite** (decisão do produto). Um script pode consumir a cota grátis do Groq (ao estourar, a tela pede para tentar de novo); se virar problema, o ponto para um limite por IP está comentado no `EconomiaController`.
 - Números por mês dependem da leitura da IA; quando ela não acha um dado, aparece “—”.
 - Sorocaba: dado de frota (Detran-SP via jornal), não de vendas; não há série municipal oficial.
 - O bundle principal cresceu ~130 kB (Firebase Auth). Dá para carregar o Auth sob demanda depois.

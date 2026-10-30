@@ -16,13 +16,12 @@ function Cartao({ membro }) {
       <div className="equipe-texto">
         <h3>{membro.nome}</h3>
         <p className="equipe-papel">{membro.papel}</p>
-        {membro.curso && <p className="equipe-curso">{membro.curso}</p>}
+        {membro.descricao && <p className="equipe-curso">{membro.descricao}</p>}
         {membro.link && (
           <a className="eco-link equipe-link" href={membro.link} target="_blank" rel="noopener noreferrer">
             Ver perfil<span className="eco-sr-only"> de {membro.nome}</span>
           </a>
         )}
-        {membro.exemplo && <p className="eco-rotulo">Exemplo — a preencher</p>}
       </div>
     </li>
   );

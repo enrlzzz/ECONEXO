@@ -90,9 +90,10 @@ backend só valida o ID token e guarda o cadastro (nome, cidade, LGPD...).
 3. **Authentication → Configurações → Domínios autorizados**: adicione
    `econexo.dev` (e `localhost` para desenvolvimento).
 4. **Configurações do projeto → Seus apps → Web (`</>`)** → copie a config.
-5. `frontend/.env.local` (veja `frontend/.env.example`): preencha
-   `VITE_FIREBASE_API_KEY`, `VITE_FIREBASE_AUTH_DOMAIN`, `VITE_FIREBASE_PROJECT_ID`,
-   `VITE_FIREBASE_APP_ID`. Em produção, as mesmas variáveis no build da Hostinger.
+5. Produção: preencha `VITE_FIREBASE_API_KEY`, `VITE_FIREBASE_AUTH_DOMAIN`,
+   `VITE_FIREBASE_PROJECT_ID` e `VITE_FIREBASE_APP_ID` em `frontend/.env.production`
+   (é o arquivo que o build da Hostinger lê; pode ir para o Git — a config web do
+   Firebase é pública por natureza). Local: as mesmas em `frontend/.env.local`.
 6. Backend (Render): `FIREBASE_PROJECT_ID` = o mesmo `projectId`.
 7. Banco: aplique `database/migrations/V7__firebase_uid_e_historico_de_analises.sql`
    no phpMyAdmin **antes** do push na `main`.
@@ -140,6 +141,19 @@ e os legados `POST /api/auth/login` e `POST /api/usuarios`.
 
 Erros seguem sempre `{status, erro, mensagem, campos?}` — nunca stack trace.
 Nenhuma resposta, em nenhum endpoint, contém `senha` ou `cpf`.
+
+### 5. Análise de contas (Groq)
+
+A análise usa a API do **Groq** (plano gratuito), modelo `openai/gpt-oss-120b`.
+
+1. Crie a chave em <https://console.groq.com/keys>.
+2. **Render → serviço do backend → Environment:** `GROQ_API_KEY` = a chave.
+   É segredo: nunca no Git, em `.env.production` ou em print.
+3. Opcional: `GROQ_MODEL` para trocar o modelo se o Groq aposentá-lo
+   (lista em <https://console.groq.com/docs/models>).
+4. Local: `GROQ_API_KEY=... ./mvnw spring-boot:run`.
+
+Sem a chave, o site funciona e a análise responde "indisponível".
 
 ## Customização de ambiente
 

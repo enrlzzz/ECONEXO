@@ -32,7 +32,7 @@
 }
 
 .equipe-cartao {
-    width: 300px;
+    width: 360px;
     flex: 0 0 auto;
     display: flex;
     gap: 1.6rem;
@@ -77,9 +77,15 @@
     color: var(--eco-ink);
 }
 
+.equipe-papel {
+    font-weight: 500;
+}
+
 .equipe-curso {
     font-size: var(--eco-text-xs);
+    line-height: 1.4;
     color: var(--eco-ink-3);
+    margin-top: 0.4rem;
 }
 
 .equipe-link {
@@ -107,7 +113,7 @@
 
 @media (max-width: 620px) {
     .equipe-cartao {
-        width: 260px;
+        width: 290px;
         padding: 2rem;
     }
 }
