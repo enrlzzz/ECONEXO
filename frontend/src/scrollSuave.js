@@ -1,4 +1,5 @@
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
+import Lenis from "lenis";
 import { useLocation, useNavigate } from "react-router-dom";
 
 /**
@@ -59,4 +60,48 @@ export function useRolagemNoTopoAoTrocarDeRota() {
     if (window.location.hash) return;
     window.scrollTo({ top: 0, behavior: "instant" });
   }, [pathname]);
+}
+
+/**
+ * Rolagem suave com inércia na landing (Lenis).
+ *
+ * O `scroll-behavior: smooth` do CSS só anima clique em âncora; a roda do
+ * mouse e o trackpad continuam "secos". O Lenis suaviza os dois e também
+ * leva os links `/#aprenda` até a seção (o react-router não rola até o hash
+ * sozinho). Só roda onde é chamado — a área logada mantém a rolagem nativa.
+ * Quem pediu "reduzir movimento" no sistema fica com a rolagem normal.
+ */
+export function useRolagemSuaveDaHome() {
+  const { hash } = useLocation();
+  const lenisRef = useRef(null);
+
+  useEffect(() => {
+    if (window.matchMedia?.("(prefers-reduced-motion: reduce)").matches) return undefined;
+
+    const lenis = new Lenis({ duration: 1.1, anchors: false });
+    lenisRef.current = lenis;
+
+    let quadro = requestAnimationFrame(function passo(t) {
+      lenis.raf(t);
+      quadro = requestAnimationFrame(passo);
+    });
+
+    return () => {
+      cancelAnimationFrame(quadro);
+      lenis.destroy();
+      lenisRef.current = null;
+    };
+  }, []);
+
+  // Chegou com #aprenda / #profissionais: rola até a seção, descontando a
+  // barra fixa (o scroll-margin-top do CSS vale só para a rolagem nativa).
+  useEffect(() => {
+    if (!hash) return;
+    const alvo = document.getElementById(hash.slice(1));
+    if (!alvo) return;
+    const alturaBarra = parseFloat(getComputedStyle(document.documentElement).getPropertyValue("--eco-nav-h")) || 52;
+    const folga = -alturaBarra - 16;
+    if (lenisRef.current) lenisRef.current.scrollTo(alvo, { offset: folga });
+    else alvo.scrollIntoView({ behavior: "smooth", block: "start" });
+  }, [hash]);
 }

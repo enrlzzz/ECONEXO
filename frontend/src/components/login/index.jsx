@@ -21,7 +21,7 @@ export default function Login() {
   // O backend (plano gratuito do Render) dorme; acorda enquanto a pessoa digita.
   useEffect(() => {
     aquecerApi();
-    if (isLoggedIn()) navigate("/perfil", { replace: true });
+    if (isLoggedIn()) navigate("/menu-user", { replace: true });
   }, [navigate]);
 
   async function executar(tipo, acao) {

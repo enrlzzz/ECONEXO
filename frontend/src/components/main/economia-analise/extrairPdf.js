@@ -12,12 +12,15 @@ async function carregarPdfjs() {
   if (!pdfjsPromise) {
     pdfjsPromise = (async () => {
       const pdfjs = await import("pdfjs-dist");
-      // O worker precisa vir como URL resolvida pelo Vite. Sem isto o
-      // pdf.js tenta buscar um caminho relativo que não existe no build.
-      const workerUrl = (
-        await import("pdfjs-dist/build/pdf.worker.min.mjs?url")
+      // Worker empacotado pelo Vite (?worker) e instanciado aqui. Antes era
+      // ?url, que publica um arquivo .pdf.worker.min.mjs: servidores que não
+      // mapeiam .mjs para JavaScript (a Hostinger) o entregam como
+      // octet-stream, o navegador recusa o módulo e a leitura falhava em
+      // todo PDF — mesmo nos sem senha. O ?worker sai como .js.
+      const Worker = (
+        await import("pdfjs-dist/build/pdf.worker.min.mjs?worker")
       ).default;
-      pdfjs.GlobalWorkerOptions.workerSrc = workerUrl;
+      pdfjs.GlobalWorkerOptions.workerPort = new Worker();
       return pdfjs;
     })();
   }
@@ -44,9 +47,15 @@ export async function extrairTextoDoPdf(arquivo, aoProgredir) {
   let documento;
   try {
     documento = await pdfjs.getDocument({ data: buffer }).promise;
-  } catch {
+  } catch (e) {
+    // Só chama de "senha" o que realmente é senha; o resto aparece no
+    // console para dar para diagnosticar (antes tudo virava "senha").
+    if (e?.name === "PasswordException") {
+      throw new Error(`${arquivo.name} está protegido por senha. Baixe uma cópia sem senha e tente de novo.`);
+    }
+    console.error("Falha ao abrir o PDF", e);
     throw new Error(
-      `Não consegui abrir ${arquivo.name}. O arquivo pode estar protegido por senha.`,
+      `Não consegui abrir ${arquivo.name}. Tente baixar o PDF de novo; se continuar, recarregue a página (Ctrl+F5).`,
     );
   }
 

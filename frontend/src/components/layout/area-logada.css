@@ -1,61 +1,468 @@
 /* =====================================================================
-   Moldura da área logada
+   Moldura da área logada: barra lateral + conteúdo
    ===================================================================== */
 
-/* Altura da barra inferior do celular — o conteúdo reserva esse espaço. */
-:root {
-    --eco-tabbar-h: 64px;
+.shell {
+    --lateral-w: 290px;
+    /* Não há mais barra fixa no topo no computador: quem media a altura
+       dela (sticky da busca, min-height) passa a ver 0. */
+    --eco-nav-h: 0px;
+
+    display: grid;
+    grid-template-columns: var(--lateral-w) minmax(0, 1fr);
+    min-height: 100vh;
+    transition: grid-template-columns 0.25s var(--eco-ease);
+}
+
+.shell.is-recolhida {
+    --lateral-w: 92px;
 }
 
 .area-logada {
-    min-height: calc(100vh - var(--eco-nav-h));
+    min-width: 0;
+    min-height: 100vh;
     outline: none;
 }
 
-/* ------------------------------ barra inferior ------------------------------ */
-
-.barra-inferior {
+/* Faixa de topo: só existe no celular (abre a gaveta). */
+.shell-topo {
     display: none;
 }
 
+/* ------------------------------ barra lateral ------------------------------ */
+
+.lateral {
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    padding: 1.2rem 0 1.2rem 1.2rem;
+    z-index: 200;
+}
+
+.lateral-painel {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    background: #fff;
+    border: 1px solid var(--eco-line-2);
+    border-radius: 2.4rem;
+    overflow: hidden;
+}
+
+.lateral-marca {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 2rem 2rem 1.2rem;
+    font-size: 2rem;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    color: var(--eco-ink);
+    white-space: nowrap;
+}
+
+.lateral-busca {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin: 0.6rem 1.2rem 1.2rem;
+    min-height: 40px;
+    padding: 0 1.4rem;
+    border: 1px solid var(--eco-line-2);
+    border-radius: 9999px;
+    background: var(--eco-bg);
+    color: var(--eco-ink-3);
+    font-size: var(--eco-text-sm);
+    white-space: nowrap;
+}
+
+.lateral-busca:hover {
+    border-color: var(--eco-line);
+    color: var(--eco-ink);
+}
+
+.lateral-nav {
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding: 0 1.2rem 1.2rem;
+    scrollbar-width: thin;
+}
+
+.lateral-bloco {
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+}
+
+.lateral-item {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 1.2rem;
+    width: 100%;
+    min-height: 42px;
+    padding: 0 1.4rem;
+    border: 0;
+    border-radius: 1.4rem;
+    background: transparent;
+    color: var(--eco-ink-2);
+    font: inherit;
+    font-size: var(--eco-text-base);
+    text-align: left;
+    white-space: nowrap;
+    cursor: pointer;
+}
+
+.lateral-item svg {
+    flex: none;
+}
+
+.lateral-item:hover {
+    background: var(--eco-bg);
+    color: var(--eco-ink);
+}
+
+/* Destino ativo: fundo verde claro e a barrinha à esquerda, como no exemplo. */
+.lateral-item.active {
+    background: var(--eco-brand-50);
+    color: var(--eco-brand-700);
+    font-weight: 600;
+}
+
+.lateral-item.active::before {
+    content: "";
+    position: absolute;
+    left: -1.2rem;
+    top: 20%;
+    bottom: 20%;
+    width: 3px;
+    border-radius: 0 3px 3px 0;
+    background: var(--eco-brand-600);
+}
+
+.lateral-selo {
+    margin-left: auto;
+    min-width: 18px;
+    height: 18px;
+    padding: 0 0.5rem;
+    border-radius: 9999px;
+    background: var(--eco-brand-600);
+    color: #fff;
+    font-size: 1.1rem;
+    font-weight: 600;
+    line-height: 1;
+    display: inline-grid;
+    place-items: center;
+}
+
+/* Seções que abrem e fecham. */
+.lateral-grupo {
+    margin-top: 0.8rem;
+}
+
+.lateral-grupo-cabeca {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    min-height: 36px;
+    padding: 0 1.4rem;
+    border: 0;
+    background: transparent;
+    color: var(--eco-ink-3);
+    font: inherit;
+    font-size: var(--eco-text-xs);
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    cursor: pointer;
+}
+
+.lateral-grupo-cabeca:hover {
+    color: var(--eco-ink);
+}
+
+.lateral-seta {
+    transition: transform 0.2s var(--eco-ease);
+}
+
+.lateral-grupo-cabeca[aria-expanded="true"] .lateral-seta {
+    transform: rotate(90deg);
+}
+
+.lateral-grupo-itens {
+    display: none;
+    flex-direction: column;
+    gap: 0.2rem;
+}
+
+.lateral-grupo-itens.is-aberto {
+    display: flex;
+}
+
+/* Rodapé: recolher e conta, com o perfil no canto inferior esquerdo. */
+.lateral-rodape {
+    padding: 1.2rem;
+    border-top: 1px solid var(--eco-line-2);
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+}
+
+.lateral-tecla {
+    margin-left: auto;
+    min-width: 24px;
+    padding: 0.1rem 0.6rem;
+    border: 1px solid var(--eco-line);
+    border-radius: 0.6rem;
+    font: inherit;
+    font-size: var(--eco-text-xs);
+    text-align: center;
+    color: var(--eco-ink-3);
+}
+
+.lateral-conta {
+    position: relative;
+}
+
+.lateral-perfil {
+    display: flex;
+    align-items: center;
+    gap: 1.2rem;
+    width: 100%;
+    padding: 0.8rem 1rem;
+    border: 0;
+    border-radius: 1.6rem;
+    background: transparent;
+    color: var(--eco-ink);
+    font: inherit;
+    text-align: left;
+    cursor: pointer;
+}
+
+.lateral-perfil:hover {
+    background: var(--eco-bg);
+}
+
+.lateral-avatar {
+    flex: none;
+    display: grid;
+    place-items: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    color: #fff;
+    font-size: var(--eco-text-sm);
+    font-weight: 600;
+}
+
+.lateral-perfil-texto {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+}
+
+.lateral-perfil-texto strong {
+    font-size: var(--eco-text-base);
+    font-weight: 600;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.lateral-perfil-texto small {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    font-size: var(--eco-text-xs);
+    color: var(--eco-ink-3);
+}
+
+.lateral-perfil-texto i {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--eco-brand-500);
+}
+
+.lateral-conta-menu {
+    position: absolute;
+    left: 0;
+    bottom: calc(100% + 0.6rem);
+    min-width: 210px;
+    padding: 0.6rem;
+    display: flex;
+    flex-direction: column;
+    background: #fff;
+    border: 1px solid var(--eco-line-2);
+    border-radius: 1.6rem;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+    z-index: 5;
+}
+
+.lateral-conta-menu a,
+.lateral-conta-menu button {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    min-height: 40px;
+    padding: 0 1.2rem;
+    border: 0;
+    border-radius: 1.2rem;
+    background: transparent;
+    color: var(--eco-ink-2);
+    font: inherit;
+    font-size: var(--eco-text-sm);
+    text-align: left;
+    cursor: pointer;
+}
+
+.lateral-conta-menu a:hover,
+.lateral-conta-menu button:hover {
+    background: var(--eco-bg);
+    color: var(--eco-ink);
+}
+
+/* ---- Recolhida: coluna só de ícones ---- */
+.is-recolhida .lateral-rotulo,
+.is-recolhida .lateral-selo {
+    display: none;
+}
+
+.is-recolhida .lateral-marca,
+.is-recolhida .lateral-busca,
+.is-recolhida .lateral-item,
+.is-recolhida .lateral-perfil {
+    justify-content: center;
+    padding-inline: 0;
+}
+
+/* Sem títulos de seção, as seções viram grupos separados por uma linha e
+   os itens aparecem sempre (senão ficariam escondidos sem como abrir). */
+.is-recolhida .lateral-grupo-cabeca {
+    display: none;
+}
+
+.is-recolhida .lateral-grupo {
+    margin-top: 0.8rem;
+    padding-top: 0.8rem;
+    border-top: 1px solid var(--eco-line-2);
+}
+
+.is-recolhida .lateral-grupo-itens {
+    display: flex;
+}
+
+.lateral-fundo {
+    display: none;
+}
+
+/* ------------------------------ celular: gaveta ------------------------------ */
+
 @media (max-width: 860px) {
-    .area-logada {
-        /* Para o último item da página não ficar escondido atrás da barra. */
-        padding-bottom: calc(var(--eco-tabbar-h) + env(safe-area-inset-bottom));
+    .shell,
+    .shell.is-recolhida {
+        --lateral-w: 0px;
+        --eco-nav-h: 56px;
+        grid-template-columns: minmax(0, 1fr);
     }
 
-    .barra-inferior {
-        position: fixed;
-        inset: auto 0 0 0;
-        z-index: 100;
-
-        display: grid;
-        grid-template-columns: repeat(5, 1fr);
-
-        height: calc(var(--eco-tabbar-h) + env(safe-area-inset-bottom));
-        padding-bottom: env(safe-area-inset-bottom);
-
+    .shell-topo {
+        position: sticky;
+        top: 0;
+        z-index: 150;
+        display: flex;
+        align-items: center;
+        gap: 1.2rem;
+        height: var(--eco-nav-h);
+        padding: 0 1.2rem;
         background: rgba(255, 255, 255, 0.92);
         backdrop-filter: saturate(180%) blur(20px);
         -webkit-backdrop-filter: saturate(180%) blur(20px);
-        border-top: 1px solid var(--eco-line-2);
+        border-bottom: 1px solid var(--eco-line-2);
     }
 
-    .barra-inferior a {
+    .shell-topo-menu {
+        display: grid;
+        place-items: center;
+        width: 40px;
+        height: 40px;
+        border: 0;
+        border-radius: 50%;
+        background: transparent;
+        color: var(--eco-ink);
+    }
+
+    .area-logada {
+        min-height: calc(100vh - var(--eco-nav-h));
+    }
+
+    .lateral {
+        position: fixed;
+        inset: 0 auto 0 0;
+        width: min(310px, 86vw);
+        height: 100dvh;
+        padding: 0.8rem;
+        transform: translateX(-105%);
+        transition: transform 0.25s var(--eco-ease);
+    }
+
+    .lateral.is-aberta {
+        transform: none;
+    }
+
+    .lateral-fundo {
+        display: block;
+        position: fixed;
+        inset: 0;
+        z-index: 190;
+        background: rgba(0, 0, 0, 0.36);
+    }
+
+    /* Na gaveta o menu é sempre o completo; "recolher" não faz sentido. */
+    .lateral-recolher {
+        display: none;
+    }
+
+    .is-recolhida .lateral-rotulo {
+        display: revert;
+    }
+
+    .is-recolhida .lateral-selo {
+        display: inline-grid;
+    }
+
+    .is-recolhida .lateral-marca,
+    .is-recolhida .lateral-busca,
+    .is-recolhida .lateral-item,
+    .is-recolhida .lateral-perfil {
+        justify-content: flex-start;
+        padding-inline: 1.4rem;
+    }
+
+    .is-recolhida .lateral-grupo-cabeca {
         display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        gap: 0.3rem;
-
-        color: var(--eco-ink-3);
-        font-size: 1.1rem;
-        font-weight: 500;
     }
 
-    .barra-inferior a.active {
-        color: var(--eco-brand-600);
-        font-weight: 600;
+    .is-recolhida .lateral-grupo {
+        border-top: 0;
+        padding-top: 0;
+    }
+
+    .is-recolhida .lateral-grupo-itens:not(.is-aberto) {
+        display: none;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .shell,
+    .lateral,
+    .lateral-seta {
+        transition: none;
     }
 }
 

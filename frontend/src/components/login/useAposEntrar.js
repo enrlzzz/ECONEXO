@@ -1,12 +1,10 @@
-import { useLocation, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
-/** Para onde ir depois de entrar: a página que pediu o login, ou o perfil. */
+/** Depois de entrar ou criar a conta, o destino é sempre a timeline da comunidade. */
 export function useAposEntrar() {
   const navigate = useNavigate();
-  const location = useLocation();
-  const destino = location.state?.from || "/perfil";
 
   return (resultado) => {
-    if (resultado.status === "ok") navigate(destino, { replace: true });
+    if (resultado.status === "ok") navigate("/menu-user", { replace: true });
   };
 }

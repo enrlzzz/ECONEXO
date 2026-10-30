@@ -18,6 +18,12 @@
   RewriteRule ^ index.html [L]
 </IfModule>
 
+# Módulos ES (.mjs) precisam sair como JavaScript, senão o navegador recusa
+# (o worker do leitor de PDF vinha como octet-stream e a análise não abria).
+<IfModule mod_mime.c>
+  AddType application/javascript .js .mjs
+</IfModule>
+
 # Assets do Vite têm hash no nome (index-CyY2JRLx.js), então podem ter cache
 # longo com segurança: se o conteúdo muda, o nome do arquivo muda junto.
 <IfModule mod_expires.c>

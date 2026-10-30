@@ -4,6 +4,7 @@ import { Link } from "react-router-dom";
 
 import Carrossel from "../carrossel";
 import Equipe from "../equipe";
+import { useRolagemSuaveDaHome } from "../../scrollSuave";
 
 const PASSOS = [
   {
@@ -55,6 +56,8 @@ function ArteHero() {
 }
 
 export default function Main() {
+  useRolagemSuaveDaHome();
+
   return (
     <div className="home">
       <section className="home-hero eco-container">
