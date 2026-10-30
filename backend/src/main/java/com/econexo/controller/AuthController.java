@@ -1,10 +1,13 @@
 package com.econexo.controller;
 
 import com.econexo.dto.ErroResponse;
+import com.econexo.dto.FirebaseCadastroRequest;
 import com.econexo.dto.LoginRequest;
 import com.econexo.dto.LoginResponse;
 import com.econexo.dto.UsuarioResponse;
 import com.econexo.model.Usuario;
+import com.econexo.security.FirebaseTokenService;
+import com.econexo.security.IdentidadeFirebase;
 import com.econexo.security.JwtService;
 import com.econexo.security.RateLimitService;
 import com.econexo.service.UsuarioService;
@@ -14,6 +17,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -26,10 +30,13 @@ public class AuthController {
     private final UsuarioService usuarioService;
     private final JwtService jwtService;
     private final RateLimitService rateLimit;
+    private final FirebaseTokenService firebaseTokenService;
 
     public AuthController(UsuarioService usuarioService,
                           JwtService jwtService,
-                          RateLimitService rateLimit) {
+                          RateLimitService rateLimit,
+                          FirebaseTokenService firebaseTokenService) {
+        this.firebaseTokenService = firebaseTokenService;
         this.usuarioService = usuarioService;
         this.jwtService = jwtService;
         this.rateLimit = rateLimit;
@@ -72,5 +79,40 @@ public class AuthController {
                 jwtService.validadeEmSegundos(),
                 UsuarioResponse.de(usuario)
         ));
+    }
+
+    /**
+     * POST /api/auth/firebase — liga a conta do Firebase ao cadastro daqui.
+     *
+     * Pública na SecurityConfig porque quem ainda não tem cadastro não passa
+     * no filtro de autenticação. A identidade sai do ID token no header
+     * Authorization, validado aqui mesmo; e-mail e UID nunca vêm do corpo.
+     */
+    @PostMapping("/firebase")
+    public ResponseEntity<?> firebase(@RequestHeader(value = "Authorization", required = false) String autorizacao,
+                                      @Valid @RequestBody(required = false) FirebaseCadastroRequest req,
+                                      HttpServletRequest request) {
+
+        long bloqueio = rateLimit.segundosDeBloqueio(request, "firebase");
+        if (bloqueio > 0) {
+            return ResponseEntity.status(HttpStatus.TOO_MANY_REQUESTS)
+                    .header("Retry-After", String.valueOf(bloqueio))
+                    .body(ErroResponse.de(429, "Muitas tentativas",
+                            "Excesso de tentativas. Tente novamente em "
+                          + Math.ceil(bloqueio / 60.0) + " minuto(s)."));
+        }
+
+        String token = autorizacao != null && autorizacao.startsWith("Bearer ")
+                ? autorizacao.substring(7).trim() : null;
+        Optional<IdentidadeFirebase> identidade = firebaseTokenService.verificar(token);
+
+        if (identidade.isEmpty()) {
+            rateLimit.registrarFalha(request, "firebase");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(ErroResponse.de(401, "Não autenticado",
+                            "Sua sessão expirou. Entre de novo."));
+        }
+
+        return ResponseEntity.ok(usuarioService.entrarComFirebase(identidade.get(), req));
     }
 }

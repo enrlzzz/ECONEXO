@@ -26,7 +26,7 @@
     background: var(--eco-card);
     border: 1px solid var(--eco-line);
     border-radius: var(--eco-r-lg);
-    box-shadow: var(--eco-shadow-sm);
+    box-shadow: none;
 
     display: flex;
     flex-direction: column;
@@ -373,7 +373,7 @@
 
 .dm-bubble {
     padding: 0.95rem 1.2rem;
-    border-radius: 18px;
+    border-radius: var(--eco-r-card);
     font-size: 1.35rem;
     line-height: 1.5;
     font-weight: 600;
@@ -433,7 +433,7 @@
 
     background: var(--eco-bg);
     border: 1px solid var(--eco-line);
-    border-radius: 20px;
+    border-radius: var(--eco-r-card);
 
     padding: 0.5rem 0.7rem 0.5rem 1.4rem;
 }
@@ -471,7 +471,7 @@
 
     cursor: pointer;
     transition: 0.15s ease;
-    box-shadow: 0 6px 16px rgba(42, 38, 199, 0.28);
+    box-shadow: none;
 }
 
 .dm-send:disabled {
@@ -605,7 +605,7 @@
 
     border: 1px solid var(--eco-blue-100);
     border-radius: 14px;
-    background: linear-gradient(100deg, var(--eco-blue-050), #fff);
+    background: var(--eco-brand-50);
 }
 
 .dm-ctx-projeto-icon {

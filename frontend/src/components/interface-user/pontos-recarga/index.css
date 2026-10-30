@@ -26,17 +26,17 @@
     gap: 0.6rem;
     font-size: 1.75rem;
     font-weight: 700;
-    color: var(--eco-blue-700, #211ea3);
+    color: var(--eco-blue-700, var(--eco-brand-700));
     margin-bottom: 0.25rem;
 }
 
 .pr-icon-titulo {
     font-size: 2rem;
-    color: var(--eco-green, #0e8f5a);
+    color: var(--eco-green, var(--eco-green));
 }
 
 .pr-subtitulo {
-    color: var(--gray-text, #555);
+    color: var(--gray-text, var(--eco-ink-2));
     font-size: 0.95rem;
 }
 
@@ -55,7 +55,7 @@
     align-items: center;
     gap: 0.5rem;
     font-size: 0.9rem;
-    color: var(--gray-text, #555);
+    color: var(--gray-text, var(--eco-ink-2));
 }
 
 .pr-campo-raio select {
@@ -87,26 +87,26 @@
 }
 
 .pr-btn-localizacao {
-    background: var(--eco-blue-600, #2a26c7);
+    background: var(--eco-blue-600, var(--eco-brand-600));
     color: #fff;
 }
 
 .pr-btn-localizacao:hover:not(:disabled) {
-    background: var(--eco-blue-700, #211ea3);
+    background: var(--eco-blue-700, var(--eco-brand-700));
 }
 
 .pr-btn-sorocaba {
-    background: var(--eco-blue-100, #e4e3fb);
-    color: var(--eco-blue-700, #211ea3);
+    background: var(--eco-blue-100, var(--eco-brand-100));
+    color: var(--eco-blue-700, var(--eco-brand-700));
 }
 
 .pr-btn-sorocaba:hover:not(:disabled) {
-    background: var(--eco-blue-200, #cbc9f7);
+    background: var(--eco-blue-200, var(--eco-brand-200));
 }
 
 .pr-btn-atualizar {
     background: var(--eco-green-soft, #e3f5ec);
-    color: var(--eco-green, #0e8f5a);
+    color: var(--eco-green, var(--eco-green));
 }
 
 .pr-btn-atualizar:hover:not(:disabled) {
@@ -129,14 +129,14 @@
 }
 
 .pr-vazio {
-    background: var(--eco-blue-50, #f2f2fe);
-    border: 1px solid var(--eco-blue-100, #e4e3fb);
-    color: var(--eco-blue-700, #211ea3);
+    background: var(--eco-blue-50, var(--eco-brand-50));
+    border: 1px solid var(--eco-blue-100, var(--eco-brand-100));
+    color: var(--eco-blue-700, var(--eco-brand-700));
 }
 
 .pr-contagem {
     font-size: 0.85rem;
-    color: var(--gray-text, #555);
+    color: var(--gray-text, var(--eco-ink-2));
     margin-bottom: 0.5rem;
 }
 
@@ -148,7 +148,7 @@
     border-radius: 10px;
     border: 1px solid var(--eco-line, #d0d0d0);
     overflow: hidden;
-    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.07);
+    box-shadow: none;
 }
 
 /* ---------- Popup Leaflet ---------- */
@@ -167,7 +167,7 @@
 }
 
 .pr-popup p {
-    color: #555;
+    color: var(--eco-ink-2);
     margin-bottom: 0.3rem;
     font-size: 0.82rem;
 }
@@ -183,7 +183,7 @@
 
 .pr-status-operacional {
     background: var(--eco-green-soft, #e3f5ec);
-    color: var(--eco-green, #0e8f5a);
+    color: var(--eco-green, var(--eco-green));
 }
 
 .pr-status-planejado {

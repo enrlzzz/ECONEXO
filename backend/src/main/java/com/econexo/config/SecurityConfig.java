@@ -63,9 +63,15 @@ public class SecurityConfig {
                     // keep-alive para manter o pool de conexões aquecido.
                     .requestMatchers(HttpMethod.GET, "/health/db").permitAll()
 
-                    // As duas únicas portas abertas: entrar e criar conta.
+                    // Portas abertas: entrar e criar conta (JWT legado e
+                    // Firebase — este valida o ID token por conta própria).
                     .requestMatchers(HttpMethod.POST, "/api/auth/login").permitAll()
+                    .requestMatchers(HttpMethod.POST, "/api/auth/firebase").permitAll()
                     .requestMatchers(HttpMethod.POST, "/api/usuarios").permitAll()
+
+                    // Análise de conta de energia: visitante analisa sem
+                    // conta (nada é salvo). Com token, vai para o histórico.
+                    .requestMatchers(HttpMethod.POST, "/api/economia/analisar").permitAll()
 
                     // Todo o resto exige token válido.
                     .anyRequest().authenticated()

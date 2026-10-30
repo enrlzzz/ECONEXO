@@ -14,15 +14,18 @@ vulnerabilidade já conhecida e é considerado regressão — não passa em revi
 | Pacote | Versão mínima | Por quê |
 |---|---|---|
 | `react-router-dom` / `react-router` | **7.18.2** | Open redirect via backslash em `<Link>`/`useNavigate`, DoS em route matching, CSRF em PUT/PATCH/DELETE |
-| `vite` | **8.2.1** | Bypass de `server.fs.deny` em paths alternativos do Windows; NTLMv2 hash disclosure via `launch-editor` |
+| `vite` | **8.3.4** | Bypass de `server.fs.deny` em paths alternativos do Windows; NTLMv2 hash disclosure e execução de comando via `launch-editor` (8.2.0–8.2.2 vulneráveis) |
 | `postcss` | **8.5.23** | Path traversal via `sourceMappingURL` → leitura arbitrária de `.map` |
 | `nanoid` | **3.3.17** | Loop infinito com size zero/negativo |
 | `js-yaml` | **4.3.2** | Consumo quadrático de CPU em `!!omap` e merge keys; `maxTotalMergeKeys` não limitava CPU com merge de fonte vazia (GHSA-2883-xcg3-v3hh, atinge **até a 4.3.1 inclusive** — por isso o piso é 4.3.2) |
-| `brace-expansion` | **1.1.18** | DoS por expansão ilimitada → OOM |
+| `brace-expansion` | **1.1.21** | DoS por expansão ilimitada → OOM; recursão e CPU quadrática (até 1.1.20) |
+| `source-map-js` | **1.2.2** | DoS do event loop por offsets de seção do source map |
+| `zod` | **4.6.6** | Vulnerabilidade alta corrigida na 4.6.6 (transitiva do eslint-plugin-react-hooks) |
+| `@grpc/grpc-js` | **1.14.6** | Certificado não autorizado tratado como autorizado (até 1.13.5). Transitiva do `firebase` (Firestore, que não usamos) |
 | `@babel/core` | **7.29.6** | Leitura arbitrária de arquivo via comentário `sourceMappingURL` |
 
-`postcss`, `nanoid`, `js-yaml`, `brace-expansion` e `@babel/core` são **transitivas**
-(vêm via `vite` e `eslint`). Se subir as diretas não resolver, force com `overrides`
+`postcss`, `nanoid`, `js-yaml`, `brace-expansion`, `@babel/core`, `source-map-js`,
+`zod` e `@grpc/grpc-js` são **transitivas** (vêm via `vite`, `eslint` e `firebase`). Se subir as diretas não resolver, force com `overrides`
 no `package.json` — não deixe passar:
 
 ```json
@@ -30,8 +33,11 @@ no `package.json` — não deixe passar:
   "postcss": ">=8.5.23",
   "nanoid": ">=3.3.17",
   "js-yaml": ">=4.3.2",
-  "brace-expansion": ">=1.1.18",
-  "@babel/core": ">=7.29.6"
+  "brace-expansion": "^1.1.21",
+  "@babel/core": ">=7.29.6",
+  "source-map-js": "^1.2.2",
+  "zod": "^4.6.6",
+  "@grpc/grpc-js": "1.14.6"
 }
 ```
 
@@ -50,7 +56,10 @@ Escritas como regra permanente porque cada uma delas já foi um problema real aq
    string aparece em log de servidor, de proxy e no histórico do navegador.
 3. **Entidade JPA nunca é devolvida pela API.** Todo endpoint responde com DTO.
    `senha` e `cpf` não existem em nenhuma resposta, em nenhum endpoint, nunca.
-4. **Todo endpoint sob `/api/**` exige autenticação**, exceto `login` e `cadastro`.
+4. **Todo endpoint sob `/api/**` exige autenticação**, exceto `login`, `cadastro`
+   (incluindo `POST /api/auth/firebase`) e `POST /api/economia/analisar` — a
+   análise de conta é pública por decisão de produto (out/2026): visitante
+   analisa sem salvar. Não abra outro endpoint sem a mesma decisão explícita.
 5. **Guard de rota no React não é segurança** — é conveniência de UX. Quem autoriza
    é o backend. `localStorage` é editável pelo usuário em 5 segundos no DevTools.
 6. **Toda escrita/leitura de recurso de usuário confere dono.** O id vem do token,
@@ -74,12 +83,14 @@ Escritas como regra permanente porque cada uma delas já foi um problema real aq
 | Variável | Se trocar |
 |---|---|
 | `JWT_SECRET` | Todos os tokens caem; todo mundo precisa logar de novo. É o botão de emergência se vazar. |
+| `FIREBASE_PROJECT_ID` | Precisa ser o MESMO projeto do front (`VITE_FIREBASE_PROJECT_ID`). Trocar de projeto Firebase = todo mundo recria a conta. |
 | `ECONEXO_CRYPTO_KEY` | **Os CPFs já gravados tornam-se ILEGÍVEIS para sempre.** Trocar exige decifrar a base com a chave antiga antes. |
 
 ### Como isso é garantido
 
-`backend/src/test/java/com/econexo/SegurancaIntegrationTest.java` tem 15 testes,
-um por regra acima, rodando contra H2 em memória (não precisa de MySQL local).
+`backend/src/test/java/com/econexo/SegurancaIntegrationTest.java` cobre as regras
+acima e `FirebaseEHistoricoIntegrationTest.java` cobre o login pelo Firebase e o
+dono do histórico, rodando contra H2 em memória (não precisa de MySQL local).
 O CI executa em cada PR.
 
 **Se um desses testes quebrar, uma vulnerabilidade já corrigida foi reaberta.**
@@ -87,8 +98,17 @@ Não faça merge "consertando o teste" — conserte o código.
 
 ### Contrato da API de autenticação
 
-- `POST /api/auth/login` — corpo `{email, senha}` → `{token, expiraEmSegundos, usuario}`
-- `POST /api/usuarios` — cadastro (público)
+- **Login é pelo Firebase Authentication** (front). O `<token>` é o ID token do
+  Firebase, validado no backend (`FirebaseTokenService`: assinatura do Google,
+  `iss`/`aud` = `FIREBASE_PROJECT_ID`). Senha não passa mais pelo backend.
+- `POST /api/auth/firebase` — header `Authorization: Bearer <ID token>`, corpo
+  opcional `{nome, cpf, telefone, dataNascimento, cidade, estado, tipoProfissional,
+  consentimentoLgpd}` → `{usuario, novo}`. Acha, vincula (só com e-mail
+  verificado) ou cria o cadastro. 428 = falta nome/consentimento.
+- Legado, mantido na transição: `POST /api/auth/login` (`{email, senha}` → JWT
+  próprio) e `POST /api/usuarios`. O filtro aceita os dois tipos de token.
+- `POST /api/economia/analisar` — público; com token, salva no histórico.
+  `GET/DELETE /api/economia/historico[/{id}]` — só o dono.
 - Todo o resto exige `Authorization: Bearer <token>`
 - Erros seguem sempre `{status, erro, mensagem, campos?}` — nunca stack trace
 
@@ -107,7 +127,17 @@ Passo a passo em [`deploy/HOSTINGER-RENDER.md`](deploy/HOSTINGER-RENDER.md).
 - A Hostinger roda **MariaDB**, não MySQL Oracle. O warning `HHH000339 / Unknown
   column 'RESERVED'` no log é benigno e esperado.
 
-## 4. Convenções
+## 4. Sistema visual (redesign out/2026)
+
+- Referência aprovada: `prototipo.html` na raiz (inclui a tela "Design tokens").
+- Tokens em `frontend/src/variables.css`; peças base em `frontend/src/components.css`
+  (`eco-btn`, `eco-card`, `eco-field`, `eco-faixa`, `eco-kicker`...).
+- Regras: canvas branco alternando com `#f5f5f7`, cards de 28px **sem sombra e sem
+  gradiente**, botões pill, Inter 400/500/600, uma cor de ação (verde `#0a7f4f`),
+  âmbar `#a84b00` só para dados. Contraste AA conferido em cada cor de texto.
+- Carrossel educativo: todo número precisa de fonte, data e link no próprio slide.
+
+## 5. Convenções
 
 - **Monorepo:** `backend/` (Spring Boot 3.4 / Java 21), `frontend/` (React 19 + Vite),
   `database/`, `deploy/`.

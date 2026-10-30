@@ -79,14 +79,47 @@ npm run dev
 
 Site em `http://localhost:5173`. As chamadas para `/api/*` são roteadas pelo proxy do Vite até `http://localhost:8080`.
 
+### 4. Login (Firebase Authentication)
+
+O login é feito pelo **Firebase Authentication** (e-mail/senha e Google). O
+backend só valida o ID token e guarda o cadastro (nome, cidade, LGPD...).
+
+1. [Console do Firebase](https://console.firebase.google.com) → criar projeto
+   (Analytics é opcional).
+2. **Authentication → Método de login**: ative **E-mail/senha** e **Google**.
+3. **Authentication → Configurações → Domínios autorizados**: adicione
+   `econexo.dev` (e `localhost` para desenvolvimento).
+4. **Configurações do projeto → Seus apps → Web (`</>`)** → copie a config.
+5. `frontend/.env.local` (veja `frontend/.env.example`): preencha
+   `VITE_FIREBASE_API_KEY`, `VITE_FIREBASE_AUTH_DOMAIN`, `VITE_FIREBASE_PROJECT_ID`,
+   `VITE_FIREBASE_APP_ID`. Em produção, as mesmas variáveis no build da Hostinger.
+6. Backend (Render): `FIREBASE_PROJECT_ID` = o mesmo `projectId`.
+7. Banco: aplique `database/migrations/V7__firebase_uid_e_historico_de_analises.sql`
+   no phpMyAdmin **antes** do push na `main`.
+
+Sem a config, o site abre normalmente e só o login fica indisponível.
+
+**Testar sem projeto real:** `npx firebase-tools emulators:start --only auth --project demo-econexo`
+e, no `.env.local`, `VITE_FIREBASE_PROJECT_ID=demo-econexo` +
+`VITE_FIREBASE_AUTH_EMULATOR=http://127.0.0.1:9099` (só vale em `npm run dev`).
+
+**Contas antigas** (login anterior, senha no backend): a pessoa cria a conta de
+novo em "Criar conta" com o **mesmo e-mail** e confirma pelo link enviado. Com o
+e-mail confirmado, o cadastro antigo (projetos, avaliações, CREA) é vinculado.
+
 ## Endpoints principais
 
-Só `POST /api/auth/login`, `POST /api/usuarios` e `GET /health` são públicos.
-**Todo o resto exige `Authorization: Bearer <token>`.**
+Públicos: `POST /api/auth/firebase`, `POST /api/economia/analisar`, `GET /health`
+e os legados `POST /api/auth/login` e `POST /api/usuarios`.
+**Todo o resto exige `Authorization: Bearer <ID token do Firebase>`.**
 
 | Método | Path | Auth | Descrição |
 |---|---|---|---|
-| `POST` | `/api/auth/login` | pública | Login — `{email, senha}` **no corpo** → `{token, expiraEmSegundos, usuario}` |
+| `POST` | `/api/auth/firebase` | ID token | Vincula/cria o cadastro da conta Firebase → `{usuario, novo}` (428 = falta nome/LGPD) |
+| `POST` | `/api/economia/analisar` | pública | Análise de 2–6 contas; com token, salva no histórico |
+| `GET`  | `/api/economia/historico` | Bearer | Histórico de análises do dono do token |
+| `GET`/`DELETE` | `/api/economia/historico/{id}` | Bearer | Uma análise — só do dono |
+| `POST` | `/api/auth/login` | pública | Legado (JWT próprio), mantido na transição |
 | `POST` | `/api/usuarios` | pública | Cadastrar usuário (exige consentimento LGPD) |
 | `GET`  | `/api/usuarios` | Bearer | Listar usuários |
 | `GET`  | `/api/usuarios/{id}` | Bearer | Buscar por id |
@@ -121,9 +154,7 @@ SERVER_PORT=8080
 
 ### Frontend — `.env.local` (não commitado)
 
-```
-VITE_API_URL=http://localhost:8080
-```
+Ver `frontend/.env.example` (API e Firebase).
 
 ## Deploy
 

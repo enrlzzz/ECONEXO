@@ -1,135 +1,112 @@
 import "./index.css";
-import "/src/variables.css";
 
+import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 
-import { BsLightning } from "react-icons/bs";
-import { useEffect, useState } from "react";
-
+import PaginaPublica from "../layout/PaginaPublica";
+import { entrar, entrarComGoogle } from "../../auth/sessao";
 import { aquecerApi } from "../../services/api";
-import { usuariosService } from "../../services/usuarios";
-import { isLoggedIn, persistSession } from "../../userSession";
+import { isLoggedIn } from "../../userSession";
+import { BotaoEnviar, ConfirmarEmail, IconeGoogle } from "./conta";
+import { useAposEntrar } from "./useAposEntrar";
 
 export default function Login() {
   const navigate = useNavigate();
+  const seguir = useAposEntrar();
   const [form, setForm] = useState({ email: "", senha: "" });
   const [erro, setErro] = useState("");
-  const [enviando, setEnviando] = useState(false);
+  const [enviando, setEnviando] = useState(null); // null | "email" | "google"
   const [demorando, setDemorando] = useState(false);
+  const [confirmacao, setConfirmacao] = useState(null);
 
-  // Enquanto a pessoa digita, o servidor (plano gratuito, dorme após alguns
-  // minutos parado) já pode estar acordando.
+  // O backend (plano gratuito do Render) dorme; acorda enquanto a pessoa digita.
   useEffect(() => {
     aquecerApi();
-  }, []);
-
-  // Login persistente: se já houver sessão, vai direto para a área logada
-  useEffect(() => {
-    // Sem PerfilMenu nesta tela de propósito: quem já tem sessão é levado
-    // direto para a timeline, então o menu nunca chegaria a aparecer.
-    if (isLoggedIn()) navigate("/menu-user", { replace: true });
+    if (isLoggedIn()) navigate("/perfil", { replace: true });
   }, [navigate]);
 
-  const handleChange = (event) => {
-    const { name, value } = event.target;
-    setForm({ ...form, [name]: value });
-  };
-
-  const handleSubmit = async (event) => {
-    event.preventDefault();
+  async function executar(tipo, acao) {
     setErro("");
-    setEnviando(true);
-
-    // Passou de 5 s: quase certamente o servidor estava dormindo. Sem este
-    // aviso o botão parece travado e a pessoa clica de novo, ou desiste.
+    setEnviando(tipo);
     const aviso = setTimeout(() => setDemorando(true), 5000);
-
     try {
-      // Resposta: { token, expiraEmSegundos, usuario }
-      const sessao = await usuariosService.login(form.email, form.senha);
-      persistSession(sessao);
-      navigate("/menu-user", { replace: true });
+      seguir(await acao(), setConfirmacao);
     } catch (e) {
-      setErro(
-        e.status === 401
-          ? "Email ou senha incorretos."
-          : e.status === 429
-            ? e.message // "Excesso de tentativas. Tente novamente em N minuto(s)."
-            : `Falha ao entrar: ${e.message}`,
-      );
+      setErro(e.message);
     } finally {
       clearTimeout(aviso);
       setDemorando(false);
-      setEnviando(false);
+      setEnviando(null);
     }
+  }
+
+  const aoEnviar = (e) => {
+    e.preventDefault();
+    if (!form.email || !form.senha) {
+      setErro("Preencha e-mail e senha.");
+      return;
+    }
+    executar("email", () => entrar(form.email, form.senha));
   };
 
   return (
-    <div className="login-container">
-      <Link to="/">
-        <div className="logos-menu">
-          <span className="logo-title-menu">
-            <BsLightning />
-          </span>
-          <span className="title-menu">EcoNexo</span>
-        </div>
-      </Link>
+    <PaginaPublica>
+      <section className="auth-pagina">
+        <div className="auth-card">
+          {confirmacao !== null ? (
+            <ConfirmarEmail mensagem={confirmacao} aoConcluir={(r) => seguir(r, setConfirmacao)} />
+          ) : (
+            <>
+              <div>
+                <h1>Entrar</h1>
+                <p className="eco-pequeno eco-mudo">Acesse seu histórico de análises e o painel profissional.</p>
+              </div>
 
-      <div className="login-user">
-        <h3>Entrar na Plataforma</h3>
+              <button
+                type="button"
+                className="eco-btn eco-btn--ghost"
+                onClick={() => executar("google", entrarComGoogle)}
+                disabled={enviando !== null}
+                aria-busy={enviando === "google" || undefined}
+              >
+                {enviando === "google" ? <span className="eco-giro" aria-hidden="true" /> : <IconeGoogle />}
+                Continuar com Google
+              </button>
 
-        <form onSubmit={handleSubmit}>
-          <label htmlFor="email" className="label-name">
-            Email
-          </label>
-          <input
-            type="email"
-            placeholder="seu@email.com"
-            id="email"
-            name="email"
-            required
-            value={form.email}
-            onChange={handleChange}
-          />
+              <div className="eco-divisor">ou com e-mail</div>
 
-          <label htmlFor="senha" className="label-password">
-            Senha
-          </label>
-          <input
-            type="password"
-            placeholder="********"
-            id="senha"
-            name="senha"
-            required
-            value={form.senha}
-            onChange={handleChange}
-          />
+              <form onSubmit={aoEnviar} noValidate>
+                <div className="eco-field">
+                  <label htmlFor="email">E-mail</label>
+                  <input id="email" type="email" autoComplete="email" placeholder="voce@exemplo.com" required
+                    value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} />
+                </div>
+                <div className="eco-field">
+                  <div className="auth-rotulo-linha">
+                    <label htmlFor="senha">Senha</label>
+                    <Link className="eco-link eco-pequeno" to="/recuperar-senha">Esqueceu a senha?</Link>
+                  </div>
+                  <input id="senha" type="password" autoComplete="current-password" required
+                    value={form.senha} onChange={(e) => setForm({ ...form, senha: e.target.value })} />
+                </div>
 
-          {erro && <p style={{ color: "red" }}>{erro}</p>}
+                {erro && <p className="eco-alerta eco-alerta--erro" role="alert">{erro}</p>}
+                {demorando && (
+                  <p className="eco-alerta eco-alerta--info auth-demora" role="status">
+                    O servidor estava em repouso e está acordando. Na primeira vez isso pode levar até 1 minuto — não precisa clicar de novo.
+                  </p>
+                )}
 
-          {demorando && (
-            <p className="login-demora" role="status">
-              O servidor estava em repouso e está acordando — na primeira vez
-              isso pode levar até 1 minuto. Aguarde, não precisa clicar de novo.
-            </p>
+                <BotaoEnviar carregando={enviando === "email"} disabled={enviando !== null} rotulo="Entrar" rotuloCarregando="Entrando…" />
+              </form>
+
+              <p className="auth-rodape">
+                Ainda não tem conta? <Link className="eco-link" to="/register">Criar conta</Link>
+              </p>
+            </>
           )}
-
-          <div className="submit-container">
-            <span className="no-password">Esqueceu a senha?</span>
-
-            <button type="submit" className="login-submit" disabled={enviando}>
-              {enviando ? "Entrando..." : "Entrar"}
-            </button>
-
-            <span>
-              Não tem uma conta?{" "}
-              <Link to="/register">
-                <span className="register-account">Cadastre-se</span>
-              </Link>
-            </span>
-          </div>
-        </form>
-      </div>
-    </div>
+        </div>
+      </section>
+    </PaginaPublica>
   );
 }

@@ -42,7 +42,7 @@
     background: transparent;
     color: var(--gray);
     font-size: 1.5rem;
-    font-family: montserrat, sans-serif;
+    font-family: var(--eco-font);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -54,7 +54,7 @@
     background: var(--white);
     color: var(--black);
     font-weight: 500;
-    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+    box-shadow: none;
 }
 
 .settings-content {
@@ -117,7 +117,7 @@
     font-size: 1.3rem;
     font-weight: 600;
     cursor: pointer;
-    font-family: montserrat, sans-serif;
+    font-family: var(--eco-font);
     color: var(--black);
     background: var(--white);
 }
@@ -169,7 +169,7 @@
     border: 1px solid var(--graybutton);
     border-radius: 8px;
     font-size: 1.5rem;
-    font-family: montserrat, sans-serif;
+    font-family: var(--eco-font);
     background: var(--whitesmoke);
     outline: none;
     color: var(--black);
@@ -226,12 +226,12 @@
     font-size: 1.3rem;
     font-weight: 600;
     cursor: pointer;
-    font-family: montserrat, sans-serif;
+    font-family: var(--eco-font);
     transition: all 0.2s ease;
 }
 
 .btn-salvar:hover {
-     background: #3b40d0;
+     background: var(--eco-brand-600);
 }
 
 .notificacao-item {
@@ -272,12 +272,12 @@
 .form-group textarea:focus,
 .form-group select:focus {
     border-color: var(--blue);
-    box-shadow: 0 0 0 3px rgba(72, 78, 255, 0.15);
+    box-shadow: 0 0 0 3px rgba(10, 127, 79, 0.15);
 }
 
 .input-icon:focus-within {
     border-color: var(--blue);
-    box-shadow: 0 0 0 3px rgba(72, 78, 255, 0.15);
+    box-shadow: 0 0 0 3px rgba(10, 127, 79, 0.15);
 }
 
 /* =========================
@@ -525,12 +525,12 @@
 .settings-status {
     padding: 2rem 0;
     font-size: 1.4rem;
-    color: var(--eco-ink-3, #6b7280);
+    color: var(--eco-ink-3, var(--eco-ink-3));
 }
 
 .settings-hint {
     font-size: 1.25rem;
-    color: var(--eco-ink-3, #6b7280);
+    color: var(--eco-ink-3, var(--eco-ink-3));
     margin-top: 1.2rem;
     line-height: 1.5;
 }

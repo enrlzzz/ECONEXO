@@ -8,6 +8,7 @@ import org.springframework.lang.NonNull;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
+import com.econexo.repository.UsuarioRepository;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -29,9 +30,15 @@ public class JwtAuthFilter extends OncePerRequestFilter {
     private static final String PREFIXO = "Bearer ";
 
     private final JwtService jwtService;
+    private final FirebaseTokenService firebaseTokenService;
+    private final UsuarioRepository usuarioRepository;
 
-    public JwtAuthFilter(JwtService jwtService) {
+    public JwtAuthFilter(JwtService jwtService,
+                         FirebaseTokenService firebaseTokenService,
+                         UsuarioRepository usuarioRepository) {
         this.jwtService = jwtService;
+        this.firebaseTokenService = firebaseTokenService;
+        this.usuarioRepository = usuarioRepository;
     }
 
     @Override
@@ -45,7 +52,16 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         if (header != null && header.startsWith(PREFIXO)) {
             String token = header.substring(PREFIXO.length()).trim();
 
-            jwtService.idDoUsuario(token).ifPresent(idUsuario -> {
+            // Dois emissores aceitos: o ID token do Firebase (o front novo) e o
+            // JWT próprio (mantido para não derrubar sessões antigas durante a
+            // transição). Nos dois casos o principal é o id do NOSSO cadastro.
+            // Token do Firebase de conta ainda sem cadastro aqui não autentica:
+            // o front precisa chamar POST /api/auth/firebase primeiro.
+            jwtService.idDoUsuario(token)
+                    .or(() -> firebaseTokenService.verificar(token)
+                            .flatMap(id -> usuarioRepository.findByFirebaseUid(id.uid()))
+                            .map(u -> u.getIdUsuario()))
+                    .ifPresent(idUsuario -> {
                 var auth = new UsernamePasswordAuthenticationToken(
                         idUsuario, null, List.of());
                 auth.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));

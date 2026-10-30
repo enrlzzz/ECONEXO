@@ -43,9 +43,9 @@
 }
 
 .notifications-title button {
-    border: 1px solid var(--eco-blue-200, #cbc9f7);
+    border: 1px solid var(--eco-blue-200, var(--eco-brand-200));
     background: var(--white);
-    color: var(--eco-blue, #2a26c7);
+    color: var(--eco-blue, var(--eco-brand-600));
 
     padding: 1rem 1.4rem;
     border-radius: 1.2rem;
@@ -81,8 +81,8 @@
 }
 
 .notifications-filtros button.ativo {
-    background: var(--eco-blue, #2a26c7);
-    border-color: var(--eco-blue, #2a26c7);
+    background: var(--eco-blue, var(--eco-brand-600));
+    border-color: var(--eco-blue, var(--eco-brand-600));
     color: #fff;
 }
 
@@ -123,7 +123,7 @@
 .notifications-item:hover,
 .notifications-item:focus-visible {
     border-color: var(--eco-blue-300, #a9a5f0);
-    box-shadow: 0 4px 16px rgba(42, 38, 199, 0.08);
+    box-shadow: none;
 }
 
 /* Lida: continua legível, só deixa de chamar atenção. */
@@ -146,8 +146,8 @@
 
     border-radius: 1.2rem;
 
-    background: var(--eco-blue-50, #f2f2fe);
-    color: var(--eco-blue, #2a26c7);
+    background: var(--eco-blue-50, var(--eco-brand-50));
+    color: var(--eco-blue, var(--eco-brand-600));
 
     font-size: 1.8rem;
 }
@@ -185,7 +185,7 @@
     height: 1rem;
 
     border-radius: 50%;
-    background: var(--eco-solar-500, #e8911b);
+    background: var(--eco-solar-500, var(--eco-solar-ink));
 }
 
 /* ------------------------------ vazio/erro ------------------------------ */
@@ -207,7 +207,7 @@
 
 .notifications-empty svg {
     font-size: 3.2rem;
-    color: var(--eco-green, #0e8f5a);
+    color: var(--eco-green, var(--eco-green));
 }
 
 .notifications-empty h2 {

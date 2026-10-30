@@ -1,362 +1,83 @@
-/* =====================================================================
-   HOME — tema escuro
-   ---------------------------------------------------------------------
-   Estrutura emprestada da referência do refero (fundo chapado near-black,
-   sem gradiente de página, elevação por cor de superfície e não por
-   sombra, divisores tracejados de 1px, respiro generoso entre seções,
-   raios de borda deliberados), aplicada sobre a NOSSA paleta: o azul
-   --eco-blue continua sendo a marca.
-
-   O que saiu daqui:
-   - .steps1/.steps2/.steps3 e .point1..point6 (CSS repetido 6x) viraram
-     um .cartao só dentro de .grade;
-   - margin-top: 20rem cravado no hero virou padding relativo à viewport;
-   - os oito breakpoints locais viraram os dois canônicos (1024 / 640).
-   ===================================================================== */
-
-.landing-main {
-    background: var(--eco-dark-bg);
-    color: var(--eco-dark-ink);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    overflow-x: clip;
-}
-
-/* ---------------------------------------------------------------------
-   HERO
-   --------------------------------------------------------------------- */
-.hero {
-    position: relative;
-    isolation: isolate;
-    width: 100%;
-    /* Alto o bastante para a foto de fundo respirar e ainda sobrar contraste
-       para o texto. min() com um teto em px impede que num monitor
-       ultrawide o hero vire uma parede de imagem. */
-    min-height: min(92vh, 900px);
-    /* min(), não margin fixo: em telas baixas o hero encolhe em vez de
-       empurrar o resto da página para fora da dobra. O header agora é
-       sticky (não fixed), então não há altura de header para compensar. */
-    padding: min(12vh, var(--eco-sp-8)) var(--eco-sp-5) var(--eco-sp-8);
-    display: flex;
-    align-items: center;
-    justify-content: center;
+/* Home — galeria branca: hero centralizado, faixas névoa alternadas. */
+.home-hero {
     text-align: center;
-    /* Sem divisor: a imagem já se dissolve no fundo da página, e uma linha
-       tracejada aqui criaria justamente a borda que a máscara evita. */
+    padding-top: 7.2rem;
+    padding-bottom: 2rem;
 }
 
-/* ---------------------------------------------------------------------
-   FUNDO DO HERO
-
-   O "encontro" entre a foto e o fundo chapado é feito por máscara, não
-   por gradiente sobreposto: a imagem fica de fato transparente nas
-   pontas, então ela termina no #0B0C1A exato da página — em qualquer
-   tamanho de tela e sem depender de acertar a cor do gradiente.
-   --------------------------------------------------------------------- */
-.hero-fundo {
-    position: absolute;
-    inset: 0;
-    z-index: 0;
-    overflow: hidden;
-    pointer-events: none;
-
-    --recorte: linear-gradient(
-        180deg,
-        transparent 0%,
-        rgba(0, 0, 0, 0.55) 14%,
-        #000 42%,
-        #000 62%,
-        transparent 100%
-    );
-    -webkit-mask-image: var(--recorte);
-    mask-image: var(--recorte);
+.home-hero .eco-hero-titulo {
+    max-width: 920px;
+    margin-inline: auto;
 }
 
-.hero-fundo img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    /* A foto é quente (madeira/sépia) e a página é azul-fria. Dessaturar e
-       esfriar um pouco faz as duas parecerem a mesma cena em vez de duas
-       imagens coladas. */
-    filter: saturate(0.5) brightness(0.8) contrast(1.05) hue-rotate(-10deg);
-    opacity: 0.72;
-}
-
-/* Véu de cor: garante o contraste do texto e tinge o resto de azul. */
-.hero-veu {
-    position: absolute;
-    inset: 0;
-    z-index: 0;
-    pointer-events: none;
-    background:
-        /* Mancha escura sob o texto, clareando nas bordas onde não há
-           nada escrito: o contraste do título é garantido sem apagar a
-           planta elétrica nos cantos. */
-        radial-gradient(
-            85% 65% at 50% 50%,
-            rgba(11, 12, 26, 0.82) 0%,
-            rgba(11, 12, 26, 0.55) 55%,
-            rgba(11, 12, 26, 0.2) 100%
-        ),
-        /* Tingimento azul + fechamento nas pontas. */
-        linear-gradient(
-            180deg,
-            var(--eco-dark-bg) 0%,
-            rgba(11, 12, 26, 0.45) 26%,
-            rgba(11, 12, 26, 0.45) 70%,
-            var(--eco-dark-bg) 100%
-        );
-}
-
-.hero-conteudo {
-    position: relative;
-    z-index: 1;
-    width: min(var(--eco-maxw), 100%);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: var(--eco-sp-4);
-}
-
-.hero-kicker {
-    padding: 0.7rem 1.4rem;
-    border-radius: var(--eco-r-pill);
-    border: 1px solid var(--eco-dark-line);
-    background: var(--eco-dark-surface);
-    color: var(--eco-dark-ink-2);
-    font-size: var(--eco-text-sm);
-    font-weight: 700;
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
-}
-
-.hero h1 {
-    /* clamp(): o título acompanha a largura sem precisar de media query,
-       e sem <br /> decidindo onde a frase quebra. */
-    font-size: var(--eco-text-3xl);
-    font-weight: 800;
-    line-height: var(--eco-leading-tight);
-    letter-spacing: -0.035em;
-    max-width: 18ch;
-    text-wrap: balance;
-}
-
-.hero-descricao {
-    font-size: var(--eco-text-lg);
-    line-height: var(--eco-leading);
-    color: var(--eco-dark-ink-2);
-    /* Antes a medida de leitura era definida por dois <br /> no JSX.
-       Em qualquer largura diferente da que foi desenhada, quebrava errado. */
-    max-width: 58ch;
-    text-wrap: pretty;
-}
-
-.hero-acoes {
-    display: flex;
-    gap: var(--eco-sp-3);
-    flex-wrap: wrap;
-    justify-content: center;
-    margin-top: var(--eco-sp-3);
-}
-
-.hero-acoes .eco-btn {
-    padding: 1.4rem 2.6rem;
-    font-size: var(--eco-text-md);
-}
-
-/* ---------------------------------------------------------------------
-   SEÇÕES DE CONTEÚDO
-   --------------------------------------------------------------------- */
-.secao {
-    width: min(var(--eco-maxw), 100%);
-    padding: var(--eco-sp-8) var(--eco-sp-5);
-    display: flex;
-    flex-direction: column;
-    gap: var(--eco-sp-6);
-}
-
-.secao-cabecalho {
-    display: flex;
-    flex-direction: column;
-    gap: var(--eco-sp-2);
-    text-align: center;
-    align-items: center;
-}
-
-.secao-cabecalho h2 {
-    font-size: var(--eco-text-xl);
-    font-weight: 800;
-    letter-spacing: -0.025em;
-    line-height: var(--eco-leading-snug);
-}
-
-.secao-cabecalho p {
-    font-size: var(--eco-text-md);
-    line-height: var(--eco-leading);
-    color: var(--eco-dark-ink-2);
-    max-width: 56ch;
-}
-
-/* ---------------------------------------------------------------------
-   GRADE DE CARTÕES — um componente, não seis classes posicionais
-   --------------------------------------------------------------------- */
-.grade {
-    list-style: none;
-    display: grid;
-    gap: var(--eco-sp-4);
-}
-
-/* auto-fit + minmax faz a grade decidir sozinha quantas colunas cabem.
-   É o que elimina a necessidade de uma media query por breakpoint. */
-.grade--3 {
-    grid-template-columns: repeat(auto-fit, minmax(28rem, 1fr));
-}
-
-.cartao {
-    background: var(--eco-dark-surface);
-    border: 1px solid var(--eco-dark-line);
-    border-radius: var(--eco-r-lg);
-    padding: var(--eco-sp-5);
-    display: flex;
-    flex-direction: column;
-    gap: var(--eco-sp-3);
-    /* Sem box-shadow: na referência a elevação vem da cor da superfície. */
-    transition: border-color 0.2s var(--eco-ease),
-        background 0.2s var(--eco-ease), transform 0.2s var(--eco-ease);
-}
-
-.cartao:hover {
-    border-color: var(--eco-dark-accent);
-    background: var(--eco-dark-surface-2);
-    transform: translateY(-2px);
-}
-
-.cartao-icone {
-    width: 46px;
-    height: 46px;
-    border-radius: 14px;
-    display: grid;
-    place-items: center;
-    background: var(--eco-dark-accent-soft);
-    color: var(--eco-blue-300);
+.home-hero-texto {
+    max-width: 620px;
+    margin: 2rem auto 0;
     font-size: 2.1rem;
+    line-height: 1.38;
+    letter-spacing: 0.01em;
+    color: var(--eco-ink-3);
 }
 
-.cartao h3 {
-    font-size: var(--eco-text-lg);
-    font-weight: 700;
-    letter-spacing: -0.01em;
+.home-hero-acoes {
+    justify-content: center;
+    margin-top: 3.2rem;
 }
 
-.cartao p {
-    font-size: var(--eco-text-base);
-    line-height: var(--eco-leading);
-    color: var(--eco-dark-ink-2);
-}
-
-/* ---------------------------------------------------------------------
-   CHAMADA FINAL
-   --------------------------------------------------------------------- */
-.chamada-final {
+.home-hero-arte {
+    display: block;
     width: 100%;
-    padding: var(--eco-sp-8) var(--eco-sp-5);
-    border-top: 1px dashed var(--eco-dark-line);
+    max-width: 880px;
+    height: auto;
+    margin: 5.6rem auto 0;
+}
+
+.home-topo-secao {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 2rem;
+    flex-wrap: wrap;
+    margin-bottom: 3.2rem;
+}
+
+.home-titulo {
+    margin-bottom: 4rem;
+}
+
+.home-lista {
+    list-style: none;
+}
+
+.home-lista .eco-card {
     display: flex;
     flex-direction: column;
-    align-items: center;
-    text-align: center;
-    gap: var(--eco-sp-4);
+    gap: 1.2rem;
 }
 
-.chamada-final h2 {
-    font-size: var(--eco-text-2xl);
-    font-weight: 800;
-    letter-spacing: -0.03em;
-    line-height: var(--eco-leading-tight);
+.eco-faixa--nevoa .home-lista .eco-card {
+    background: #fff;
 }
 
-.chamada-final p {
-    font-size: var(--eco-text-md);
-    line-height: var(--eco-leading);
-    color: var(--eco-dark-ink-2);
-    max-width: 52ch;
+.home-pro-texto {
+    max-width: 640px;
+    margin-top: 2rem;
 }
 
-.chamada-final .eco-btn {
-    padding: 1.4rem 2.8rem;
-    font-size: var(--eco-text-md);
-    margin-top: var(--eco-sp-2);
+.home-diferenciais {
+    margin-top: 4rem;
 }
 
-/* ---------------------------------------------------------------------
-   RESPONSIVO — md (1024) e sm (640). Só esses dois.
-   --------------------------------------------------------------------- */
-@media (max-width: 1024px) {
-    .secao {
-        padding: var(--eco-sp-7) var(--eco-sp-5);
-    }
+.home-pro-acoes {
+    margin-top: 4rem;
 }
 
-@media (max-width: 640px) {
-    .hero {
-        /* No telefone o teto de 92vh empurraria todo o resto para baixo da
-           dobra sem ganho nenhum: a foto vira uma faixa, nao um cenario. */
-        min-height: 68vh;
-        padding: var(--eco-sp-7) var(--eco-sp-4);
+@media (max-width: 620px) {
+    .home-hero {
+        padding-top: 4.8rem;
     }
 
-    /* Num viewport estreito o raio de 85% do véu cobria a tela inteira e
-       apagava a foto: sobrava uma textura fantasma, e o usuário de celular
-       baixava 433 kB de imagem para não ver quase nada. Aqui o escurecido
-       encolhe para caber só atrás do texto e a foto ganha presença nas
-       bordas — o contraste do título fica preservado porque a mancha
-       central continua na mesma opacidade. */
-    .hero-veu {
-        background:
-            radial-gradient(
-                62% 42% at 50% 50%,
-                rgba(11, 12, 26, 0.86) 0%,
-                rgba(11, 12, 26, 0.6) 60%,
-                rgba(11, 12, 26, 0.12) 100%
-            ),
-            linear-gradient(
-                180deg,
-                var(--eco-dark-bg) 0%,
-                rgba(11, 12, 26, 0.32) 22%,
-                rgba(11, 12, 26, 0.32) 74%,
-                var(--eco-dark-bg) 100%
-            );
-    }
-
-    .hero-fundo img {
-        opacity: 0.85;
-    }
-
-    .hero h1 {
-        max-width: none;
-    }
-
-    .hero-acoes {
-        width: 100%;
-        flex-direction: column;
-    }
-
-    .hero-acoes .eco-btn {
-        width: 100%;
-    }
-
-    .secao,
-    .chamada-final {
-        padding: var(--eco-sp-6) var(--eco-sp-4);
-    }
-
-    .grade--3 {
-        grid-template-columns: 1fr;
-    }
-
-    .cartao {
-        padding: var(--eco-sp-4);
+    .home-hero-texto {
+        font-size: 1.9rem;
     }
 }

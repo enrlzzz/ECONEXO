@@ -1,32 +1,18 @@
 import { useEffect } from "react";
 
 import { aquecerApi } from "./services/api";
-import Footer from "./components/footer";
-import Header from "./components/header";
+import PaginaPublica from "./components/layout/PaginaPublica";
 import Main from "./components/main";
 
 export default function App() {
-  // A home é escura. Sem pintar o body junto, a área de overscroll (o
-  // "elástico" no topo e no rodapé) aparece branca por baixo da página.
   // Acorda o backend (Render free dorme) enquanto o visitante lê a página.
   useEffect(() => {
     aquecerApi();
   }, []);
 
-  useEffect(() => {
-    document.body.style.backgroundColor = "var(--eco-dark-bg)";
-    document.documentElement.style.colorScheme = "dark";
-    return () => {
-      document.body.style.backgroundColor = "";
-      document.documentElement.style.colorScheme = "";
-    };
-  }, []);
-
   return (
-    <>
-      <Header />
+    <PaginaPublica>
       <Main />
-      <Footer />
-    </>
+    </PaginaPublica>
   );
 }

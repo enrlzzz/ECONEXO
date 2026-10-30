@@ -44,6 +44,11 @@ services:
       - key: GEMINI_API_KEY
         sync: false
 
+      # ID do projeto Firebase (login). O backend só aceita ID tokens
+      # emitidos para este projeto. Sem valor, o login pelo Firebase falha.
+      - key: FIREBASE_PROJECT_ID
+        sync: false
+
       # Chave da API do Open Charge Map (pontos de recarga de veículos elétricos).
       # Sem ela a API ainda responde, mas com rate limit reduzido.
       # Cadastre gratuitamente em https://openchargemap.org/site/develop/api

@@ -74,6 +74,13 @@ public class Usuario {
     private Boolean admin = false;
 
     /**
+     * UID do Firebase Authentication. Quem confere a senha agora é o
+     * Firebase; este campo só liga aquela identidade a este cadastro.
+     */
+    @Column(name = "firebase_uid", unique = true, length = 128)
+    private String firebaseUid;
+
+    /**
      * Consentimento LGPD.
      *
      * A LGPD (Art. 8º, §2º) coloca o ônus da prova do consentimento no
@@ -198,6 +205,14 @@ public class Usuario {
 
     public void setTipoProfissional(String tipoProfissional) {
         this.tipoProfissional = tipoProfissional;
+    }
+
+    public String getFirebaseUid() {
+        return firebaseUid;
+    }
+
+    public void setFirebaseUid(String firebaseUid) {
+        this.firebaseUid = firebaseUid;
     }
 
     public Boolean getAdmin() {

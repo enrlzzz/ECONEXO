@@ -53,6 +53,12 @@ public class GlobalExceptionHandler {
                 .body(ErroResponse.de(409, "Conflito", e.getMessage()));
     }
 
+    @ExceptionHandler(CadastroIncompletoException.class)
+    public ResponseEntity<ErroResponse> cadastroIncompleto(CadastroIncompletoException e) {
+        return ResponseEntity.status(HttpStatus.PRECONDITION_REQUIRED)
+                .body(ErroResponse.de(428, "Cadastro incompleto", e.getMessage()));
+    }
+
     @ExceptionHandler(AcessoNegadoException.class)
     public ResponseEntity<ErroResponse> acessoNegado(AcessoNegadoException e) {
         return ResponseEntity.status(HttpStatus.FORBIDDEN)

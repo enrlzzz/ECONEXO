@@ -63,7 +63,7 @@
 
     border-radius: 16px;
 
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.08);
+    box-shadow: none;
 
     transition: 0.2s ease;
 }
@@ -124,7 +124,7 @@
 
     width: 100%;
 
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.08);
+    box-shadow: none;
 }
 
 .progress-header {
@@ -207,11 +207,11 @@
 
     transition: 0.3s ease;
 
-    font-family: montserrat, sans-serif;
+    font-family: var(--eco-font);
 }
 
 .progress-btn:hover {
-    background: #3b40d0;
+    background: var(--eco-brand-600);
 }
 
 /* ===================================== */
@@ -243,7 +243,7 @@
 
     padding: 2rem;
 
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.08);
+    box-shadow: none;
 }
 
 .recent-projects-header {
@@ -290,7 +290,7 @@
 
     transition: 0.3s ease;
 
-    font-family: montserrat, sans-serif;
+    font-family: var(--eco-font);
 }
 
 .recent-projects-btn span {
@@ -299,7 +299,7 @@
 }
 
 .recent-projects-btn:hover {
-    background: #3b40d0;
+    background: var(--eco-brand-600);
 }
 
 /* ===================================== */
@@ -331,7 +331,7 @@
 
     color: var(--blue);
 
-    background: #e8f0fe;
+    background: var(--eco-brand-50);
 
     border-radius: 50%;
 
@@ -363,7 +363,7 @@
 
     background: #f0f0f0;
 
-    border-radius: 20px;
+    border-radius: var(--eco-r-card);
 
     padding: 0.4rem 1rem;
 
@@ -387,7 +387,7 @@
 
     padding: 2rem;
 
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.08);
+    box-shadow: none;
 }
 
 .quick-actions h2 {
@@ -438,7 +438,7 @@
 
     transition: 0.2s ease;
 
-    font-family: montserrat, sans-serif;
+    font-family: var(--eco-font);
 }
 
 .actions button:hover {

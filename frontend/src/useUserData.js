@@ -50,7 +50,7 @@ function readSafe() {
       estado: "",
       role: "",
       initials: "",
-      color: "#2A26C7",
+      color: "#0A7F4F",
     }
   );
 }

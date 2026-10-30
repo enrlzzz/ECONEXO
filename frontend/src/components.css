@@ -22,10 +22,13 @@
 .eco-btn {
     border: 1px solid transparent;
     border-radius: var(--eco-r-pill);
-    padding: 1.1rem 1.8rem;
-    font-size: var(--eco-text-base);
-    font-weight: 700;
+    min-height: 44px;
+    padding: 0 2.2rem;
+    font-size: var(--eco-text-md);
+    font-weight: 400;
+    letter-spacing: var(--eco-tracking-body);
     line-height: 1;
+    white-space: nowrap;
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -42,8 +45,21 @@
 }
 
 .eco-btn:disabled {
-    opacity: 0.55;
+    background: var(--eco-line-2);
+    border-color: transparent;
+    color: var(--eco-ink-3);
     cursor: not-allowed;
+}
+
+.eco-btn[aria-busy="true"] {
+    cursor: progress;
+}
+
+/* Compacto (12px): barra de navegação, ações secundárias de card. */
+.eco-btn--sm {
+    min-height: 32px;
+    padding: 0 1.4rem;
+    font-size: var(--eco-text-xs);
 }
 
 .eco-btn--primary {
@@ -56,9 +72,9 @@
 }
 
 .eco-btn--light {
-    background: var(--eco-surface);
-    border-color: var(--eco-line);
-    color: var(--eco-ink-2);
+    background: transparent;
+    border-color: #86868b;
+    color: var(--eco-ink);
 }
 
 .eco-btn--light:hover:not(:disabled) {
@@ -67,62 +83,52 @@
 
 .eco-btn--ghost {
     background: transparent;
-    border-color: var(--eco-line);
-    color: var(--eco-ink-2);
+    border-color: #86868b;
+    color: var(--eco-ink);
 }
 
 .eco-btn--ghost:hover:not(:disabled) {
-    background: var(--eco-blue-50);
-    border-color: var(--eco-blue-200);
-    color: var(--eco-blue-700);
+    background: var(--eco-bg);
 }
 
-/* Variantes para a home escura. */
+/* Link textual com seta — a ação de menor peso. */
+.eco-btn--texto {
+    background: none;
+    border: 0;
+    min-height: auto;
+    padding: 0.4rem;
+    color: var(--eco-link);
+}
+
+.eco-btn--texto:hover:not(:disabled) {
+    text-decoration: underline;
+}
+
+/* Antigas variantes da home escura: a home ficou clara, viraram
+   sinônimos de primário e secundário. */
 .eco-btn--on-dark {
-    background: var(--eco-dark-accent);
+    background: var(--eco-brand-600);
     color: #fff;
 }
 
 .eco-btn--on-dark:hover:not(:disabled) {
-    background: var(--eco-blue-400);
+    background: var(--eco-brand-700);
 }
 
 .eco-btn--outline-dark {
     background: transparent;
-    border-color: var(--eco-dark-line);
-    color: var(--eco-dark-ink);
+    border-color: #86868b;
+    color: var(--eco-ink);
 }
 
 .eco-btn--outline-dark:hover:not(:disabled) {
-    border-color: var(--eco-dark-accent);
-    background: var(--eco-dark-accent-soft);
+    background: var(--eco-bg);
 }
 
-/* Rich Button: brilho que atravessa a superfície no hover. Puro
-   ::after com translate — nada de JS nem de biblioteca de animação. */
+/* Rich Button: o brilho atravessando o botão era gradiente — fora do
+   sistema novo. A classe continua existindo para não quebrar o JSX. */
 .eco-btn--rich {
     position: relative;
-    overflow: hidden;
-    isolation: isolate;
-}
-
-.eco-btn--rich::after {
-    content: "";
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(
-        110deg,
-        transparent 25%,
-        rgba(255, 255, 255, 0.34) 48%,
-        transparent 72%
-    );
-    transform: translateX(-120%);
-    transition: transform 0.65s var(--eco-ease);
-    pointer-events: none;
-}
-
-.eco-btn--rich:hover::after {
-    transform: translateX(120%);
 }
 
 /* ---------------------------------------------------------------------
@@ -130,9 +136,9 @@
    --------------------------------------------------------------------- */
 .eco-card {
     background: var(--eco-card);
-    border: 1px solid var(--eco-line);
-    border-radius: var(--eco-r-lg);
-    box-shadow: var(--eco-shadow-sm);
+    border: 0;
+    border-radius: var(--eco-r-card);
+    box-shadow: none;
 }
 
 .eco-card--flat {
@@ -158,10 +164,9 @@
     gap: 0.4rem;
     padding: 0.4rem 0.8rem;
     border-radius: var(--eco-r-pill);
-    font-size: 0.9rem;
-    font-weight: 900;
-    letter-spacing: 0.04em;
-    text-transform: uppercase;
+    font-size: var(--eco-text-xs);
+    font-weight: 600;
+    letter-spacing: -0.01em;
     white-space: nowrap;
 }
 
@@ -186,7 +191,7 @@
 }
 
 .eco-badge--muted {
-    background: #f0f2f7;
+    background: var(--eco-line-2);
     color: var(--eco-ink-3);
 }
 
@@ -196,7 +201,7 @@
     background: var(--eco-surface);
     border: 1px solid var(--eco-line);
     font-size: var(--eco-text-xs);
-    font-weight: 800;
+    font-weight: 500;
     color: var(--eco-ink-2);
 }
 
@@ -210,19 +215,20 @@
 }
 
 .eco-field > label {
-    font-size: var(--eco-text-xs);
-    font-weight: 800;
+    font-size: var(--eco-text-sm);
+    font-weight: 500;
     color: var(--eco-ink-2);
 }
 
 .eco-field input,
 .eco-field select,
 .eco-field textarea {
-    border: 1px solid #dfe3ec;
-    border-radius: 12px;
-    padding: 1.1rem 1.2rem;
+    border: 1px solid #86868b;
+    border-radius: var(--eco-r-sm);
+    min-height: 44px;
+    padding: 0 1.6rem;
     background: #fff;
-    font-size: var(--eco-text-base);
+    font-size: var(--eco-text-md);
     outline: none;
     transition: border-color 0.16s var(--eco-ease),
         box-shadow 0.16s var(--eco-ease);
@@ -231,8 +237,12 @@
 .eco-field input:focus,
 .eco-field select:focus,
 .eco-field textarea:focus {
-    border-color: var(--eco-blue-400);
+    border-color: var(--eco-brand-600);
     box-shadow: var(--eco-ring);
+}
+
+.eco-field textarea {
+    padding-block: 1.2rem;
 }
 
 /* ---------------------------------------------------------------------
@@ -249,18 +259,13 @@
     background: var(--eco-bg-2);
 }
 
-.eco-skeleton::after {
-    content: "";
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(
-        90deg,
-        transparent,
-        rgba(255, 255, 255, 0.72),
-        transparent
-    );
-    transform: translateX(-100%);
-    animation: eco-shimmer 1.4s infinite;
+/* Pulso de opacidade em vez do brilho em gradiente. */
+.eco-skeleton {
+    animation: eco-pulso 1.4s ease-in-out infinite;
+}
+
+@keyframes eco-pulso {
+    50% { opacity: 0.55; }
 }
 
 .eco-skeleton--text {
@@ -282,11 +287,7 @@
     height: 100%;
     width: var(--valor, 0%);
     border-radius: inherit;
-    background: linear-gradient(
-        90deg,
-        var(--eco-blue-600),
-        var(--eco-blue-500)
-    );
+    background: var(--eco-brand-600);
     transition: width 0.45s var(--eco-ease);
 }
 
@@ -344,37 +345,15 @@
    TEXTO ANIMADO
    --------------------------------------------------------------------- */
 
-/* Shimmer Text: o brilho que percorre a palavra. */
+/* Shimmer Text e Gradient Wave Text eram gradientes animados sobre o
+   texto. No sistema novo o texto é cor chapada; as classes ficam para
+   não quebrar o JSX. */
 .eco-shimmer-text {
-    background: linear-gradient(
-            90deg,
-            var(--shimmer-base, var(--eco-ink-3)) 0%,
-            var(--shimmer-base, var(--eco-ink-3)) 40%,
-            var(--shimmer-glow, var(--eco-ink)) 50%,
-            var(--shimmer-base, var(--eco-ink-3)) 60%,
-            var(--shimmer-base, var(--eco-ink-3)) 100%
-        )
-        0 0 / 220% 100%;
-    -webkit-background-clip: text;
-    background-clip: text;
-    color: transparent;
-    animation: eco-shimmer-sweep 2.6s linear infinite;
+    color: var(--eco-ink-3);
 }
 
-/* Gradient Wave Text: gradiente que desliza pela palavra. */
 .eco-gradient-text {
-    background: linear-gradient(
-            100deg,
-            var(--eco-blue-400),
-            var(--eco-sky),
-            var(--eco-solar-300),
-            var(--eco-blue-400)
-        )
-        0 0 / 280% 100%;
-    -webkit-background-clip: text;
-    background-clip: text;
-    color: transparent;
-    animation: eco-gradient-wave 9s linear infinite;
+    color: var(--eco-brand-600);
 }
 
 /* Blur Reveal: entra desfocado e se resolve. */
@@ -389,69 +368,27 @@
     animation-delay: calc(var(--i, 0) * 70ms);
 }
 
-/* ---------------------------------------------------------------------
-   LIGHT RAYS — feixes de luz saindo do topo.
-   Dois cones cônicos sobrepostos, girando muito devagar. É o que dá
-   profundidade ao fundo chapado da home escura sem virar gradiente.
-   --------------------------------------------------------------------- */
+/* Light Rays (feixes na home escura): desligado — a home é clara. */
 .eco-rays {
-    position: absolute;
-    inset: 0;
-    overflow: hidden;
-    pointer-events: none;
-    z-index: 0;
-}
-
-.eco-rays::before,
-.eco-rays::after {
-    content: "";
-    position: absolute;
-    left: 50%;
-    top: -55%;
-    width: 130vmax;
-    height: 130vmax;
-    translate: -50% 0;
-    background: conic-gradient(
-        from 180deg at 50% 0%,
-        transparent 0deg,
-        var(--eco-dark-accent-soft) 12deg,
-        transparent 26deg,
-        transparent 334deg,
-        var(--eco-dark-accent-soft) 348deg,
-        transparent 360deg
-    );
-    filter: blur(28px);
-    opacity: 0.9;
-    animation: eco-rays-drift 26s ease-in-out infinite alternate;
-}
-
-.eco-rays::after {
-    background: conic-gradient(
-        from 180deg at 50% 0%,
-        transparent 0deg,
-        rgba(216, 234, 250, 0.1) 18deg,
-        transparent 38deg
-    );
-    animation-duration: 34s;
-    animation-direction: alternate-reverse;
+    display: none;
 }
 
 /* ---------------------------------------------------------------------
    DROPZONE
    --------------------------------------------------------------------- */
 .eco-dropzone {
-    border: 1.6px dashed #cfd5e4;
-    border-radius: var(--eco-r);
-    background: #fbfcff;
-    padding: 1.8rem;
+    border: 1.5px dashed #86868b;
+    border-radius: var(--eco-r-card);
+    background: #fff;
+    padding: 4.4rem 2.4rem;
     text-align: center;
     transition: border-color 0.16s var(--eco-ease),
         background 0.16s var(--eco-ease);
 }
 
 .eco-dropzone--drag {
-    border-color: var(--eco-blue-600);
-    background: var(--eco-blue-50);
+    border-color: var(--eco-brand-600);
+    background: var(--eco-brand-100);
 }
 
 /* ---------------------------------------------------------------------
@@ -470,4 +407,240 @@
     clip: rect(0 0 0 0);
     white-space: nowrap;
     border: 0;
+}
+
+/* =====================================================================
+   LAYOUT E TIPOGRAFIA DE PÁGINA (redesign out/2026)
+   As peças do protótipo aprovado, para qualquer tela usar.
+   ===================================================================== */
+.eco-pular {
+    position: absolute;
+    left: 1.6rem;
+    top: -6rem;
+    z-index: 999;
+    padding: 1rem 1.6rem;
+    background: var(--eco-ink);
+    color: #fff;
+    border-radius: var(--eco-r-pill);
+    font-size: var(--eco-text-sm);
+}
+
+.eco-pular:focus {
+    top: 0.8rem;
+}
+
+main:focus {
+    outline: none;
+}
+
+.eco-container {
+    width: min(var(--eco-maxw), 100% - 3.2rem);
+    margin-inline: auto;
+}
+
+.eco-estreito {
+    width: min(680px, 100% - 3.2rem);
+    margin-inline: auto;
+}
+
+.eco-faixa {
+    padding-block: var(--eco-section-gap);
+}
+
+.eco-faixa--nevoa {
+    background: var(--eco-bg);
+}
+
+/* Card dentro de faixa branca fica névoa; dentro de faixa névoa, branco. */
+.eco-faixa:not(.eco-faixa--nevoa) .eco-card {
+    background: var(--eco-bg);
+}
+
+.eco-card {
+    padding: var(--eco-card-pad);
+}
+
+.eco-kicker {
+    font-size: 2.1rem;
+    font-weight: 600;
+    line-height: 1;
+    letter-spacing: 0.011em;
+    color: var(--eco-link);
+    margin-bottom: 1.4rem;
+}
+
+.eco-hero-titulo {
+    font-size: var(--eco-text-3xl);
+    font-weight: 600;
+    line-height: 1.05;
+    letter-spacing: -0.015em;
+}
+
+.eco-titulo-secao {
+    font-size: var(--eco-text-xl);
+    font-weight: 600;
+    line-height: 1.08;
+    letter-spacing: -0.01em;
+}
+
+.eco-titulo-card {
+    font-size: var(--eco-text-lg);
+    font-weight: 600;
+    line-height: 1.17;
+    letter-spacing: -0.008em;
+}
+
+.eco-corpo {
+    font-size: var(--eco-text-md);
+    line-height: var(--eco-leading);
+}
+
+.eco-pequeno {
+    font-size: var(--eco-text-sm);
+    line-height: 1.43;
+    letter-spacing: -0.016em;
+}
+
+.eco-mudo {
+    color: var(--eco-ink-3);
+}
+
+.eco-link {
+    color: var(--eco-link);
+    border-radius: 6px;
+}
+
+.eco-link:hover {
+    text-decoration: underline;
+}
+
+.eco-link-seta::after {
+    content: " ›";
+}
+
+/* Rótulo de status sem pílula: texto âmbar de 12px. */
+.eco-rotulo {
+    color: var(--eco-solar-ink);
+    font-size: var(--eco-text-xs);
+    font-weight: 600;
+    line-height: 1.33;
+    letter-spacing: -0.01em;
+}
+
+.eco-num {
+    font-variant-numeric: tabular-nums;
+}
+
+.eco-grade {
+    display: grid;
+    gap: var(--eco-gap);
+}
+
+.eco-grade--2 { grid-template-columns: repeat(2, 1fr); }
+.eco-grade--3 { grid-template-columns: repeat(3, 1fr); }
+.eco-grade--4 { grid-template-columns: repeat(4, 1fr); }
+
+@media (max-width: 900px) {
+    .eco-grade--3,
+    .eco-grade--4 { grid-template-columns: repeat(2, 1fr); }
+}
+
+@media (max-width: 620px) {
+    .eco-grade--2,
+    .eco-grade--3,
+    .eco-grade--4 { grid-template-columns: 1fr; }
+}
+
+.eco-acoes {
+    display: flex;
+    gap: 1.4rem;
+    flex-wrap: wrap;
+    align-items: center;
+}
+
+/* Mensagem de erro/sucesso de formulário. */
+.eco-alerta {
+    border-radius: 14px;
+    padding: 1.2rem 1.6rem;
+    font-size: var(--eco-text-sm);
+    line-height: 1.43;
+}
+
+.eco-alerta--erro { background: var(--eco-red-soft); color: var(--eco-red); }
+.eco-alerta--ok { background: var(--eco-green-soft); color: var(--eco-green-ink); }
+.eco-alerta--info { background: var(--eco-bg); color: var(--eco-ink-2); }
+
+/* Controle segmentado (dois a três botões exclusivos). */
+.eco-segmento {
+    display: grid;
+    grid-auto-columns: 1fr;
+    grid-auto-flow: column;
+    padding: 4px;
+    border-radius: var(--eco-r-pill);
+    background: var(--eco-line-2);
+}
+
+.eco-segmento button {
+    min-height: 36px;
+    border: 0;
+    border-radius: var(--eco-r-pill);
+    background: transparent;
+    font-size: var(--eco-text-sm);
+    color: var(--eco-ink);
+}
+
+.eco-segmento button[aria-pressed="true"] {
+    background: #fff;
+    font-weight: 600;
+    box-shadow: 0 0 0 1px var(--eco-line-2);
+}
+
+.eco-check {
+    display: flex;
+    gap: 1rem;
+    align-items: flex-start;
+    font-size: var(--eco-text-sm);
+    line-height: 1.43;
+}
+
+.eco-check input {
+    width: 18px;
+    height: 18px;
+    margin-top: 1px;
+    accent-color: var(--eco-brand-600);
+    flex: 0 0 auto;
+}
+
+.eco-divisor {
+    display: flex;
+    align-items: center;
+    gap: 1.2rem;
+    color: var(--eco-ink-3);
+    font-size: var(--eco-text-xs);
+}
+
+.eco-divisor::before,
+.eco-divisor::after {
+    content: "";
+    flex: 1;
+    height: 1px;
+    background: var(--eco-line);
+}
+
+/* Giro do botão "carregando". */
+.eco-giro {
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    border: 2px solid currentColor;
+    border-right-color: transparent;
+    animation: eco-spin 0.8s linear infinite;
+    flex: 0 0 auto;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .eco-giro,
+    .eco-skeleton {
+        animation-duration: 2.4s;
+    }
 }

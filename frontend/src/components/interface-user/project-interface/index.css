@@ -35,7 +35,7 @@
     font-weight: 600;
     cursor: pointer;
     transition: background 0.3s ease;
-    font-family: montserrat, sans-serif;
+    font-family: var(--eco-font);
     margin-right: 6rem;
 }
 
@@ -45,7 +45,7 @@
 }
 
 .projects-btn:hover {
-    background: #3b40d0;
+    background: var(--eco-brand-600);
 }
 
 .modal-overlay {
@@ -103,7 +103,7 @@
     border: 1px solid var(--graybutton);
     border-radius: 8px;
     font-size: 1.4rem;
-    font-family: montserrat, sans-serif;
+    font-family: var(--eco-font);
     outline: none;
 }
 
@@ -135,12 +135,12 @@
     font-weight: 600;
     cursor: pointer;
     transition: background 0.3s ease;
-    font-family: montserrat, sans-serif;
+    font-family: var(--eco-font);
     margin-top: 3rem;
 }
 
 .modal button:hover {
-    background: #3b40d0;
+    background: var(--eco-brand-600);
 }
 
 .project-content p {
@@ -166,7 +166,7 @@
     padding: 1.5rem;
     gap: 2rem;
     min-height: 15rem;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    box-shadow: none;
 }
 
 .card-content-title {
@@ -201,7 +201,7 @@
     color: var(--gray);
     cursor: pointer;
     padding: 0.30rem 0.80rem;
-    border-radius: 20px;
+    border-radius: var(--eco-r-card);
     white-space: nowrap;     /* evita quebra de linha */
 }
 
@@ -216,7 +216,7 @@
     border-radius: 12px;
     padding: 2rem;
     width: calc(100% - 8rem);
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    box-shadow: none;
     margin: 0 auto;
     margin-top: 2rem;
 
@@ -387,7 +387,7 @@
     text-align: center;
     padding: 3rem 0;
     font-size: 1.4rem;
-    color: var(--eco-ink-3, #6b7280);
+    color: var(--eco-ink-3, var(--eco-ink-3));
 }
 
 .project-empty {
@@ -398,7 +398,7 @@
     text-align: center;
 
     background: var(--white);
-    border: 1px solid var(--eco-line, #e4e8ef);
+    border: 1px solid var(--eco-line, var(--eco-line-2));
     border-radius: 16px;
 }
 
@@ -410,6 +410,6 @@
 
 .project-empty p {
     font-size: 1.4rem;
-    color: var(--eco-ink-3, #6b7280);
+    color: var(--eco-ink-3, var(--eco-ink-3));
     line-height: 1.6;
 }

@@ -8,9 +8,11 @@
     /* 62.5% = base 10px, então 1rem = 10px em todo o projeto.
        É o que faz --eco-text-base: 1.4rem valer 14px. */
     font-size: 62.5%;
-    font-family: "Montserrat", ui-sans-serif, system-ui, -apple-system,
-        "Segoe UI", Roboto, Arial, sans-serif;
-    font-weight: 500;
+    /* Inter substitui a SF Pro (proprietária) do sistema de referência.
+       Só 400/500/600 são carregados: pedidos de 700+ caem no 600, que é o
+       peso máximo do sistema. */
+    font-family: var(--eco-font);
+    font-weight: 400;
 
     /* Impede o navegador de "ajudar" com um dark mode automático em cima
        de superfícies que já são claras por decisão de design. */
@@ -23,6 +25,10 @@ html {
 
 body {
     color: var(--eco-ink);
+    background: #fff;
+    font-size: var(--eco-text-md);
+    line-height: var(--eco-leading);
+    letter-spacing: var(--eco-tracking-body);
     -webkit-font-smoothing: antialiased;
 }
 
@@ -38,8 +44,8 @@ a {
    O projeto inteiro tinha UM :focus-visible. Sem isto, quem navega por
    teclado não enxerga onde está — o foco existe e é invisível. */
 :focus-visible {
-    outline: 2px solid var(--eco-blue-500);
-    outline-offset: 2px;
+    outline: 2px solid var(--eco-brand-600);
+    outline-offset: 3px;
     border-radius: 4px;
 }
 

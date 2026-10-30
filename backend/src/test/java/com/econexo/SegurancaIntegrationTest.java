@@ -43,6 +43,7 @@ class SegurancaIntegrationTest {
     @Autowired com.econexo.repository.ProjetoRepository projetoRepository;
     @Autowired com.econexo.repository.NotificacaoRepository notificacaoRepository;
     @Autowired com.econexo.repository.CredencialCreaRepository credencialCreaRepository;
+    @Autowired com.econexo.repository.AnaliseContaRepository analiseContaRepository;
     @Autowired ObjectMapper json;
     @Autowired RateLimitService rateLimitService;
     @Autowired jakarta.persistence.EntityManager entityManager;
@@ -57,6 +58,7 @@ class SegurancaIntegrationTest {
         // Hibernate, e ele gera as FKs sem cascade — apagar usuário direto
         // estoura violação de integridade.
         // Notificação e credencial CREA apontam para usuário: saem antes dele.
+        analiseContaRepository.deleteAll();
         notificacaoRepository.deleteAll();
         credencialCreaRepository.deleteAll();
         postCurtidaRepository.deleteAll();

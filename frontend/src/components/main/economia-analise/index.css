@@ -1,467 +1,239 @@
-/* =====================================================================
-   Validador de economia — vive na home, logo em tema escuro.
-   ===================================================================== */
+/* Análise de contas de energia — upload, progresso e resultado. */
+.analise:focus {
+    outline: none;
+}
 
-.economia {
-    width: min(var(--eco-maxw), 100%);
-    margin-inline: auto;
-    padding: var(--eco-sp-7) var(--eco-sp-5);
+.analise-form {
     display: flex;
     flex-direction: column;
-    gap: var(--eco-sp-5);
-    position: relative;
-    z-index: 1;
+    gap: var(--eco-gap);
 }
 
-.economia-cabecalho {
-    display: flex;
-    flex-direction: column;
-    gap: var(--eco-sp-3);
-    max-width: 62ch;
-}
-
-.economia-kicker {
-    align-self: flex-start;
-    padding: 0.6rem 1.2rem;
-    border-radius: var(--eco-r-pill);
-    border: 1px solid var(--eco-dark-line);
-    background: var(--eco-dark-accent-soft);
-    color: var(--eco-blue-300);
-    font-size: var(--eco-text-xs);
-    font-weight: 800;
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
-}
-
-.economia-cabecalho h2 {
-    font-size: var(--eco-text-xl);
-    font-weight: 800;
-    line-height: var(--eco-leading-snug);
-    letter-spacing: -0.02em;
-    color: var(--eco-dark-ink);
-}
-
-.economia-cabecalho p {
-    font-size: var(--eco-text-md);
-    line-height: var(--eco-leading);
-    color: var(--eco-dark-ink-2);
-}
-
-/* ---------------------------------------------------------------------
-   FORMULÁRIO
-   --------------------------------------------------------------------- */
-.economia-form {
-    background: var(--eco-dark-surface);
-    border: 1px solid var(--eco-dark-line);
-    border-radius: var(--eco-r-lg);
-    padding: var(--eco-sp-5);
-    display: flex;
-    flex-direction: column;
-    gap: var(--eco-sp-4);
-}
-
-/* Reescreve .eco-dropzone (que é clara) para o fundo escuro. */
-.economia-dropzone.eco-dropzone {
-    border-color: var(--eco-dark-line);
-    background: var(--eco-dark-surface-2);
-    padding: var(--eco-sp-6) var(--eco-sp-4);
-    cursor: pointer;
+.analise-dropzone {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: var(--eco-sp-2);
+    gap: 0.8rem;
+    cursor: pointer;
 }
 
-.economia-dropzone.eco-dropzone:hover,
-.economia-dropzone.eco-dropzone--drag {
-    border-color: var(--eco-dark-accent);
-    background: var(--eco-dark-accent-soft);
+.analise-dropzone:hover {
+    background: var(--eco-brand-50);
+    border-color: var(--eco-brand-600);
 }
 
-.economia-upload-icone {
-    width: 48px;
-    height: 48px;
-    border-radius: 14px;
-    display: grid;
-    place-items: center;
-    background: var(--eco-dark-accent-soft);
-    color: var(--eco-blue-300);
-    font-size: 2.2rem;
-}
-
-.economia-dropzone strong {
-    font-size: var(--eco-text-base);
-    font-weight: 700;
-    color: var(--eco-dark-ink);
-}
-
-.economia-dropzone-dica {
-    font-size: var(--eco-text-sm);
-    color: var(--eco-dark-ink-3);
-}
-
-/* ---------------------------------------------------------------------
-   LISTA DE ARQUIVOS
-   --------------------------------------------------------------------- */
-.economia-lista {
+.analise-arquivos {
     list-style: none;
     display: grid;
-    gap: var(--eco-sp-2);
+    gap: 1rem;
 }
 
-.economia-item {
-    display: grid;
-    grid-template-columns: 38px 1fr auto;
+.analise-arquivos li {
+    display: flex;
     align-items: center;
-    gap: var(--eco-sp-3);
-    padding: var(--eco-sp-3);
-    border: 1px solid var(--eco-dark-line);
-    border-radius: var(--eco-r);
-    background: var(--eco-dark-surface-2);
-    animation: eco-fade-up 0.3s var(--eco-ease) both;
+    gap: 1.2rem;
+    background: #fff;
+    border-radius: 16px;
+    padding: 1.2rem 1.6rem;
+    font-size: var(--eco-text-sm);
 }
 
-.economia-item-icone {
-    width: 38px;
-    height: 38px;
-    border-radius: 12px;
-    display: grid;
-    place-items: center;
-    background: var(--eco-dark-accent-soft);
-    color: var(--eco-blue-300);
-    font-size: 1.7rem;
-}
-
-.economia-item-texto {
+.analise-arquivos span {
+    flex: 1;
     min-width: 0;
-}
-
-.economia-item-texto strong {
-    display: block;
-    font-size: var(--eco-text-base);
-    font-weight: 600;
-    color: var(--eco-dark-ink);
-    /* Nome de PDF de conta é longo; truncar evita quebrar o grid. */
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
 }
 
-.economia-item-texto span {
-    font-size: var(--eco-text-sm);
-    color: var(--eco-dark-ink-3);
+.analise-arquivos small {
+    color: var(--eco-ink-3);
+    font-size: var(--eco-text-xs);
 }
 
-.economia-remover {
-    width: 38px;
-    height: 38px;
-    border-radius: 12px;
-    border: 1px solid var(--eco-dark-line);
-    background: transparent;
-    color: var(--eco-dark-ink-3);
-    display: grid;
-    place-items: center;
-    font-size: 1.6rem;
-    transition: color 0.16s var(--eco-ease), border-color 0.16s var(--eco-ease);
+.analise-arquivos button {
+    background: none;
+    border: 0;
+    color: var(--eco-ink-3);
+    font-size: var(--eco-text-xs);
+    padding: 0.6rem;
+    border-radius: 8px;
 }
 
-.economia-remover:hover:not(:disabled) {
-    color: #ff9c9c;
-    border-color: #6b3438;
+.analise-arquivos button:hover {
+    color: var(--eco-red);
 }
 
-.economia-remover:disabled {
-    opacity: 0.4;
-    cursor: not-allowed;
-}
-
-/* ---------------------------------------------------------------------
-   RODAPÉ DO FORM
-   --------------------------------------------------------------------- */
-.economia-rodape {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: var(--eco-sp-3);
-    flex-wrap: wrap;
-}
-
-.economia-contador {
-    font-size: var(--eco-text-sm);
-    font-weight: 600;
-    color: var(--eco-dark-ink-3);
-}
-
-.economia-contador em {
-    font-style: normal;
-    color: var(--eco-solar-300);
-}
-
-/* ---------------------------------------------------------------------
-   PROGRESSO
-   --------------------------------------------------------------------- */
-.economia-progresso {
-    background: var(--eco-dark-surface);
-    border: 1px solid var(--eco-dark-line);
-    border-radius: var(--eco-r-lg);
-    padding: var(--eco-sp-5);
+.analise-progresso {
+    background: #fff;
     display: flex;
     flex-direction: column;
-    gap: var(--eco-sp-4);
-    animation: eco-fade-up 0.35s var(--eco-ease) both;
+    gap: 1.8rem;
 }
 
-.economia-progresso-topo {
+.analise-progresso-topo {
     display: flex;
-    align-items: baseline;
     justify-content: space-between;
-    gap: var(--eco-sp-3);
-}
-
-.economia-progresso-topo strong {
     font-size: var(--eco-text-md);
-    font-weight: 700;
-    color: var(--eco-dark-ink);
 }
 
-.economia-progresso-topo span {
-    font-size: var(--eco-text-base);
-    font-weight: 800;
-    color: var(--eco-blue-300);
-    font-variant-numeric: tabular-nums;
+.analise-progresso-topo strong {
+    font-weight: 600;
 }
 
-.economia-progresso .eco-progress {
-    background: var(--eco-dark-surface-2);
-}
-
-.economia-etapas {
+.analise-etapas {
     list-style: none;
     display: grid;
-    gap: var(--eco-sp-2);
+    gap: 1.2rem;
 }
 
-.economia-etapas li {
-    display: grid;
-    grid-template-columns: 26px 1fr;
-    gap: var(--eco-sp-3);
+.analise-etapas li {
+    display: flex;
     align-items: center;
-    padding: var(--eco-sp-2) var(--eco-sp-3);
-    border-radius: var(--eco-r-sm);
-    opacity: 0.45;
-    transition: opacity 0.3s var(--eco-ease), background 0.3s var(--eco-ease);
+    gap: 1.2rem;
+    font-size: var(--eco-text-sm);
+    color: var(--eco-ink-3);
 }
 
-.economia-etapas li.atual {
-    opacity: 1;
-    background: var(--eco-dark-accent-soft);
+.analise-etapas li.is-feita {
+    color: var(--eco-ink);
 }
 
-.economia-etapas li.concluida {
-    opacity: 0.85;
+.analise-etapas li.is-atual {
+    color: var(--eco-ink);
+    font-weight: 600;
 }
 
-.economia-etapa-marca {
-    width: 26px;
-    height: 26px;
+.analise-etapa-marca {
+    width: 20px;
+    height: 20px;
     border-radius: 50%;
+    border: 1px solid #86868b;
     display: grid;
     place-items: center;
-    background: var(--eco-dark-surface-2);
-    color: var(--eco-dark-ink-3);
     font-size: var(--eco-text-xs);
-    font-weight: 900;
+    flex: 0 0 20px;
 }
 
-.economia-etapas li.atual .economia-etapa-marca {
-    background: var(--eco-dark-accent);
+.is-feita .analise-etapa-marca {
+    background: var(--eco-brand-600);
+    border-color: var(--eco-brand-600);
     color: #fff;
 }
 
-.economia-etapas li.concluida .economia-etapa-marca {
-    background: rgba(14, 143, 90, 0.2);
-    /* Fundo escuro aqui, então o verde CLARO é o que dá contraste —
-       o oposto do que vale nas telas claras. */
-    color: #6fe0b1;
-}
-
-.economia-etapas strong {
-    display: block;
-    font-size: var(--eco-text-base);
-    font-weight: 600;
-    color: var(--eco-dark-ink);
-}
-
-.economia-etapas span {
-    font-size: var(--eco-text-sm);
-    color: var(--eco-dark-ink-3);
-}
-
-/* Prévia do formato da resposta enquanto ela não chega. */
-.economia-esqueleto .eco-skeleton {
-    background: var(--eco-dark-surface-2);
-}
-
-.economia-esqueleto .eco-skeleton::after {
-    background: linear-gradient(
-        90deg,
-        transparent,
-        rgba(255, 255, 255, 0.07),
-        transparent
-    );
-}
-
-/* ---------------------------------------------------------------------
-   AVISOS
-   --------------------------------------------------------------------- */
-.economia-aviso {
-    display: grid;
-    grid-template-columns: 40px 1fr;
-    gap: var(--eco-sp-3);
-    padding: var(--eco-sp-4);
-    border-radius: var(--eco-r-lg);
-    border: 1px solid var(--eco-dark-line);
-    background: var(--eco-dark-surface);
-    animation: eco-fade-up 0.3s var(--eco-ease) both;
-}
-
-.economia-aviso > span {
-    width: 40px;
-    height: 40px;
-    border-radius: 13px;
-    display: grid;
-    place-items: center;
-    font-size: 1.9rem;
-}
-
-.economia-aviso--erro {
-    border-color: #6b3438;
-}
-
-.economia-aviso--erro > span {
-    background: rgba(194, 69, 63, 0.18);
-    color: #ff9c9c;
-}
-
-.economia-aviso--login > span {
-    background: var(--eco-dark-accent-soft);
-    color: var(--eco-blue-300);
-}
-
-.economia-aviso strong {
-    display: block;
-    font-size: var(--eco-text-md);
-    font-weight: 700;
-    color: var(--eco-dark-ink);
-}
-
-.economia-aviso p {
-    margin-top: 0.4rem;
-    font-size: var(--eco-text-base);
-    line-height: var(--eco-leading);
-    color: var(--eco-dark-ink-2);
-}
-
-.economia-aviso .eco-btn {
-    margin-top: var(--eco-sp-3);
-}
-
-/* ---------------------------------------------------------------------
-   RESULTADO
-   --------------------------------------------------------------------- */
-.economia-resultado {
-    background: var(--eco-dark-surface);
-    border: 1px solid var(--eco-dark-line);
-    border-radius: var(--eco-r-lg);
-    padding: var(--eco-sp-5);
+/* ---------- Resultado ---------- */
+.resultado {
     display: flex;
     flex-direction: column;
-    gap: var(--eco-sp-3);
-    align-items: flex-start;
-    animation: eco-blur-in 0.6s var(--eco-ease) both;
+    gap: var(--eco-gap);
 }
 
-.economia-resultado header {
+.resultado-titulo {
+    margin-top: -1.2rem;
+}
+
+.resultado-metrica {
+    background: #fff;
+}
+
+.resultado-metrica-rotulo {
+    font-size: var(--eco-text-sm);
+    color: var(--eco-ink-3);
+}
+
+.resultado-metrica-valor {
+    font-size: clamp(2.8rem, 2vw + 2rem, 4rem);
+    font-weight: 600;
+    line-height: 1.05;
+    letter-spacing: -0.01em;
+    margin-top: 1rem;
+}
+
+.resultado-delta {
+    font-size: var(--eco-text-xs);
+    margin-top: 0.8rem;
+}
+
+.resultado-delta.is-sobe { color: var(--eco-red); }
+.resultado-delta.is-desce { color: var(--eco-link); }
+
+.resultado-bloco {
+    background: #fff;
     display: flex;
-    align-items: center;
-    gap: var(--eco-sp-3);
-    flex-wrap: wrap;
+    flex-direction: column;
+    gap: 1.6rem;
 }
 
-.economia-resultado header strong {
-    font-size: var(--eco-text-lg);
-    font-weight: 800;
-    color: var(--eco-dark-ink);
+.resultado-tabela {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: var(--eco-text-sm);
 }
 
-.economia-resultado .eco-badge--info {
-    background: var(--eco-dark-accent-soft);
-    color: var(--eco-blue-300);
+.resultado-tabela th {
+    text-align: left;
+    font-weight: 500;
+    color: var(--eco-ink-3);
+    padding: 0 1.2rem 1.2rem;
+    border-bottom: 1px solid var(--eco-line);
 }
 
-.economia-resultado p {
-    font-size: var(--eco-text-md);
-    line-height: var(--eco-leading);
-    color: var(--eco-dark-ink-2);
-    /* A IA responde em texto corrido com quebras de linha. */
-    white-space: pre-wrap;
+.resultado-tabela td {
+    padding: 1.4rem 1.2rem;
+    border-bottom: 1px solid var(--eco-line-2);
 }
 
-/* ---------------------------------------------------------------------
-   RESPONSIVO — breakpoints canônicos (md 1024 / sm 640)
-   --------------------------------------------------------------------- */
-@media (max-width: 640px) {
-    .economia {
-        padding: var(--eco-sp-6) var(--eco-sp-4);
-    }
-
-    .economia-form,
-    .economia-progresso,
-    .economia-resultado {
-        padding: var(--eco-sp-4);
-    }
-
-    .economia-rodape {
-        flex-direction: column;
-        align-items: stretch;
-    }
-
-    .economia-rodape .eco-btn {
-        width: 100%;
-    }
+.resultado-tabela tr:last-child td {
+    border-bottom: 0;
 }
 
+.resultado-tabela th:not(:first-child),
+.resultado-tabela td:not(:first-child) {
+    text-align: right;
+}
 
-/* Texto da análise: subtítulos, listas e negrito vindos da IA. */
+.resultado-fonte {
+    font-size: var(--eco-text-xs);
+    color: var(--eco-ink-3);
+    border-top: 1px solid var(--eco-line-2);
+    padding-top: 1.2rem;
+}
+
+/* Texto da IA */
 .economia-texto {
     display: flex;
     flex-direction: column;
-    gap: var(--eco-sp-3);
-    width: 100%;
+    gap: 1rem;
+    font-size: var(--eco-text-md);
 }
 
 .economia-texto h4 {
-    margin-top: var(--eco-sp-2);
-    font-size: var(--eco-text-md);
-    font-weight: 800;
-    color: var(--eco-dark-ink);
+    font-size: 1.9rem;
+    font-weight: 600;
+    margin-top: 1.4rem;
 }
 
-.economia-texto p,
-.economia-texto li {
-    font-size: var(--eco-text-md);
-    line-height: var(--eco-leading);
-    color: var(--eco-dark-ink-2);
+.economia-texto h4:first-child {
+    margin-top: 0;
 }
 
 .economia-texto ul {
-    display: flex;
-    flex-direction: column;
-    gap: var(--eco-sp-2);
-    padding-left: var(--eco-sp-5);
-    list-style: disc;
+    padding-left: 2rem;
+    display: grid;
+    gap: 0.6rem;
 }
 
 .economia-texto strong {
-    color: var(--eco-dark-ink);
+    font-weight: 600;
+}
+
+.analise-convite {
+    display: flex;
+    gap: 2rem;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    border-top: 1px solid var(--eco-line);
+    padding-top: 2.4rem;
+    margin-top: 3.2rem;
 }

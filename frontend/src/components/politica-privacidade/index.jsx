@@ -1,10 +1,6 @@
 import "./index.css";
-import "/src/variables.css";
 
-import { Link } from "react-router-dom";
-import { BsLightning } from "react-icons/bs";
-
-import PerfilMenu from "../shared/perfil-menu";
+import PaginaPublica from "../layout/PaginaPublica";
 
 /**
  * Política de Privacidade — rota PÚBLICA (/politica-de-privacidade).
@@ -23,23 +19,9 @@ export const VIGENTE_DESDE = "16 de agosto de 2026";
 
 export default function PoliticaPrivacidade() {
   return (
-    <div className="politica-container">
-      <header className="politica-header">
-        <Link to="/">
-          <div className="logos-menu">
-            <span className="logo-title-menu">
-              <BsLightning />
-            </span>
-            <span className="title-menu">EcoNexo</span>
-          </div>
-        </Link>
-
-        {/* Página pública por exigência da LGPD (Art. 9º), mas quem chega
-            aqui logado não deve perder o acesso ao próprio menu. */}
-        <PerfilMenu />
-      </header>
-
-      <main className="politica-conteudo">
+    // Pública por exigência da LGPD (Art. 9º): acesso facilitado, sem login.
+    <PaginaPublica>
+      <article className="politica-conteudo">
         <h1>Política de Privacidade</h1>
         <p className="politica-meta">
           Versão {VERSAO_POLITICA} — vigente desde {VIGENTE_DESDE}
@@ -191,12 +173,7 @@ export default function PoliticaPrivacidade() {
             dados sensíveis que você não queira em um ambiente de estudo.
           </p>
         </section>
-      </main>
-
-      <footer className="politica-footer">
-        <Link to="/register">Voltar ao cadastro</Link>
-        <Link to="/">Página inicial</Link>
-      </footer>
-    </div>
+      </article>
+    </PaginaPublica>
   );
 }
