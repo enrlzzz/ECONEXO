@@ -6,7 +6,7 @@
     background: var(--eco-bg);
     min-height: 100vh;
 
-    padding-top: 12rem;
+    padding-top: var(--eco-pagina-topo);
     padding-bottom: 8rem;
 }
 
@@ -46,9 +46,9 @@
 
 .eco-card {
     background: var(--eco-card);
-    border: 1px solid var(--eco-line);
-    border-radius: var(--eco-r-lg);
-    box-shadow: var(--eco-shadow-sm);
+    border: 0;
+    border-radius: var(--eco-r-card);
+    box-shadow: none;
 }
 
 .eco-hairline {
@@ -129,7 +129,7 @@
 
     border: none;
     cursor: pointer;
-    box-shadow: 0 6px 16px rgba(42, 38, 199, 0.28);
+    box-shadow: none;
 
     transition: 0.16s ease;
 }
@@ -213,7 +213,7 @@
 
 .eco-perfil-banner {
     height: 6.4rem;
-    background: linear-gradient(120deg, var(--eco-sky), var(--eco-sky-deep));
+    background: var(--eco-bg);
 }
 
 .eco-perfil-corpo {
@@ -733,7 +733,7 @@
     color: var(--eco-blue);
     background: var(--eco-blue-050);
     padding: 1.4rem;
-    border-radius: 18px;
+    border-radius: var(--eco-r-card);
 }
 
 .eco-empty h3 {
@@ -835,7 +835,7 @@
     width: 4.4rem;
     height: 4.4rem;
     border-radius: 12px;
-    background: linear-gradient(135deg, hsl(205 62% 88%), hsl(223 55% 78%));
+    background: var(--eco-bg-2);
     color: var(--eco-blue-700);
     font-size: 2rem;
     flex-shrink: 0;
@@ -930,7 +930,7 @@
 
     /* header continua com 10rem até 500px — precisa de folga >= 10rem */
     .eco-shell {
-        padding-top: 11rem;
+        padding-top: var(--eco-pagina-topo);
     }
 }
 
@@ -941,7 +941,7 @@
 
     /* aqui o header encolhe para 6.5rem, então reduzimos a folga do topo */
     .eco-shell {
-        padding-top: 8rem;
+        padding-top: var(--eco-pagina-topo);
     }
 
     .eco-post {
@@ -972,7 +972,7 @@
 
 .eco-perfil-dica {
     font-size: 1.25rem;
-    color: var(--eco-ink-3, #6b7280);
+    color: var(--eco-ink-3, var(--eco-ink-3));
     line-height: 1.55;
     text-align: center;
     padding: 0 0.4rem;
@@ -986,7 +986,7 @@
     margin-top: 1.4rem;
     font-size: 1.2rem;
     line-height: 1.5;
-    color: var(--eco-ink-3, #6b7280);
+    color: var(--eco-ink-3, var(--eco-ink-3));
 }
 
 .eco-filtros-nota svg {
@@ -1005,10 +1005,10 @@
     height: 3.6rem;
 
     background: transparent;
-    border: 1px solid var(--eco-line, #e4e8ef);
+    border: 1px solid var(--eco-line, var(--eco-line-2));
     border-radius: 10px;
 
-    color: var(--eco-ink-3, #6b7280);
+    color: var(--eco-ink-3, var(--eco-ink-3));
     font-size: 1.6rem;
 
     cursor: pointer;

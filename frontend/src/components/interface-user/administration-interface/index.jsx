@@ -2,7 +2,6 @@ import "./index.css";
 import "/src/variables.css";
 
 import { useEffect, useState } from "react";
-import HeaderInterface from "../header-interface";
 import { validacaoService } from "../../../services/validacao";
 
 import { MdOutlineShield } from "react-icons/md";
@@ -128,7 +127,6 @@ export default function Administration() {
 
   return (
     <div className="admin-panel">
-      <HeaderInterface />
 
       <div className="admin-content">
         {/* header */}

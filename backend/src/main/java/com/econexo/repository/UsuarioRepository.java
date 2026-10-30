@@ -12,6 +12,8 @@ import java.util.Optional;
 public interface UsuarioRepository extends JpaRepository<Usuario, Integer> {
     Optional<Usuario> findByEmail(String email);
 
+    Optional<Usuario> findByFirebaseUid(String firebaseUid);
+
     /**
      * Busca de profissionais feita NO BANCO.
      *

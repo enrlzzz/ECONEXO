@@ -4,7 +4,6 @@ import { useEffect, useMemo, useState } from "react";
 
 import { FiAward, FiCheck, FiClock, FiPlus } from "react-icons/fi";
 
-import HeaderInterface from "../header-interface";
 import { validacaoService } from "../../../services/validacao";
 import DrawerValidacao from "../validacao-reputacao/DrawerValidacao";
 import {
@@ -231,7 +230,6 @@ export default function ValidacaoInterface() {
 
   return (
     <div className="vr-pagina">
-      <HeaderInterface />
       <AbasModulo />
 
       <main className="vr-container">

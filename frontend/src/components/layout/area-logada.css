@@ -1,0 +1,321 @@
+/* =====================================================================
+   Moldura da área logada
+   ===================================================================== */
+
+/* Altura da barra inferior do celular — o conteúdo reserva esse espaço. */
+:root {
+    --eco-tabbar-h: 64px;
+}
+
+.area-logada {
+    min-height: calc(100vh - var(--eco-nav-h));
+    outline: none;
+}
+
+/* ------------------------------ barra inferior ------------------------------ */
+
+.barra-inferior {
+    display: none;
+}
+
+@media (max-width: 860px) {
+    .area-logada {
+        /* Para o último item da página não ficar escondido atrás da barra. */
+        padding-bottom: calc(var(--eco-tabbar-h) + env(safe-area-inset-bottom));
+    }
+
+    .barra-inferior {
+        position: fixed;
+        inset: auto 0 0 0;
+        z-index: 100;
+
+        display: grid;
+        grid-template-columns: repeat(5, 1fr);
+
+        height: calc(var(--eco-tabbar-h) + env(safe-area-inset-bottom));
+        padding-bottom: env(safe-area-inset-bottom);
+
+        background: rgba(255, 255, 255, 0.92);
+        backdrop-filter: saturate(180%) blur(20px);
+        -webkit-backdrop-filter: saturate(180%) blur(20px);
+        border-top: 1px solid var(--eco-line-2);
+    }
+
+    .barra-inferior a {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 0.3rem;
+
+        color: var(--eco-ink-3);
+        font-size: 1.1rem;
+        font-weight: 500;
+    }
+
+    .barra-inferior a.active {
+        color: var(--eco-brand-600);
+        font-weight: 600;
+    }
+}
+
+/* Respiro entre o cabeçalho e o título de cada tela. Antes cada tela tinha o
+   seu (8 a 12rem, para compensar o cabeçalho fixo antigo) e o conteúdo
+   começava em alturas diferentes de tela para tela. */
+:root {
+    --eco-pagina-topo: 3.2rem;
+}
+
+@media (max-width: 860px) {
+    :root {
+        --eco-pagina-topo: 2rem;
+    }
+}
+
+/* "Minhas análises" (/perfil) usa as faixas das páginas públicas, com
+   respiro de seção de landing page. Dentro da área logada, o mesmo do resto. */
+.area-logada > .eco-faixa:first-child {
+    padding-top: var(--eco-pagina-topo);
+}
+
+/* =====================================================================
+   Estrutura de página da área logada
+   ---------------------------------------------------------------------
+   Toda tela segue o mesmo esqueleto, para os botões ficarem sempre no
+   mesmo lugar:
+     .pg            contêiner (mesma largura do cabeçalho)
+     .pg-cabeca     título e subtítulo à esquerda, AÇÃO PRINCIPAL à direita
+     .pg-metricas   números da tela numa faixa só (não 4 cards gigantes)
+     .pg-abas       filtros da lista, logo acima dela
+     .pg-vazio      estado vazio com a ação que resolve
+   ===================================================================== */
+
+.pg {
+    width: min(var(--eco-maxw), 100% - 3.2rem);
+    margin-inline: auto;
+    padding: var(--eco-pagina-topo) 0 var(--eco-sp-8);
+    display: flex;
+    flex-direction: column;
+    gap: var(--eco-sp-5);
+}
+
+.pg--estreita {
+    width: min(860px, 100% - 3.2rem);
+}
+
+.pg-cabeca {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: var(--eco-sp-4);
+    flex-wrap: wrap;
+}
+
+.pg-titulo {
+    font-size: clamp(2.6rem, 1.2vw + 2rem, 3.2rem);
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    line-height: 1.1;
+    color: var(--eco-ink);
+}
+
+.pg-sub {
+    margin-top: 0.6rem;
+    font-size: var(--eco-text-base);
+    color: var(--eco-ink-3);
+}
+
+/* Faixa de números: um card só, divisórias entre os itens. */
+.pg-metricas {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    background: var(--eco-card, #fff);
+    border-radius: var(--eco-r-md);
+    overflow: hidden;
+}
+
+.pg-metricas > div {
+    padding: 1.6rem 2rem;
+    border-left: 1px solid var(--eco-line-2);
+}
+
+.pg-metricas > div:first-child {
+    border-left: 0;
+}
+
+.pg-metricas dt {
+    font-size: var(--eco-text-xs);
+    color: var(--eco-ink-3);
+}
+
+.pg-metricas dd {
+    margin-top: 0.4rem;
+    font-size: 2.4rem;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    color: var(--eco-ink);
+}
+
+/* Filtros da lista: pílulas que rolam de lado no celular. */
+.pg-abas {
+    display: flex;
+    gap: 0.6rem;
+    overflow-x: auto;
+    scrollbar-width: none;
+}
+
+.pg-abas::-webkit-scrollbar {
+    display: none;
+}
+
+.pg-abas button {
+    flex: none;
+    min-height: 36px;
+    padding: 0 1.4rem;
+    border: 1px solid var(--eco-line);
+    border-radius: var(--eco-r-pill);
+    background: #fff;
+    font-size: var(--eco-text-sm);
+    color: var(--eco-ink-2);
+}
+
+.pg-abas button[aria-pressed="true"] {
+    background: var(--eco-ink);
+    border-color: var(--eco-ink);
+    color: #fff;
+    font-weight: 600;
+}
+
+.pg-abas button span {
+    margin-left: 0.4rem;
+    opacity: 0.7;
+}
+
+.pg-vazio {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--eco-sp-3);
+    padding: var(--eco-sp-8) var(--eco-sp-5);
+    background: var(--eco-card, #fff);
+    border-radius: var(--eco-r-card);
+    text-align: center;
+}
+
+.pg-vazio h2 {
+    font-size: var(--eco-text-lg);
+    font-weight: 600;
+}
+
+.pg-vazio p {
+    max-width: 44ch;
+    font-size: var(--eco-text-base);
+    color: var(--eco-ink-3);
+}
+
+/* Diálogo (criar projeto, adicionar ao portfólio...). */
+.pg-dialogo-fundo {
+    position: fixed;
+    inset: 0;
+    z-index: 400;
+    display: grid;
+    place-items: center;
+    padding: 1.6rem;
+    background: rgba(0, 0, 0, 0.36);
+}
+
+.pg-dialogo {
+    width: min(560px, 100%);
+    max-height: calc(100dvh - 3.2rem);
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: var(--eco-sp-4);
+    padding: var(--eco-sp-6);
+    background: #fff;
+    border-radius: var(--eco-r-card);
+}
+
+.pg-dialogo-cabeca {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 1.6rem;
+}
+
+.pg-dialogo-cabeca h2 {
+    font-size: var(--eco-text-lg);
+    font-weight: 600;
+}
+
+.pg-dialogo-cabeca p {
+    margin-top: 0.4rem;
+    font-size: var(--eco-text-sm);
+    color: var(--eco-ink-3);
+}
+
+.pg-fechar {
+    flex: none;
+    display: grid;
+    place-items: center;
+    width: 3.6rem;
+    height: 3.6rem;
+    border: 0;
+    border-radius: 50%;
+    background: var(--eco-bg);
+    color: var(--eco-ink-2);
+}
+
+.pg-form {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--eco-sp-4);
+}
+
+.pg-form .pg-form-inteiro {
+    grid-column: 1 / -1;
+}
+
+/* Botões do rodapé do diálogo: secundário à esquerda, principal à direita. */
+.pg-dialogo-acoes {
+    grid-column: 1 / -1;
+    display: flex;
+    justify-content: flex-end;
+    gap: var(--eco-sp-3);
+    margin-top: var(--eco-sp-2);
+}
+
+@media (max-width: 860px) {
+    .pg-metricas {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .pg-metricas > div:nth-child(odd) {
+        border-left: 0;
+    }
+
+    .pg-metricas > div:nth-child(n + 3) {
+        border-top: 1px solid var(--eco-line-2);
+    }
+
+    .pg-metricas dd {
+        font-size: 2rem;
+    }
+
+    .pg-form {
+        grid-template-columns: 1fr;
+    }
+
+    /* No celular a ação principal ocupa a linha toda, logo abaixo do título. */
+    .pg-cabeca > .eco-btn {
+        width: 100%;
+    }
+
+    .pg-dialogo {
+        padding: var(--eco-sp-5);
+    }
+
+    .pg-dialogo-acoes .eco-btn {
+        flex: 1;
+    }
+}

@@ -3,7 +3,6 @@ import "../validacao-reputacao/estilo.css";
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-import HeaderInterface from "../header-interface";
 import {
   AbasModulo,
   BuscaLateral,
@@ -118,7 +117,6 @@ export default function ReputacaoInterface() {
 
   return (
     <div className="vr-pagina">
-      <HeaderInterface />
       <AbasModulo />
 
       <main className="vr-container">

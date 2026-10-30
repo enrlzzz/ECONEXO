@@ -10,26 +10,25 @@
       num projeto com 8.145 linhas de estilo global — .card e .badge já
       existem em outras telas e colidiriam nos dois sentidos.
 
-   2. As cores vêm dos tokens. O protótipo trazia --brand:#2f36c8, que é
-      uma TERCEIRA variante do azul da marca (a home tinha #1f24a0 e a
-      área logada #2a26c7). Aqui tudo aponta para a rampa --eco-blue-*, e
+   2. As cores vêm dos tokens. O protótipo trazia --brand:var(--eco-brand-600), que é
+      uma TERCEIRA variante do azul da marca (a home tinha var(--eco-brand-700) e a
+      área logada var(--eco-brand-600)). Aqui tudo aponta para a rampa --eco-blue-*, e
       o visual continua o mesmo.
    ===================================================================== */
 
 .vr-pagina {
     min-height: 100vh;
     background: var(--eco-bg);
-    /* .header-interface é position:fixed (10rem de altura) — sem essa
-       folga as abas de módulo nasciam por baixo do header, cortadas.
-       Mesma convenção usada em main-interface, project-interface etc. */
-    padding-top: 10rem;
+    /* O cabeçalho agora é sticky e desenhado pelo layout AreaLogada: a
+       folga antiga de 10rem (para o header fixo) virou o respiro padrão. */
+    padding-top: var(--eco-pagina-topo);
 }
 
 /* ---------------------------------------------------------------------
    ABAS DE MÓDULO
    --------------------------------------------------------------------- */
 .vr-abas-wrap {
-    width: min(var(--eco-maxw-wide), calc(100% - 3.4rem));
+    width: min(var(--eco-maxw), calc(100% - 3.2rem));
     margin: 1.8rem auto 0;
     display: flex;
     justify-content: center;
@@ -40,8 +39,8 @@
     background: var(--eco-card);
     border: 1px solid var(--eco-line);
     padding: 0.6rem;
-    border-radius: 18px;
-    box-shadow: var(--eco-shadow-sm);
+    border-radius: var(--eco-r-card);
+    box-shadow: none;
     gap: 0.6rem;
 }
 
@@ -72,7 +71,7 @@
    LAYOUT DE TRÊS COLUNAS
    --------------------------------------------------------------------- */
 .vr-container {
-    width: min(var(--eco-maxw-wide), calc(100% - 3.4rem));
+    width: min(var(--eco-maxw), calc(100% - 3.2rem));
     margin: 1.8rem auto 0;
     padding-bottom: var(--eco-sp-6);
 }
@@ -92,7 +91,7 @@
     background: var(--eco-card);
     border: 1px solid var(--eco-line);
     border-radius: var(--eco-r-lg);
-    box-shadow: var(--eco-shadow-sm);
+    box-shadow: none;
 }
 
 /* ---------------------------------------------------------------------
@@ -104,7 +103,7 @@
 
 .vr-perfil-banner {
     height: 58px;
-    background: linear-gradient(180deg, var(--eco-sky) 0%, var(--eco-sky-deep) 100%);
+    background: var(--eco-bg);
 }
 
 .vr-perfil-corpo {
@@ -128,7 +127,7 @@
     font-size: var(--eco-text-md);
     font-weight: 800;
     border: 3px solid #fff;
-    box-shadow: 0 4px 10px rgba(28, 39, 75, 0.12);
+    box-shadow: none;
     position: absolute;
     top: -29px;
     left: 16px;
@@ -290,7 +289,7 @@
 .vr-filtro.ativo {
     background: #fff;
     color: var(--eco-ink);
-    box-shadow: 0 2px 8px rgba(20, 25, 51, 0.07);
+    box-shadow: none;
 }
 
 /* ---------------------------------------------------------------------
@@ -533,7 +532,7 @@
     border: 1px solid var(--eco-line);
     border-radius: var(--eco-r-md);
     padding: 1.4rem;
-    background: linear-gradient(180deg, #fff 0%, #fcfcff 100%);
+    background: #fff;
 }
 
 .vr-micro-topo {
@@ -655,7 +654,7 @@
     background: var(--eco-card);
     border: 1px solid var(--eco-line);
     border-radius: var(--eco-r-md);
-    box-shadow: var(--eco-shadow-sm);
+    box-shadow: none;
     padding: 1.5rem;
 }
 
@@ -769,7 +768,7 @@
     height: 100%;
     width: min(640px, 94vw);
     background: #fff;
-    box-shadow: -18px 0 60px rgba(12, 16, 28, 0.22);
+    box-shadow: none;
     display: flex;
     flex-direction: column;
     animation: vr-drawer-in 0.28s var(--eco-ease) both;
@@ -833,7 +832,7 @@
     width: 22px;
     height: 22px;
     border-radius: 50%;
-    background: #f0f2f6;
+    background: var(--eco-bg);
     display: grid;
     place-items: center;
     font-style: normal;
@@ -1011,7 +1010,7 @@
 .vr-scan {
     border: 1px solid var(--eco-line);
     border-radius: var(--eco-r);
-    background: #fcfcfe;
+    background: #fff;
     padding: 1.5rem;
 }
 
@@ -1054,7 +1053,7 @@
     width: 24px;
     height: 24px;
     border-radius: 50%;
-    background: #f0f2f6;
+    background: var(--eco-bg);
     color: var(--eco-ink-4);
     display: grid;
     place-items: center;
@@ -1087,7 +1086,7 @@
 /* Resultado. */
 .vr-resultado {
     border: 1px solid #d6eee3;
-    background: linear-gradient(180deg, #f5fcf7, #fff);
+    background: var(--eco-green-soft);
     border-radius: 17px;
     padding: 1.5rem;
     margin-bottom: 1.2rem;
@@ -1095,7 +1094,7 @@
 
 .vr-resultado.revisao {
     border-color: #f2dfb6;
-    background: linear-gradient(180deg, #fff9eb, #fff);
+    background: var(--eco-amber-soft);
 }
 
 .vr-resultado-cabecalho {
@@ -1209,7 +1208,7 @@
     display: flex;
     gap: 0.9rem;
     align-items: center;
-    box-shadow: var(--eco-shadow-lg);
+    box-shadow: none;
     font-size: var(--eco-text-sm);
     animation: eco-fade-up 0.24s var(--eco-ease) both;
 }

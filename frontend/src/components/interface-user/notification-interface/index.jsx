@@ -11,7 +11,6 @@ import {
   FiStar,
 } from "react-icons/fi";
 
-import HeaderInterface from "../header-interface";
 import { notificacoesService } from "../../../services/notificacoes";
 import { EVENTO_NOTIFICACOES } from "../../../useNotificacoesNaoLidas";
 import { tempoRelativo } from "../../../format";
@@ -109,7 +108,6 @@ export default function NotificationInterface() {
 
   return (
     <div className="notifications-page">
-      <HeaderInterface />
 
       <main className="notifications-container">
         <div className="notifications-title">

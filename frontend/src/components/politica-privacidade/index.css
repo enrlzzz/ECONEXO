@@ -2,12 +2,12 @@
   min-height: 100vh;
   display: flex;
   flex-direction: column;
-  background-color: var(--color-background, #f7f9f8);
-  color: var(--color-text, #1a1a1a);
+  background-color: #fff;
+  color: var(--eco-ink);
 }
 
 .politica-header {
-  padding: 1.5rem 2rem;
+  padding: 2.4rem 3.2rem;
   border-bottom: 1px solid rgba(0, 0, 0, 0.08);
 }
 
@@ -18,57 +18,60 @@
 .politica-conteudo {
   flex: 1;
   width: 100%;
-  max-width: 800px;
+  max-width: 720px;
   margin: 0 auto;
-  padding: 2.5rem 1.5rem 4rem;
-  line-height: 1.7;
+  padding: 9rem 1.6rem;
+  font-size: var(--eco-text-md);
+  line-height: var(--eco-leading);
 }
 
 .politica-conteudo h1 {
-  font-size: 2rem;
-  margin-bottom: 0.25rem;
+  font-size: var(--eco-text-xl);
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  margin-bottom: 0.4rem;
 }
 
 .politica-meta {
-  color: #666;
-  font-size: 0.9rem;
-  margin-bottom: 2.5rem;
+  color: var(--eco-ink-3);
+  font-size: 1.44rem;
+  margin-bottom: 4rem;
 }
 
 .politica-conteudo section {
-  margin-bottom: 2.5rem;
+  margin-bottom: 4rem;
 }
 
 .politica-conteudo h2 {
-  font-size: 1.25rem;
-  margin-bottom: 0.75rem;
+  font-size: 2rem;
+  margin-bottom: 1.2rem;
 }
 
 .politica-conteudo p {
-  margin-bottom: 0.75rem;
+  margin-bottom: 1.2rem;
 }
 
 .politica-conteudo ul {
-  padding-left: 1.25rem;
-  margin-bottom: 0.75rem;
+  padding-left: 2rem;
+  margin-bottom: 1.2rem;
 }
 
 .politica-conteudo li {
-  margin-bottom: 0.5rem;
+  margin-bottom: 0.8rem;
   list-style: disc;
 }
 
 .politica-tabela {
   width: 100%;
   border-collapse: collapse;
-  margin-top: 0.75rem;
-  font-size: 0.925rem;
+  margin-top: 1.2rem;
+  font-size: 1.48rem;
 }
 
 .politica-tabela th,
 .politica-tabela td {
   text-align: left;
-  padding: 0.6rem 0.75rem;
+  padding: 0.96rem 1.2rem;
   border-bottom: 1px solid rgba(0, 0, 0, 0.08);
   vertical-align: top;
 }
@@ -80,8 +83,8 @@
 
 .politica-aviso {
   background-color: rgba(255, 193, 7, 0.12);
-  border-left: 4px solid #e8911b;
-  padding: 1rem 1.25rem;
+  border-left: 4px solid var(--eco-solar-ink);
+  padding: 1.6rem 2rem;
   border-radius: 4px;
 }
 
@@ -91,16 +94,16 @@
 
 .politica-footer {
   display: flex;
-  gap: 1.5rem;
+  gap: 2.4rem;
   justify-content: center;
-  padding: 1.5rem;
+  padding: 2.4rem;
   border-top: 1px solid rgba(0, 0, 0, 0.08);
 }
 
 .politica-footer a {
-  color: var(--color-primary, #0e8f5a);
+  color: var(--color-primary, var(--eco-green));
   text-decoration: none;
-  font-size: 0.925rem;
+  font-size: 1.48rem;
 }
 
 .politica-footer a:hover {
@@ -111,11 +114,11 @@
    empurrar a página inteira para os lados. */
 @media (max-width: 600px) {
   .politica-conteudo {
-    padding: 1.5rem 1rem 3rem;
+    padding: 2.4rem 1.6rem 4.8rem;
   }
 
   .politica-conteudo h1 {
-    font-size: 1.5rem;
+    font-size: 2.4rem;
   }
 
   .politica-tabela {
@@ -128,10 +131,10 @@
 /* Aviso de pendência — some quando o e-mail oficial for publicado */
 .politica-pendente {
   background-color: rgba(232, 145, 27, 0.1);
-  border-left: 4px solid #e8911b;
-  padding: 0.85rem 1rem;
+  border-left: 4px solid var(--eco-solar-ink);
+  padding: 1.36rem 1.6rem;
   border-radius: 4px;
-  font-size: 0.925rem;
+  font-size: 1.48rem;
 }
 
 /* Logo a esquerda, menu de perfil a direita. */
@@ -139,7 +142,7 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: 1.6rem;
+    gap: 2.56rem;
     flex-wrap: wrap;
 }
 

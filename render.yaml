@@ -38,10 +38,20 @@ services:
       - key: DB_PASS
         sync: false
 
-      # Chave da API do Gemini (análise de economia da conta de luz).
-      # Sem ela a análise responde "indisponível". sync: false = cola o valor
-      # no painel do Render; nada de chave no Git.
-      - key: GEMINI_API_KEY
+      # Chave da API do Groq (análise da conta de luz) — plano gratuito.
+      # Crie em https://console.groq.com/keys. Sem ela a análise responde
+      # "indisponível". sync: false = cola o valor no painel; nada no Git.
+      - key: GROQ_API_KEY
+        sync: false
+
+      # Modelo do Groq (opcional). Padrão: openai/gpt-oss-120b. Troque aqui
+      # se o Groq aposentar o modelo — lista em console.groq.com/docs/models.
+      - key: GROQ_MODEL
+        sync: false
+
+      # ID do projeto Firebase (login). O backend só aceita ID tokens
+      # emitidos para este projeto. Sem valor, o login pelo Firebase falha.
+      - key: FIREBASE_PROJECT_ID
         sync: false
 
       # Chave da API do Open Charge Map (pontos de recarga de veículos elétricos).

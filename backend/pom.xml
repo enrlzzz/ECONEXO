@@ -36,6 +36,14 @@
             <artifactId>spring-boot-starter-security</artifactId>
         </dependency>
 
+        <!-- Valida o ID token do Firebase (JWT RS256) contra as chaves
+             públicas do Google. Parte do Spring Security, versão gerida
+             pelo Boot; dispensa o Firebase Admin SDK e a conta de serviço. -->
+        <dependency>
+            <groupId>org.springframework.security</groupId>
+            <artifactId>spring-security-oauth2-jose</artifactId>
+        </dependency>
+
         <!-- JWT: token assinado devolvido no login e exigido nas demais rotas. -->
         <dependency>
             <groupId>io.jsonwebtoken</groupId>

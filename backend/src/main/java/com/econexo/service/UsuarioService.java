@@ -1,15 +1,20 @@
 package com.econexo.service;
 
+import com.econexo.dto.FirebaseCadastroRequest;
+import com.econexo.dto.FirebaseSessaoResponse;
 import com.econexo.dto.ProfissionalBuscaResponse;
 import com.econexo.dto.ProfissionalResponse;
 import com.econexo.dto.UsuarioRequest;
 import com.econexo.dto.UsuarioResponse;
 import com.econexo.exception.AcessoNegadoException;
+import com.econexo.exception.CadastroIncompletoException;
+import com.econexo.exception.RegraNegocioException;
 import com.econexo.exception.ValidacaoException;
 import com.econexo.model.Usuario;
 import com.econexo.repository.AvaliacaoRepository;
 import com.econexo.repository.CredencialCreaRepository;
 import com.econexo.repository.UsuarioRepository;
+import com.econexo.security.IdentidadeFirebase;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -23,6 +28,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.UUID;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -92,6 +98,68 @@ public class UsuarioService {
         // GlobalExceptionHandler devolve mensagem genérica — de propósito,
         // para o cadastro não virar um verificador de "quem tem conta aqui".
         return UsuarioResponse.de(usuarioRepository.save(usuario));
+    }
+
+    /**
+     * Entrada pelo Firebase: acha, vincula ou cria o cadastro desta identidade.
+     *
+     * 1. Já existe cadastro com este UID → devolve.
+     * 2. Existe cadastro antigo com o mesmo e-mail → vincula, mas SÓ se o
+     *    Firebase confirmou que o e-mail é da pessoa. Sem essa checagem,
+     *    qualquer um criaria uma conta no Firebase com o e-mail alheio (sem
+     *    confirmar) e herdaria o cadastro da vítima.
+     * 3. Não existe → cria, exigindo nome e consentimento LGPD (regra 12).
+     *
+     * A senha local recebe um hash aleatório que ninguém conhece: a coluna é
+     * NOT NULL, e quem confere senha agora é o Firebase.
+     */
+    @Transactional
+    public FirebaseSessaoResponse entrarComFirebase(IdentidadeFirebase id, FirebaseCadastroRequest req) {
+        Optional<Usuario> porUid = usuarioRepository.findByFirebaseUid(id.uid());
+        if (porUid.isPresent()) {
+            return new FirebaseSessaoResponse(UsuarioResponse.de(porUid.get()), false);
+        }
+
+        if (id.email() == null || id.email().isBlank()) {
+            throw new ValidacaoException("A conta usada para entrar não tem e-mail.");
+        }
+        String email = id.email().trim().toLowerCase();
+
+        Optional<Usuario> porEmail = usuarioRepository.findByEmail(email);
+        if (porEmail.isPresent()) {
+            if (!id.emailVerificado()) {
+                throw new RegraNegocioException(
+                        "Confirme seu e-mail pelo link que enviamos para acessar sua conta.");
+            }
+            Usuario existente = porEmail.get();
+            existente.setFirebaseUid(id.uid());
+            return new FirebaseSessaoResponse(UsuarioResponse.de(usuarioRepository.save(existente)), false);
+        }
+
+        String nome = req == null || req.nome() == null || req.nome().isBlank() ? id.nome() : req.nome().trim();
+        if (req == null || !Boolean.TRUE.equals(req.consentimentoLgpd()) || nome == null || nome.isBlank()) {
+            throw new CadastroIncompletoException(
+                    "Para concluir o cadastro, informe seu nome e aceite a Política de Privacidade.");
+        }
+
+        Usuario usuario = new Usuario();
+        usuario.setFirebaseUid(id.uid());
+        usuario.setNome(nome.length() > 100 ? nome.substring(0, 100) : nome);
+        usuario.setEmail(email);
+        usuario.setSenha(passwordEncoder.encode(UUID.randomUUID().toString()));
+        usuario.setCpf(vazioViraNulo(req.cpf()));
+        usuario.setTelefone(vazioViraNulo(req.telefone()));
+        usuario.setDataNascimento(req.dataNascimento());
+        usuario.setCidade(vazioViraNulo(req.cidade()));
+        String uf = vazioViraNulo(req.estado());
+        usuario.setEstado(uf == null ? null : uf.toUpperCase());
+        usuario.setTipoProfissional(vazioViraNulo(req.tipoProfissional()));
+
+        usuario.setConsentimentoLgpd(true);
+        usuario.setConsentimentoEm(LocalDateTime.now());
+        usuario.setConsentimentoVersao(versaoPolitica);
+
+        return new FirebaseSessaoResponse(UsuarioResponse.de(usuarioRepository.save(usuario)), true);
     }
 
     /**

@@ -1,14 +1,11 @@
 import "./index.css";
-import "/src/variables.css";
 
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { IconBolt, IconMapPin, IconPlus, IconX } from "@tabler/icons-react";
 
-import { FiPlus } from "react-icons/fi";
-import { IoLocation } from "react-icons/io5";
-import { AiOutlineThunderbolt } from "react-icons/ai";
-
-import HeaderInterface from "../header-interface";
 import { projetosService } from "../../../services/projetos";
+import { getUser } from "../../../userSession";
 
 const ESTADOS = [
   ["AC", "Acre"], ["AL", "Alagoas"], ["AP", "Amapá"], ["AM", "Amazonas"],
@@ -22,254 +19,275 @@ const ESTADOS = [
   ["TO", "Tocantins"],
 ];
 
-const FORM_VAZIO = {
-  titulo: "",
-  descricao: "",
-  cidade: "",
-  estado: "",
-  potenciaKwp: "",
-};
+const FORM_VAZIO = { titulo: "", descricao: "", cidade: "", estado: "", potenciaKwp: "" };
+
+/**
+ * O status chega como texto livre ("Aberto", "Em andamento", "Concluído").
+ * normalizar() deixa a comparação imune a caixa e acento, para um status
+ * gravado como "EM_ANDAMENTO" ou "concluido" cair no filtro certo.
+ */
+const normalizar = (s) =>
+  (s || "").normalize("NFD").replace(/[̀-ͯ]/g, "").replace(/_/g, " ").trim().toLowerCase();
+
+const FILTROS = [
+  { id: "todos", rotulo: "Todos", aceita: () => true },
+  { id: "aberto", rotulo: "Abertos", aceita: (p) => normalizar(p.status) === "aberto" },
+  { id: "andamento", rotulo: "Em andamento", aceita: (p) => normalizar(p.status) === "em andamento" },
+  { id: "concluido", rotulo: "Concluídos", aceita: (p) => normalizar(p.status) === "concluido" },
+];
+
+const SELO = { aberto: "eco-badge--ok", "em andamento": "eco-badge--info", concluido: "eco-badge--muted" };
+
+/** "EM_ANDAMENTO" -> "Em andamento"; o que já vier bonito fica como está. */
+function rotuloStatus(status) {
+  const n = normalizar(status);
+  if (!n) return "";
+  if (n === "concluido") return "Concluído";
+  return n.charAt(0).toUpperCase() + n.slice(1);
+}
 
 export default function ProjectInterface() {
-  const [mostrarModal, setMostrarModal] = useState(false);
-  const [form, setForm] = useState(FORM_VAZIO);
+  const navigate = useNavigate();
+  const meuId = Number(getUser()?.id);
 
   const [projetos, setProjetos] = useState([]);
   const [carregando, setCarregando] = useState(true);
-  const [salvando, setSalvando] = useState(false);
   const [erro, setErro] = useState("");
+  const [filtro, setFiltro] = useState("todos");
+  const [soMeus, setSoMeus] = useState(false);
+
+  const [dialogo, setDialogo] = useState(false);
+  const [form, setForm] = useState(FORM_VAZIO);
+  const [salvando, setSalvando] = useState(false);
+  const [erroForm, setErroForm] = useState("");
 
   useEffect(() => {
     let ativo = true;
     projetosService
       .listar()
-      .then((lista) => {
-        if (ativo) setProjetos(Array.isArray(lista) ? lista : []);
-      })
-      .catch((e) => {
-        if (ativo) setErro(e.message || "Não foi possível carregar os projetos.");
-      })
-      .finally(() => {
-        if (ativo) setCarregando(false);
-      });
+      .then((lista) => ativo && setProjetos(Array.isArray(lista) ? lista : []))
+      .catch((e) => ativo && setErro(e.message || "Não foi possível carregar os projetos."))
+      .finally(() => ativo && setCarregando(false));
     return () => {
       ativo = false;
     };
   }, []);
 
-  const handlePublicar = async (event) => {
-    event.preventDefault();
+  // Esc fecha o diálogo.
+  useEffect(() => {
+    if (!dialogo) return undefined;
+    const aoTeclar = (e) => e.key === "Escape" && setDialogo(false);
+    window.addEventListener("keydown", aoTeclar);
+    return () => window.removeEventListener("keydown", aoTeclar);
+  }, [dialogo]);
+
+  const ehMeu = (p) => p.criador?.idUsuario === meuId;
+  const base = soMeus ? projetos.filter(ehMeu) : projetos;
+  const contagem = Object.fromEntries(FILTROS.map((f) => [f.id, base.filter(f.aceita).length]));
+  const visiveis = base.filter(FILTROS.find((f) => f.id === filtro).aceita);
+
+  const handleChange = (e) => setForm((atual) => ({ ...atual, [e.target.name]: e.target.value }));
+
+  async function publicar(e) {
+    e.preventDefault();
     setSalvando(true);
-    setErro("");
+    setErroForm("");
     try {
       const criado = await projetosService.criar({
         titulo: form.titulo,
         descricao: form.descricao,
         cidade: form.cidade,
         estado: form.estado,
-        // O input é texto e o backend espera número: converte aqui e manda
-        // null quando vazio, em vez de "" (que quebraria a validação).
+        // O backend espera número: manda null quando vazio, não "".
         potenciaKwp: form.potenciaKwp ? Number(form.potenciaKwp) : null,
         status: "Aberto",
       });
       setProjetos((atuais) => [criado, ...atuais]);
-      setMostrarModal(false);
+      setDialogo(false);
       setForm(FORM_VAZIO);
-    } catch (e) {
-      setErro(e.message || "Não foi possível publicar o projeto.");
+    } catch (ex) {
+      setErroForm(ex.message || "Não foi possível publicar o projeto.");
     } finally {
       setSalvando(false);
     }
-  };
+  }
 
-  const total = projetos.length;
-  const abertos = projetos.filter((p) => p.status === "Aberto").length;
-  const emAndamento = projetos.filter((p) => p.status === "Em andamento").length;
-  const concluidos = projetos.filter((p) => p.status === "Concluído").length;
-
-  const handleChange = (event) => {
-    const { name, value } = event.target;
-    setForm((atual) => ({ ...atual, [name]: value }));
-  };
+  async function excluir(projeto) {
+    if (!window.confirm(`Excluir o projeto "${projeto.titulo}"? Isso não pode ser desfeito.`)) return;
+    setErro("");
+    try {
+      await projetosService.excluir(projeto.idProjeto);
+      setProjetos((atuais) => atuais.filter((p) => p.idProjeto !== projeto.idProjeto));
+    } catch (ex) {
+      setErro(ex.message || "Não foi possível excluir o projeto.");
+    }
+  }
 
   return (
-    <div className="project-interface-container">
-      <HeaderInterface />
-
-      <div className="project-content">
-        <div className="content-header">
-          <h2>Projetos</h2>
-          <button className="projects-btn" onClick={() => setMostrarModal(true)}>
-            <span>
-              <FiPlus />
-            </span>
-            Novo Projeto
-          </button>
-
-          {mostrarModal && (
-            <div className="modal-overlay">
-              <div className="modal">
-                <span className="close" onClick={() => setMostrarModal(false)}>
-                  X
-                </span>
-                <h3>Publicar Novo Projeto</h3>
-                <span className="span-modal">
-                  Publique um projeto e encontre instaladores qualificados
-                </span>
-
-                <form onSubmit={handlePublicar}>
-                  <label htmlFor="titulo" className="label-name">
-                    Título do Projeto
-                  </label>
-                  <input
-                    type="text"
-                    id="titulo"
-                    placeholder="Ex: Instalação Residencial 10kWp"
-                    name="titulo"
-                    value={form.titulo}
-                    onChange={handleChange}
-                    required
-                  />
-
-                  <label htmlFor="descricao" className="label-name">
-                    Descrição
-                  </label>
-                  <input
-                    type="text"
-                    id="descricao"
-                    placeholder="Descreva o escopo do projeto, requisitos técnicos..."
-                    name="descricao"
-                    value={form.descricao}
-                    onChange={handleChange}
-                    required
-                  />
-
-                  <label htmlFor="cidade" className="label-name">
-                    Cidade
-                  </label>
-                  <input
-                    type="text"
-                    id="cidade"
-                    placeholder="Ex: São Paulo"
-                    name="cidade"
-                    value={form.cidade}
-                    onChange={handleChange}
-                    required
-                  />
-
-                  <label htmlFor="estado" className="label-name">
-                    Estado
-                  </label>
-                  <select
-                    id="estado"
-                    name="estado"
-                    required
-                    value={form.estado}
-                    onChange={handleChange}
-                  >
-                    <option value="">Selecione</option>
-                    {ESTADOS.map(([uf, nome]) => (
-                      <option key={uf} value={uf}>
-                        {nome}
-                      </option>
-                    ))}
-                  </select>
-
-                  <label htmlFor="potenciaKwp" className="label-name">
-                    Potência (kWp)
-                  </label>
-                  <input
-                    type="number"
-                    id="potenciaKwp"
-                    step="0.01"
-                    min="0"
-                    placeholder="Ex: 10"
-                    name="potenciaKwp"
-                    value={form.potenciaKwp}
-                    onChange={handleChange}
-                    required
-                  />
-                  <button type="submit" disabled={salvando}>
-                    {salvando ? "Publicando…" : "Publicar"}
-                  </button>
-                </form>
-              </div>
-            </div>
-          )}
+    <div className="pg">
+      <header className="pg-cabeca">
+        <div>
+          <h1 className="pg-titulo">Projetos</h1>
+          <p className="pg-sub">Publique um projeto e encontre instaladores qualificados.</p>
         </div>
-        <p>Gerencie seus projetos e encontre instaladores</p>
+        <button type="button" className="eco-btn eco-btn--primary" onClick={() => setDialogo(true)}>
+          <IconPlus size={18} stroke={2} aria-hidden="true" />
+          Novo projeto
+        </button>
+      </header>
+
+      <dl className="pg-metricas">
+        <div><dt>Total</dt><dd>{contagem.todos}</dd></div>
+        <div><dt>Abertos</dt><dd>{contagem.aberto}</dd></div>
+        <div><dt>Em andamento</dt><dd>{contagem.andamento}</dd></div>
+        <div><dt>Concluídos</dt><dd>{contagem.concluido}</dd></div>
+      </dl>
+
+      <div className="proj-barra">
+        <div className="pg-abas" role="group" aria-label="Filtrar por situação">
+          {FILTROS.map((f) => (
+            <button key={f.id} type="button" aria-pressed={filtro === f.id} onClick={() => setFiltro(f.id)}>
+              {f.rotulo}
+              <span>{contagem[f.id]}</span>
+            </button>
+          ))}
+        </div>
+
+        <label className="proj-meus">
+          <input type="checkbox" checked={soMeus} onChange={(e) => setSoMeus(e.target.checked)} />
+          Só os meus
+        </label>
       </div>
 
-      {erro && <div className="project-erro">{erro}</div>}
-
-      <div className="cards-content">
-        <div className="card">
-          <p className="card-content-title">Total</p>
-          <p className="card-number">{total}</p>
-        </div>
-        <div className="card">
-          <p className="card-content-title">Abertos</p>
-          <p className="card-number">{abertos}</p>
-        </div>
-        <div className="card">
-          <p className="card-content-title">Em andamento</p>
-          <p className="card-number">{emAndamento}</p>
-        </div>
-        <div className="card">
-          <p className="card-content-title">Concluídos</p>
-          <p className="card-number">{concluidos}</p>
-        </div>
-      </div>
-
-      <div className="bar-process">
-        <p>Todos({total})</p>
-        <p>Abertos({abertos})</p>
-        <p>Em Andamento({emAndamento})</p>
-        <p>Concluídos({concluidos})</p>
-      </div>
+      {erro && <p className="eco-alerta eco-alerta--erro" role="alert">{erro}</p>}
 
       {carregando ? (
-        <p className="project-status">Carregando projetos…</p>
-      ) : projetos.length === 0 ? (
-        <div className="project-empty">
-          <h3>Nenhum projeto publicado</h3>
+        <p className="eco-mudo">Carregando projetos…</p>
+      ) : visiveis.length === 0 ? (
+        <div className="pg-vazio">
+          <h2>{projetos.length ? "Nenhum projeto neste filtro" : "Nenhum projeto publicado"}</h2>
           <p>
-            Ainda não há projetos na plataforma. Clique em{" "}
-            <strong>Novo Projeto</strong> para publicar o primeiro e receber
-            contato de instaladores.
+            {projetos.length
+              ? "Troque o filtro acima para ver os outros projetos."
+              : "Publique o primeiro projeto e receba contato de instaladores da sua região."}
           </p>
+          {!projetos.length && (
+            <button type="button" className="eco-btn eco-btn--primary" onClick={() => setDialogo(true)}>
+              Publicar projeto
+            </button>
+          )}
         </div>
       ) : (
-        projetos.map((projeto) => (
-          <div className="box-project" key={projeto.idProjeto}>
-            <div className="box-title">
-              <h3>{projeto.titulo}</h3>
-              <p className="status">{projeto.status}</p>
+        <ul className="proj-lista">
+          {visiveis.map((p) => {
+            const meu = ehMeu(p);
+            const local = [p.cidade, p.estado].filter(Boolean).join(", ");
+            return (
+              <li key={p.idProjeto} className="proj-card">
+                <div className="proj-card-topo">
+                  <h2>{p.titulo}</h2>
+                  {p.status && (
+                    <span className={`eco-badge ${SELO[normalizar(p.status)] || "eco-badge--muted"}`}>
+                      {rotuloStatus(p.status)}
+                    </span>
+                  )}
+                </div>
+
+                {p.descricao && <p className="proj-card-desc">{p.descricao}</p>}
+
+                <div className="proj-card-rodape">
+                  <ul className="proj-card-meta">
+                    {local && (
+                      <li><IconMapPin size={16} stroke={1.6} aria-hidden="true" />{local}</li>
+                    )}
+                    {p.potenciaKwp != null && (
+                      <li><IconBolt size={16} stroke={1.6} aria-hidden="true" />{p.potenciaKwp} kWp</li>
+                    )}
+                    {p.criador?.nome && <li>{meu ? "Publicado por você" : `por ${p.criador.nome}`}</li>}
+                  </ul>
+
+                  {meu ? (
+                    <button type="button" className="eco-btn eco-btn--texto eco-btn--sm proj-excluir" onClick={() => excluir(p)}>
+                      Excluir
+                    </button>
+                  ) : (
+                    p.criador && (
+                      <button
+                        type="button"
+                        className="eco-btn eco-btn--ghost eco-btn--sm"
+                        onClick={() => navigate(`/menu-user/messages?com=${p.criador.idUsuario}`)}
+                      >
+                        Conversar com {p.criador.nome.split(" ")[0]}
+                      </button>
+                    )
+                  )}
+                </div>
+              </li>
+            );
+          })}
+        </ul>
+      )}
+
+      {dialogo && (
+        <div className="pg-dialogo-fundo" onClick={(e) => e.target === e.currentTarget && setDialogo(false)}>
+          <div className="pg-dialogo" role="dialog" aria-modal="true" aria-labelledby="titulo-novo-projeto">
+            <div className="pg-dialogo-cabeca">
+              <div>
+                <h2 id="titulo-novo-projeto">Novo projeto</h2>
+                <p>Instaladores da região veem o projeto e podem te chamar.</p>
+              </div>
+              <button type="button" className="pg-fechar" onClick={() => setDialogo(false)} aria-label="Fechar">
+                <IconX size={18} aria-hidden="true" />
+              </button>
             </div>
-            <p className="box-description">{projeto.descricao}</p>
-            <div className="box-information">
-              {(projeto.cidade || projeto.estado) && (
-                <p className="location">
-                  <span className="icon-location">
-                    <IoLocation />
-                  </span>
-                  {[projeto.cidade, projeto.estado].filter(Boolean).join(", ")}
-                </p>
-              )}
-              {projeto.potenciaKwp != null && (
-                <p className="power">
-                  <span className="icon-power">
-                    <AiOutlineThunderbolt />
-                  </span>
-                  {projeto.potenciaKwp}kWp
-                </p>
-              )}
-              {projeto.criador?.nome && (
-                <p className="data">por {projeto.criador.nome}</p>
-              )}
-            </div>
+
+            <form className="pg-form" onSubmit={publicar}>
+              <div className="eco-field pg-form-inteiro">
+                <label htmlFor="titulo">Título</label>
+                <input id="titulo" name="titulo" value={form.titulo} onChange={handleChange}
+                  placeholder="Ex.: Residencial 10 kWp em telhado cerâmico" required autoFocus />
+              </div>
+
+              <div className="eco-field pg-form-inteiro">
+                <label htmlFor="descricao">Descrição</label>
+                <textarea id="descricao" name="descricao" rows={4} value={form.descricao} onChange={handleChange}
+                  placeholder="Escopo, tipo de telhado, padrão de entrada, certificações exigidas…" required />
+              </div>
+
+              <div className="eco-field">
+                <label htmlFor="cidade">Cidade</label>
+                <input id="cidade" name="cidade" value={form.cidade} onChange={handleChange} placeholder="Ex.: Sorocaba" required />
+              </div>
+
+              <div className="eco-field">
+                <label htmlFor="estado">Estado</label>
+                <select id="estado" name="estado" value={form.estado} onChange={handleChange} required>
+                  <option value="">Selecione</option>
+                  {ESTADOS.map(([uf, nome]) => (
+                    <option key={uf} value={uf}>{nome}</option>
+                  ))}
+                </select>
+              </div>
+
+              <div className="eco-field">
+                <label htmlFor="potenciaKwp">Potência (kWp)</label>
+                <input id="potenciaKwp" name="potenciaKwp" type="number" step="0.01" min="0"
+                  value={form.potenciaKwp} onChange={handleChange} placeholder="Ex.: 10" required />
+              </div>
+
+              {erroForm && <p className="eco-alerta eco-alerta--erro pg-form-inteiro" role="alert">{erroForm}</p>}
+
+              <div className="pg-dialogo-acoes">
+                <button type="button" className="eco-btn eco-btn--ghost" onClick={() => setDialogo(false)}>
+                  Cancelar
+                </button>
+                <button type="submit" className="eco-btn eco-btn--primary" disabled={salvando} aria-busy={salvando}>
+                  {salvando ? "Publicando…" : "Publicar projeto"}
+                </button>
+              </div>
+            </form>
           </div>
-        ))
+        </div>
       )}
     </div>
   );

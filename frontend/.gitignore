@@ -22,3 +22,7 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Variáveis de ambiente locais (Firebase etc.) — nunca commitar
+.env
+.env.*.local

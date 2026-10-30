@@ -1,227 +1,102 @@
-body {
-    background: var(--darkblue);
-    overflow-x: hidden;
+/* Telas de conta: entrar, criar conta, recuperar senha, concluir cadastro. */
+.auth-pagina {
+    min-height: calc(100vh - var(--eco-nav-h) - 160px);
+    display: grid;
+    place-items: center;
+    padding: 6.4rem 1.6rem;
+    background: var(--eco-bg);
 }
 
-/* ===================================== */
-/* CONTAINER */
-/* ===================================== */
-
-.login-container {
-    padding: 0 2rem;
-}
-
-/* ===================================== */
-/* CARD LOGIN */
-/* ===================================== */
-
-.login-user {
-    border: none;
-    border-radius: 20px;
-
+.auth-card {
+    width: min(440px, 100%);
+    background: #fff;
+    border-radius: var(--eco-r-card);
+    padding: var(--eco-card-pad);
     display: flex;
     flex-direction: column;
-    align-items: center;
-
-    padding: 4rem;
-
-    margin: 0 auto;
-    margin-top: 5rem;
-    margin-bottom: 5rem;
-
-    gap: 2rem;
-
-    background: var(--white);
-
-    width: 100%;
-    max-width: 50rem;
-
-    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.15);
+    gap: 1.8rem;
 }
 
-.login-user h3 {
-    font-size: 2rem;
+.auth-card--largo {
+    width: min(540px, 100%);
+}
+
+.auth-card h1 {
+    font-size: 3.2rem;
     font-weight: 600;
-    color: var(--black);
-    text-align: center;
+    line-height: 1.1;
+    letter-spacing: -0.01em;
 }
 
-/* ===================================== */
-/* FORM */
-/* ===================================== */
-
-.login-user form {
+.auth-card form {
     display: flex;
     flex-direction: column;
+    gap: 1.8rem;
+}
 
-    width: 100%;
+.auth-linha-2 {
+    display: grid;
+    /* minmax(0, 1fr): sem o 0, a coluna não encolhe abaixo da largura
+       intrínseca do input e o segundo campo vaza do card. */
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1.8rem 1.4rem;
+}
 
+@media (max-width: 480px) {
+    .auth-linha-2 {
+        grid-template-columns: 1fr;
+    }
+}
+
+.auth-rotulo-linha {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
     gap: 1rem;
 }
 
-label {
-    font-size: 1.5rem;
-    color: var(--black);
-    font-weight: 500;
+.auth-ajuda {
+    font-size: var(--eco-text-xs);
+    color: var(--eco-ink-3);
 }
 
-.login-user form input {
-    border: 1px solid var(--graybutton);
-    border-radius: 10px;
-
-    padding: 1.2rem;
-
-    font-size: 1.5rem;
-
-    color: var(--black);
-
-    font-family: montserrat, sans-serif;
-
-    outline: none;
-
-    transition: 0.2s ease;
+.auth-erro-campo {
+    font-size: var(--eco-text-xs);
+    color: var(--eco-red);
 }
 
-.login-user form input:focus {
-    border-color: var(--blue);
-    box-shadow: 0 0 0 3px rgba(71, 77, 255, 0.15);
+.eco-field input[aria-invalid="true"] {
+    border-color: var(--eco-red);
 }
 
-/* ===================================== */
-/* TEXTS */
-/* ===================================== */
-
-.login-user span {
-    font-size: 1.5rem;
-    color: var(--gray);
-
-    font-weight: 500;
-
+.auth-rodape {
     text-align: center;
-
-    margin-top: 1rem;
+    font-size: var(--eco-text-sm);
+    color: var(--eco-ink-3);
 }
 
-.login-user .no-password {
-    color: var(--blue);
+.auth-card details {
+    border-top: 1px solid var(--eco-line-2);
+    padding-top: 1.4rem;
+}
+
+.auth-card summary {
     cursor: pointer;
-    transition: 0.2s ease;
+    font-size: var(--eco-text-sm);
+    color: var(--eco-link);
+    border-radius: 6px;
 }
 
-.login-user .no-password:hover {
-    opacity: 0.8;
+.auth-card details[open] summary {
+    margin-bottom: 1.8rem;
 }
 
-.login-user .register-account {
-    color: var(--blue);
-    cursor: pointer;
-    font-weight: 600;
-}
-
-/* ===================================== */
-/* SUBMIT */
-/* ===================================== */
-
-.submit-container {
+.auth-confirmar {
     display: flex;
     flex-direction: column;
-    gap: 1.5rem;
-
-    margin-top: 1rem;
+    gap: 1.4rem;
 }
 
-.login-submit {
-    border: none;
-
-    padding: 1.2rem 3rem;
-
-    font-size: 1.7rem;
-    font-weight: 500;
-
-    border-radius: 15px;
-
-    background: var(--blue);
-    color: var(--white);
-
-    transition: 0.2s ease;
-
-    margin-top: 1rem;
-}
-
-.login-submit:hover {
-    background: #3b40d0;
-    cursor: pointer;
-}
-
-/* ===================================== */
-/* MOBILE */
-/* ===================================== */
-
-@media (max-width: 500px) {
-
-    .login-container {
-        padding: 0 1.5rem;
-    }
-
-    .login-user {
-        width: 100%;
-
-        padding: 3rem 2rem;
-
-        margin-top: 3rem;
-        margin-bottom: 3rem;
-    }
-
-    .login-user h3 {
-        font-size: 2rem;
-    }
-
-    .login-user form input {
-        font-size: 1.4rem;
-        padding: 1rem;
-    }
-
-    .login-submit {
-        width: 100%;
-
-        padding: 1.2rem;
-
-        font-size: 1.5rem;
-    }
-
-    .login-user span {
-        font-size: 1.4rem;
-        line-height: 1.5;
-    }
-
-    .submit-container {
-        gap: 1rem;
-    }
-}
-
-/* ===================================== */
-/* TABLET */
-/* ===================================== */
-
-@media (min-width: 501px) and (max-width: 1279px) {
-
-    .login-user {
-        width: 100%;
-        max-width: 60rem;
-    }
-}
-
-
-/* Aviso de servidor acordando (primeiro acesso depois de um tempo parado). */
-.login-demora {
-    margin-top: 1rem;
-    padding: 1rem 1.2rem;
-
-    border-radius: 8px;
-
-    background: var(--eco-blue-50, #f2f2fe);
-    color: var(--eco-blue-800, #191880);
-
-    font-size: 1.3rem;
-    line-height: 1.5;
+.auth-demora {
+    font-size: var(--eco-text-sm);
 }

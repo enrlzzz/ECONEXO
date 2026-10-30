@@ -4,9 +4,9 @@
 }
 
 .admin-content {
-    width: 82%;
+    width: min(var(--eco-maxw), 100% - 3.2rem);
     margin: 0 auto;
-    padding-top: 8rem;
+    padding-top: var(--eco-pagina-topo);
     display: flex;
     flex-direction: column;
     gap: 2rem;
@@ -24,14 +24,12 @@
     color: var(--blue);
     padding: 1rem;
     border-radius: 12px;
-    margin-top: 4rem;
 }
 
 .admin-title-row h2 {
     font-size: 3rem;
     font-weight: 700;
     color: var(--black);
-    margin-top: 4rem;
 }
 
 .admin-title-row p {
@@ -113,11 +111,11 @@
 .filter-btn {
     padding: 0.6rem 1.5rem;
     border: 1px solid var(--graybutton);
-    border-radius: 20px;
+    border-radius: var(--eco-r-card);
     background: var(--white);
     font-size: 1.2rem;
     cursor: pointer;
-    font-family: montserrat, sans-serif;
+    font-family: var(--eco-font);
     color: var(--gray);
 }
 
@@ -190,7 +188,7 @@
 
 .cert-status {
     padding: 0.4rem 1.2rem;
-    border-radius: 20px;
+    border-radius: var(--eco-r-card);
     font-size: 1.2rem;
     font-weight: 600;
     border: 1px solid var(--graybutton);
@@ -231,7 +229,7 @@
     font-weight: 600;
     cursor: pointer;
     color: var(--gray);
-    font-family: montserrat, sans-serif;
+    font-family: var(--eco-font);
 }
 
 .cert-data {
@@ -253,7 +251,7 @@
     font-size: 1.2rem;
     font-weight: 600;
     cursor: pointer;
-    font-family: montserrat, sans-serif;
+    font-family: var(--eco-font);
 }
 
 .btn-aprovar {
@@ -268,7 +266,7 @@
     font-size: 1.2rem;
     font-weight: 600;
     cursor: pointer;
-    font-family: montserrat, sans-serif;
+    font-family: var(--eco-font);
 }
 
 .btn-rejeitar {
@@ -283,7 +281,7 @@
     font-size: 1.2rem;
     font-weight: 600;
     cursor: pointer;
-    font-family: montserrat, sans-serif;
+    font-family: var(--eco-font);
 }
 
 /* modal revisar */
@@ -355,7 +353,7 @@
 .modal-doc-icon {
     font-size: 2.5rem;
     color: var(--blue);
-    background: #e8f0fe;
+    background: var(--eco-brand-50);
     padding: 0.75rem;
     border-radius: 8px;
 }
@@ -383,7 +381,7 @@
     background: var(--white);
     font-size: 1.2rem;
     cursor: pointer;
-    font-family: montserrat, sans-serif;
+    font-family: var(--eco-font);
 }
 
 .checklist {
@@ -429,7 +427,7 @@
     font-size: 1.2rem;
     font-weight: 600;
     cursor: pointer;
-    font-family: montserrat, sans-serif;
+    font-family: var(--eco-font);
 }
 
 /* overlay modal */
@@ -522,7 +520,7 @@
 
     .admin-content {
         width: 95%;
-        padding-top: 7rem;
+        padding-top: var(--eco-pagina-topo);
         gap: 1.5rem;
     }
 
@@ -776,13 +774,13 @@
     padding: 5rem 2rem;
 
     background: var(--white);
-    border: 1px solid var(--eco-line, #e4e8ef);
+    border: 1px solid var(--eco-line, var(--eco-line-2));
     border-radius: 16px;
 }
 
 .admin-empty svg {
     font-size: 4.2rem;
-    color: var(--eco-ink-4, #9aa3af);
+    color: var(--eco-ink-4, var(--eco-ink-3));
 }
 
 .admin-empty h3 {
@@ -792,7 +790,7 @@
 
 .admin-empty p {
     font-size: 1.4rem;
-    color: var(--eco-ink-3, #6b7280);
+    color: var(--eco-ink-3, var(--eco-ink-3));
     max-width: 46rem;
     line-height: 1.6;
 }

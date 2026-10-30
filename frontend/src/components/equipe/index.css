@@ -1,0 +1,119 @@
+.equipe-intro {
+    max-width: 620px;
+    margin-top: 2rem;
+}
+
+.equipe-marquee {
+    margin-top: 4rem;
+    overflow: hidden;
+}
+
+/* Duas cópias lado a lado; a animação desloca uma cópia inteira (-50%). */
+.equipe-faixa {
+    display: flex;
+    width: max-content;
+    animation: equipe-rolar calc(var(--qtd, 5) * 6s) linear infinite;
+}
+
+.equipe-marquee:hover .equipe-faixa,
+.equipe-marquee:focus-within .equipe-faixa {
+    animation-play-state: paused;
+}
+
+@keyframes equipe-rolar {
+    to { transform: translateX(-50%); }
+}
+
+.equipe-lista {
+    display: flex;
+    gap: var(--eco-gap);
+    padding-right: var(--eco-gap);
+    list-style: none;
+}
+
+.equipe-cartao {
+    width: 360px;
+    flex: 0 0 auto;
+    display: flex;
+    gap: 1.6rem;
+    align-items: center;
+    padding: 2.4rem;
+    background: #fff;
+    border-radius: var(--eco-r-card);
+}
+
+.equipe-foto {
+    width: 72px;
+    height: 72px;
+    border-radius: 50%;
+    object-fit: cover;
+    flex: 0 0 72px;
+}
+
+.equipe-iniciais {
+    display: grid;
+    place-items: center;
+    color: #fff;
+    font-size: 2.2rem;
+    font-weight: 600;
+}
+
+.equipe-texto {
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+}
+
+.equipe-texto h3 {
+    font-size: 1.9rem;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    line-height: 1.2;
+}
+
+.equipe-papel {
+    font-size: var(--eco-text-sm);
+    color: var(--eco-ink);
+}
+
+.equipe-papel {
+    font-weight: 500;
+}
+
+.equipe-curso {
+    font-size: var(--eco-text-xs);
+    line-height: 1.4;
+    color: var(--eco-ink-3);
+    margin-top: 0.4rem;
+}
+
+.equipe-link {
+    font-size: var(--eco-text-sm);
+    margin-top: 0.4rem;
+    align-self: flex-start;
+}
+
+/* Sem movimento automático: a faixa vira uma lista que rola na mão e a
+   cópia duplicada some. */
+@media (prefers-reduced-motion: reduce) {
+    .equipe-marquee {
+        overflow-x: auto;
+        padding-inline: 1.6rem;
+    }
+
+    .equipe-faixa {
+        animation: none;
+    }
+
+    .equipe-lista[aria-hidden="true"] {
+        display: none;
+    }
+}
+
+@media (max-width: 620px) {
+    .equipe-cartao {
+        width: 290px;
+        padding: 2rem;
+    }
+}

@@ -3,7 +3,6 @@ import "/src/variables.css";
 
 import { useEffect, useState } from "react";
 
-import HeaderInterface from "../header-interface";
 import { useUserData } from "../../../useUserData";
 import { usuariosService } from "../../../services/usuarios";
 import { persistUser } from "../../../userSession";
@@ -134,7 +133,6 @@ export default function Settings() {
 
   return (
     <div className="container-settings">
-      <HeaderInterface />
 
       <div className="settings-header">
         <h2>Configurações</h2>

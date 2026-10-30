@@ -1,0 +1,956 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>EcoNexo — Protótipo de redesign</title>
+<meta name="description" content="Protótipo navegável do redesign do EcoNexo. Telas: início, entrar, criar conta, recuperar senha, análise, resultado, perfil e design tokens.">
+<!-- Inter substitui a SF Pro (proprietária). Sem internet, cai para a fonte do sistema. -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+/* =====================================================================
+   DESIGN TOKENS — EcoNexo
+   Sistema de galeria branca: canvas #fff alternando com faixas #f5f5f7,
+   tipografia grande e compacta, cards de 28px sem sombra nem gradiente.
+   A cor da marca é o Verde Fotovoltaico; o Âmbar Solar é só para dados.
+   ===================================================================== */
+:root{
+  /* Superfícies */
+  --branco:#ffffff;
+  --nevoa:#f5f5f7;
+  --gelo:#fafafc;
+  --linha:#d6d6d6;
+  --controle:#e6e6e8;
+  /* Texto */
+  --tinta:#1d1d1f;      /* 16,8:1 sobre branco */
+  --tinta-2:#6e6e73;    /* 5,07:1 sobre branco · 4,66:1 sobre névoa */
+  --aco:#86868b;        /* só borda/indicador (3,6:1 — regra de 3:1 p/ UI) */
+  /* Marca */
+  --verde:#0a7f4f;      /* preenchimento de botão: texto branco 5,05:1 */
+  --verde-hover:#086b42;
+  --verde-link:#087443; /* links: 5,85:1 sobre branco · 5,37:1 sobre névoa */
+  --verde-suave:#e6f4ed;
+  /* Dados e rótulos */
+  --ambar:#a84b00;      /* rótulo "Novo" e série secundária: 5,72:1 */
+  --ambar-suave:#fbeee3;
+  --erro:#b3261e;
+  --erro-suave:#fdecea;
+  --foco:#0a7f4f;
+
+  --fonte:"Inter","Helvetica Neue",Arial,system-ui,sans-serif;
+
+  --t-nav:12px; --t-controle:12px; --t-pequeno:14px; --t-corpo:17px;
+  --t-titulo-nav:19px; --t-kicker:21px; --t-secao:40px; --t-hero:80px;
+
+  --gap-secao:90px; --gap:20px; --pad-card:28px;
+  --r-card:28px; --r-link:10px; --r-pill:36px; --r-input:980px; --r-botao:9999px; --r-nav:20px;
+  --contorno-sutil:0 0 0 1px #e6e6e8;
+  --contorno-forte:0 0 0 1px #86868b;
+}
+
+*,*::before,*::after{box-sizing:border-box}
+html{scroll-behavior:smooth}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}*{transition:none!important;animation:none!important}}
+body{margin:0;background:var(--branco);color:var(--tinta);font-family:var(--fonte);
+  font-size:var(--t-corpo);line-height:1.47;letter-spacing:-.374px;-webkit-font-smoothing:antialiased}
+h1,h2,h3,h4,p{margin:0}
+img,svg{display:block;max-width:100%}
+a{color:var(--verde-link);text-decoration:none;border-radius:var(--r-link)}
+a:hover{text-decoration:underline}
+:focus-visible{outline:2px solid var(--foco);outline-offset:3px}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.pular{position:absolute;left:16px;top:-60px;background:var(--tinta);color:#fff;padding:10px 16px;border-radius:var(--r-botao);z-index:99}
+.pular:focus{top:8px}
+
+.container{width:min(1080px,100% - 32px);margin-inline:auto}
+.estreito{width:min(680px,100% - 32px);margin-inline:auto}
+.faixa{padding-block:var(--gap-secao)}
+.faixa--nevoa{background:var(--nevoa)}
+
+/* ---------- Tipografia ---------- */
+.kicker{font-size:var(--t-kicker);font-weight:600;line-height:1;letter-spacing:.231px}
+.hero-titulo{font-size:clamp(44px,8vw,var(--t-hero));font-weight:600;line-height:1.05;letter-spacing:-1.2px}
+.titulo-secao{font-size:clamp(32px,5vw,var(--t-secao));font-weight:600;line-height:1.08;letter-spacing:-.4px}
+.titulo-card{font-size:24px;font-weight:600;line-height:1.17;letter-spacing:-.2px}
+.corpo{font-size:var(--t-corpo);line-height:1.47}
+.pequeno{font-size:var(--t-pequeno);line-height:1.43;letter-spacing:-.224px}
+.mudo{color:var(--tinta-2)}
+.rotulo-novo{color:var(--ambar);font-size:12px;font-weight:600;line-height:16px;letter-spacing:-.12px}
+.num{font-variant-numeric:tabular-nums}
+
+/* ---------- Botões (pill) ---------- */
+.btn{--h:44px;display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:var(--h);
+  padding:0 22px;border-radius:var(--r-botao);border:0;font:inherit;font-size:var(--t-corpo);font-weight:400;
+  letter-spacing:-.374px;white-space:nowrap;cursor:pointer;text-decoration:none!important;transition:background .2s,color .2s,box-shadow .2s}
+.btn--sm{--h:32px;padding:0 14px;font-size:var(--t-controle);letter-spacing:-.12px}
+.btn--primario{background:var(--verde);color:#fff}
+.btn--primario:hover{background:var(--verde-hover)}
+.btn--secundario{background:transparent;color:var(--tinta);box-shadow:var(--contorno-forte)}
+.btn--secundario:hover{background:var(--nevoa)}
+.btn--texto{background:none;color:var(--verde-link);padding:0 4px;min-height:auto}
+.btn--texto:hover{text-decoration:underline!important}
+.btn[disabled],.btn[aria-disabled="true"]{background:var(--controle);color:var(--tinta-2);box-shadow:none;cursor:not-allowed}
+.btn[aria-busy="true"]{cursor:progress}
+.btn--bloco{width:100%}
+.giro{width:16px;height:16px;border-radius:50%;border:2px solid currentColor;border-right-color:transparent;animation:gira .8s linear infinite}
+@keyframes gira{to{transform:rotate(360deg)}}
+.link-seta::after{content:" ›"}
+
+/* ---------- Cards ---------- */
+.card{background:var(--branco);border-radius:var(--r-card);padding:var(--pad-card)}
+.faixa:not(.faixa--nevoa) .card{background:var(--nevoa)}
+.grade{display:grid;gap:var(--gap)}
+.grade-3{grid-template-columns:repeat(3,1fr)}
+.grade-2{grid-template-columns:repeat(2,1fr)}
+.grade-4{grid-template-columns:repeat(4,1fr)}
+@media (max-width:900px){.grade-3,.grade-4{grid-template-columns:repeat(2,1fr)}}
+@media (max-width:620px){.grade-3,.grade-2,.grade-4{grid-template-columns:1fr}}
+
+/* ---------- Navegação ---------- */
+.nav{position:sticky;top:0;z-index:50;background:rgba(255,255,255,.86);backdrop-filter:saturate(180%) blur(20px);
+  -webkit-backdrop-filter:saturate(180%) blur(20px);border-bottom:1px solid var(--controle)}
+.nav-in{display:flex;align-items:center;gap:24px;height:52px}
+.marca{display:flex;align-items:center;gap:8px;color:var(--tinta);font-size:var(--t-titulo-nav);font-weight:600;letter-spacing:.228px}
+.marca:hover{text-decoration:none}
+.nav-links{display:flex;gap:22px;margin-left:auto;list-style:none;padding:0;margin-block:0}
+.nav-links a{color:rgba(0,0,0,.8);font-size:var(--t-nav);letter-spacing:-.12px}
+.nav-links a[aria-current="page"]{color:var(--tinta);font-weight:600}
+.nav-acoes{display:flex;gap:10px;align-items:center}
+.avatar{width:32px;height:32px;border-radius:50%;background:var(--verde);color:#fff;display:grid;place-items:center;font-size:12px;font-weight:600;border:0;cursor:pointer}
+.menu-btn{display:none;background:none;border:0;padding:8px;cursor:pointer;color:var(--tinta);margin-left:auto}
+@media (max-width:760px){
+  .nav-links{display:none;position:absolute;left:0;right:0;top:52px;flex-direction:column;gap:0;background:var(--gelo);
+    border-bottom:1px solid var(--controle);padding:8px 16px 16px}
+  .nav-links.aberto{display:flex}
+  .nav-links a{display:block;padding:12px 0;font-size:var(--t-corpo)}
+  .menu-btn{display:block}
+  .nav-acoes .btn--secundario{display:none}
+}
+
+/* Barra do protótipo (não faz parte do produto) */
+.proto{background:var(--tinta);color:#fff;font-size:12px;letter-spacing:-.12px}
+.proto .container{display:flex;flex-wrap:wrap;gap:6px 14px;align-items:center;padding-block:8px}
+.proto a{color:#fff;opacity:.75}
+.proto a[aria-current="page"]{opacity:1;font-weight:600;text-decoration:underline}
+.proto strong{opacity:.6;font-weight:500;margin-right:4px}
+.proto label{display:flex;gap:6px;align-items:center;margin-left:auto;cursor:pointer}
+
+/* ---------- Telas ---------- */
+.tela:not(.ativa){display:none!important}
+.tela.ativa:not(.auth){display:block}
+
+/* ---------- Hero ---------- */
+.hero{text-align:center;padding-top:72px}
+.hero .kicker{color:var(--verde-link);margin-bottom:14px}
+.hero p.corpo{max-width:620px;margin:20px auto 0;color:var(--tinta-2);font-size:21px;line-height:1.38;letter-spacing:.2px}
+.hero-acoes{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;margin-top:32px}
+.hero-arte{margin:56px auto 0;max-width:880px}
+
+/* ---------- Carrossel ---------- */
+.car-topo{display:flex;align-items:end;justify-content:space-between;gap:20px;flex-wrap:wrap;margin-bottom:32px}
+.carrossel{position:relative}
+.car-trilho{overflow:hidden;border-radius:var(--r-card)}
+.car-faixa{display:flex;transition:transform .6s cubic-bezier(.2,.7,.2,1)}
+.slide{flex:0 0 100%;background:var(--branco);border-radius:var(--r-card);padding:40px;min-height:460px;
+  display:grid;grid-template-columns:1fr 1.1fr;gap:40px;align-items:center}
+.slide[aria-hidden="true"]{visibility:hidden}
+.slide .kicker{font-size:17px;color:var(--verde-link);margin-bottom:12px}
+.slide h3{font-size:clamp(26px,3.6vw,40px);font-weight:600;line-height:1.08;letter-spacing:-.4px;margin-bottom:16px}
+.slide ol,.slide ul{margin:16px 0 0;padding-left:20px}
+.slide li{margin-bottom:6px}
+.fonte{margin-top:20px;font-size:12px;line-height:1.4;color:var(--tinta-2);letter-spacing:-.12px}
+.fonte a{font-size:12px}
+@media (max-width:820px){.slide{grid-template-columns:1fr;padding:28px;gap:24px;min-height:0}}
+.car-controles{display:flex;justify-content:center;margin-top:24px}
+.car-pilula{display:flex;align-items:center;gap:6px;padding:6px;border-radius:var(--r-pill);background:rgba(210,210,215,.64)}
+.car-pilula button{width:36px;height:36px;border-radius:50%;border:0;background:transparent;color:rgba(0,0,0,.7);cursor:pointer;display:grid;place-items:center}
+.car-pilula button:hover{background:rgba(255,255,255,.7)}
+.car-pontos{display:flex;gap:8px;padding:0 8px}
+.car-ponto{width:8px;height:8px;padding:0;border-radius:var(--r-botao);background:rgba(0,0,0,.35);border:0;cursor:pointer;overflow:hidden;position:relative;transition:width .3s}
+.car-ponto[aria-current="true"]{width:44px;background:rgba(0,0,0,.2)}
+.car-ponto span{position:absolute;inset:0;width:0;background:var(--tinta)}
+.car-ponto[aria-current="true"] span{width:var(--p,0%)}
+/* Gráfico */
+.grafico{width:100%}
+.grafico .barra{transform-origin:bottom;transform:scaleY(0);transition:transform .9s cubic-bezier(.2,.7,.2,1)}
+.slide.visivel .grafico .barra{transform:scaleY(1)}
+.grafico text{font-family:var(--fonte);font-size:12px;fill:var(--tinta-2)}
+.grafico .val{fill:var(--tinta);font-weight:600}
+.legenda{display:flex;gap:16px;flex-wrap:wrap;font-size:12px;color:var(--tinta-2);margin-top:8px}
+.legenda i{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:6px;vertical-align:-1px}
+/* Bateria */
+.bateria .fluxo{stroke-dasharray:6 8;animation:flui 1.2s linear infinite}
+@keyframes flui{to{stroke-dashoffset:-28}}
+
+/* ---------- Formulários ---------- */
+.auth{min-height:calc(100vh - 160px);display:grid;place-items:center;padding-block:64px;background:var(--nevoa)}
+.auth .card{width:min(440px,100%);background:var(--branco)}
+.auth h1{font-size:32px;font-weight:600;line-height:1.1;letter-spacing:-.3px;margin-bottom:8px}
+.campo{display:grid;gap:6px;margin-top:18px}
+.campo label{font-size:var(--t-pequeno);font-weight:500;letter-spacing:-.224px}
+.campo .ajuda{font-size:12px;color:var(--tinta-2);letter-spacing:-.12px}
+.input{height:44px;border-radius:12px;border:0;box-shadow:var(--contorno-forte);padding:0 16px;font:inherit;font-size:var(--t-corpo);
+  background:var(--branco);color:var(--tinta);width:100%}
+.input:focus-visible{outline:none;box-shadow:0 0 0 2px var(--verde)}
+.input[aria-invalid="true"]{box-shadow:0 0 0 2px var(--erro)}
+.erro-campo{font-size:12px;color:var(--erro);letter-spacing:-.12px}
+.alerta{border-radius:14px;padding:12px 16px;font-size:var(--t-pequeno);margin-top:18px}
+.alerta--erro{background:var(--erro-suave);color:var(--erro)}
+.alerta--ok{background:var(--verde-suave);color:var(--verde-hover)}
+.divisor{display:flex;align-items:center;gap:12px;color:var(--tinta-2);font-size:12px;margin:22px 0}
+.divisor::before,.divisor::after{content:"";flex:1;height:1px;background:var(--linha)}
+.segmento{display:grid;grid-template-columns:1fr 1fr;padding:4px;border-radius:var(--r-botao);background:var(--controle);margin-top:20px}
+.segmento button{height:36px;border:0;border-radius:var(--r-botao);background:transparent;font:inherit;font-size:var(--t-pequeno);cursor:pointer;color:var(--tinta)}
+.segmento button[aria-pressed="true"]{background:var(--branco);font-weight:600;box-shadow:var(--contorno-sutil)}
+.check{display:flex;gap:10px;align-items:flex-start;font-size:var(--t-pequeno);margin-top:20px}
+.check input{width:18px;height:18px;margin-top:2px;accent-color:var(--verde)}
+.linha-2{display:grid;grid-template-columns:1fr 1fr;gap:0 14px}
+@media (max-width:480px){.linha-2{grid-template-columns:1fr}}
+
+/* ---------- Análise ---------- */
+.dropzone{border:1.5px dashed var(--aco);border-radius:var(--r-card);padding:44px 24px;text-align:center;background:var(--branco);cursor:pointer;transition:background .2s,border-color .2s}
+.dropzone:hover,.dropzone.arrastando{background:var(--verde-suave);border-color:var(--verde)}
+.arquivos{list-style:none;padding:0;margin:20px 0 0;display:grid;gap:10px}
+.arquivos li{display:flex;align-items:center;gap:12px;background:var(--branco);border-radius:16px;padding:12px 16px;font-size:var(--t-pequeno)}
+.arquivos li span{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.arquivos button{background:none;border:0;color:var(--tinta-2);cursor:pointer;font:inherit;font-size:12px;border-radius:var(--r-link);padding:6px}
+.etapas{list-style:none;padding:0;margin:24px 0 0;display:grid;gap:12px}
+.etapas li{display:flex;gap:12px;align-items:center;font-size:var(--t-pequeno);color:var(--tinta-2)}
+.etapas li.feita{color:var(--tinta)}
+.etapas li.atual{color:var(--tinta);font-weight:600}
+.etapas .bolinha{width:20px;height:20px;border-radius:50%;box-shadow:var(--contorno-forte);display:grid;place-items:center;flex:0 0 20px;font-size:12px}
+.etapas li.feita .bolinha{background:var(--verde);color:#fff;box-shadow:none}
+.barra-prog{height:6px;border-radius:var(--r-botao);background:var(--controle);overflow:hidden;margin-top:20px}
+.barra-prog span{display:block;height:100%;width:0;background:var(--verde);transition:width .25s}
+.selo-ficticio{display:inline-block;font-size:12px;font-weight:600;color:var(--ambar);letter-spacing:-.12px}
+
+/* ---------- Resultado / Perfil ---------- */
+.metrica .valor{font-size:40px;font-weight:600;line-height:1;letter-spacing:-.4px;margin-top:10px}
+.metrica .rotulo{font-size:var(--t-pequeno);color:var(--tinta-2)}
+.metrica .delta{font-size:12px;margin-top:8px}
+.sobe{color:var(--erro)} .desce{color:var(--verde-link)}
+.convite{display:flex;gap:20px;align-items:center;justify-content:space-between;flex-wrap:wrap;border-top:1px solid var(--linha);padding-top:24px;margin-top:32px}
+.texto-ia h4{font-size:19px;font-weight:600;margin:24px 0 8px}
+.texto-ia ul{padding-left:20px;margin:0}
+.tabela{width:100%;border-collapse:collapse;font-size:var(--t-pequeno)}
+.tabela th{text-align:left;font-weight:500;color:var(--tinta-2);padding:0 12px 12px;border-bottom:1px solid var(--linha)}
+.tabela td{padding:16px 12px;border-bottom:1px solid var(--controle)}
+.tabela tr:last-child td{border-bottom:0}
+.tabela td:last-child,.tabela th:last-child{text-align:right}
+@media (max-width:620px){
+  .tabela thead{display:none}
+  .tabela tr{display:grid;grid-template-columns:1fr;gap:4px;padding:14px 0;border-bottom:1px solid var(--controle)}
+  .tabela td:first-child{color:var(--tinta-2);font-size:12px}
+  .tabela td:last-child{text-align:left}
+  .tabela td{border:0;padding:2px 0}
+  .tabela td:nth-child(3){display:none}
+}
+.vazio{text-align:center;padding:64px 24px}
+.vazio svg{margin:0 auto 24px}
+.cabecalho-perfil{display:flex;gap:20px;align-items:center;flex-wrap:wrap}
+.cabecalho-perfil .avatar{width:64px;height:64px;font-size:22px;cursor:default}
+
+/* ---------- Tokens ---------- */
+.amostra{border-radius:20px;height:96px;box-shadow:var(--contorno-sutil)}
+.token-nome{font-size:var(--t-pequeno);font-weight:600;margin-top:12px}
+.token-info{font-size:12px;color:var(--tinta-2);letter-spacing:-.12px}
+.escala>div{display:flex;gap:24px;align-items:baseline;padding:18px 0;border-bottom:1px solid var(--controle);flex-wrap:wrap}
+.escala code{font-size:12px;color:var(--tinta-2);min-width:180px;font-family:ui-monospace,Menlo,monospace}
+
+/* ---------- Rodapé ---------- */
+.rodape{background:var(--nevoa);font-size:12px;color:var(--tinta-2);letter-spacing:-.12px;padding-block:40px 28px}
+.rodape-col{display:grid;grid-template-columns:repeat(4,1fr);gap:24px;padding-bottom:24px;border-bottom:1px solid var(--linha)}
+.rodape h2{font-size:12px;font-weight:600;color:var(--tinta);margin-bottom:10px}
+.rodape ul{list-style:none;padding:0;margin:0;display:grid;gap:8px}
+.rodape a{color:var(--tinta-2)}
+.rodape-base{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;padding-top:18px}
+@media (max-width:760px){.rodape-col{grid-template-columns:repeat(2,1fr)}}
+</style>
+</head>
+<body>
+<a class="pular" href="#conteudo">Pular para o conteúdo</a>
+
+<!-- Barra do protótipo: só para navegar entre as telas -->
+<div class="proto" role="navigation" aria-label="Telas do protótipo">
+  <div class="container">
+    <strong>Protótipo ·</strong>
+    <a href="#inicio">Início</a>
+    <a href="#entrar">Entrar</a>
+    <a href="#criar-conta">Criar conta</a>
+    <a href="#recuperar">Recuperar senha</a>
+    <a href="#analisar">Analisar conta</a>
+    <a href="#resultado">Resultado</a>
+    <a href="#perfil">Perfil</a>
+    <a href="#tokens">Design tokens</a>
+    <label><input type="checkbox" id="simLogado"> Simular sessão iniciada</label>
+  </div>
+</div>
+
+<header class="nav">
+  <div class="container nav-in">
+    <a class="marca" href="#inicio" aria-label="EcoNexo, ir para o início">
+      <svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="11" fill="#0a7f4f"/><path d="M13.2 4.5 7.5 13h4l-1 6.5L16.5 11h-4z" fill="#fff"/></svg>
+      EcoNexo
+    </a>
+    <button class="menu-btn" id="menuBtn" aria-expanded="false" aria-controls="navLinks" aria-label="Abrir menu">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M4 8h16M4 16h16"/></svg>
+    </button>
+    <ul class="nav-links" id="navLinks">
+      <li><a href="#inicio">Início</a></li>
+      <li><a href="#inicio-aprenda">Aprenda</a></li>
+      <li><a href="#analisar">Analisar conta</a></li>
+      <li><a href="#inicio-profissionais">Para profissionais</a></li>
+    </ul>
+    <div class="nav-acoes" id="navAcoes"></div>
+  </div>
+</header>
+
+<main id="conteudo" tabindex="-1">
+
+<!-- =============================== INÍCIO =============================== -->
+<section class="tela" id="tela-inicio" data-tela="inicio">
+  <div class="hero container">
+    <p class="kicker">Energia fotovoltaica</p>
+    <h1 class="hero-titulo">Sua conta de luz,<br>explicada. Seu projeto,<br>bem instalado.</h1>
+    <p class="corpo">Analise sua conta de energia de graça e encontre engenheiros e instaladores solares com certificações verificadas.</p>
+    <div class="hero-acoes">
+      <a class="btn btn--primario" href="#analisar">Analisar minha conta</a>
+      <a class="btn btn--secundario" href="#criar-conta">Sou profissional</a>
+    </div>
+    <div class="hero-arte" aria-hidden="true">
+      <!-- Ilustração própria: telhado com módulos fotovoltaicos -->
+      <svg viewBox="0 0 880 360" width="100%">
+        <circle cx="720" cy="80" r="44" fill="#f5c46b"/>
+        <g stroke="#f5c46b" stroke-width="4" stroke-linecap="round">
+          <path d="M720 14v14M720 132v14M654 80h14M772 80h14M673 33l10 10M757 117l10 10M767 33l-10 10M683 117l-10 10"/>
+        </g>
+        <path d="M120 300 L300 150 L640 150 L760 300 Z" fill="#e6e6e8"/>
+        <g transform="translate(300 150) skewX(-38)">
+          <g fill="#1d3b5c">
+            <rect x="40" y="18" width="88" height="52" rx="4"/><rect x="136" y="18" width="88" height="52" rx="4"/><rect x="232" y="18" width="88" height="52" rx="4"/>
+            <rect x="40" y="78" width="88" height="52" rx="4"/><rect x="136" y="78" width="88" height="52" rx="4"/><rect x="232" y="78" width="88" height="52" rx="4"/>
+          </g>
+          <g stroke="#3c6a96" stroke-width="1.2">
+            <path d="M84 18v52M180 18v52M276 18v52M84 78v52M180 78v52M276 78v52M40 44h280M40 104h280"/>
+          </g>
+        </g>
+        <rect x="150" y="300" width="580" height="40" fill="#f5f5f7"/>
+        <rect x="0" y="340" width="880" height="20" fill="#ffffff"/>
+      </svg>
+    </div>
+  </div>
+
+  <!-- Carrossel educativo -->
+  <section class="faixa faixa--nevoa" id="inicio-aprenda" aria-labelledby="aprenda-titulo" style="margin-top:var(--gap-secao)">
+    <div class="container">
+      <div class="car-topo">
+        <h2 class="titulo-secao" id="aprenda-titulo">Aprenda em 3 minutos.</h2>
+        <a class="link-seta pequeno" href="#inicio-profissionais">Fale com um profissional</a>
+      </div>
+
+      <div class="carrossel" id="carrossel" role="region" aria-roledescription="carrossel" aria-label="Conteúdo educativo sobre energia">
+        <div class="car-trilho">
+          <div class="car-faixa" id="carFaixa" aria-live="off">
+
+            <!-- Slide 1 — bateria -->
+            <article class="slide" role="group" aria-roledescription="slide" aria-label="1 de 3: Como funciona a bateria do carro elétrico">
+              <div>
+                <p class="kicker">Mobilidade elétrica</p>
+                <h3>Como a bateria move o carro elétrico.</h3>
+                <ol class="pequeno">
+                  <li><strong>Recarga:</strong> o carregador de bordo converte a corrente alternada da tomada em contínua para a bateria.</li>
+                  <li><strong>Armazenamento:</strong> a bateria de tração guarda a energia que move o carro.</li>
+                  <li><strong>Controle:</strong> a eletrônica de potência dosa a energia e define velocidade e torque do motor.</li>
+                  <li><strong>Tração:</strong> o motor elétrico gira as rodas. Uma bateria auxiliar alimenta os acessórios.</li>
+                </ol>
+                <p class="fonte">Fonte: U.S. Department of Energy — Alternative Fuels Data Center, “How Do All-Electric Cars Work?”. Acesso em 29/10/2026. <a href="https://afdc.energy.gov/vehicles/how-do-all-electric-cars-work" target="_blank" rel="noopener">afdc.energy.gov</a></p>
+              </div>
+              <svg class="bateria" viewBox="0 0 440 300" role="img" aria-label="Esquema: tomada, carregador de bordo, bateria de tração, controlador e motor ligado às rodas.">
+                <rect x="20" y="40" width="400" height="200" rx="60" fill="#f5f5f7"/>
+                <circle cx="110" cy="250" r="32" fill="#1d1d1f"/><circle cx="110" cy="250" r="12" fill="#d6d6d6"/>
+                <circle cx="330" cy="250" r="32" fill="#1d1d1f"/><circle cx="330" cy="250" r="12" fill="#d6d6d6"/>
+                <rect x="120" y="150" width="200" height="56" rx="12" fill="#0a7f4f"/>
+                <g fill="#fff" opacity=".9"><rect x="134" y="164" width="34" height="28" rx="4"/><rect x="176" y="164" width="34" height="28" rx="4"/><rect x="218" y="164" width="34" height="28" rx="4"/><rect x="260" y="164" width="34" height="28" rx="4"/></g>
+                <text x="220" y="226" text-anchor="middle" font-size="12" fill="#1d1d1f" font-family="Inter,Arial">Bateria de tração</text>
+                <rect x="44" y="84" width="70" height="40" rx="10" fill="#fff" stroke="#86868b"/>
+                <text x="79" y="108" text-anchor="middle" font-size="11" fill="#1d1d1f" font-family="Inter,Arial">Carregador</text>
+                <rect x="186" y="74" width="70" height="40" rx="10" fill="#fff" stroke="#86868b"/>
+                <text x="221" y="98" text-anchor="middle" font-size="11" fill="#1d1d1f" font-family="Inter,Arial">Controlador</text>
+                <rect x="320" y="84" width="70" height="40" rx="10" fill="#fff" stroke="#86868b"/>
+                <text x="355" y="108" text-anchor="middle" font-size="11" fill="#1d1d1f" font-family="Inter,Arial">Motor</text>
+                <g fill="none" stroke="#a84b00" stroke-width="3" stroke-linecap="round">
+                  <path class="fluxo" d="M79 124 V178 H120"/>
+                  <path class="fluxo" d="M220 150 V114"/>
+                  <path class="fluxo" d="M256 94 H320"/>
+                  <path class="fluxo" d="M355 124 V218"/>
+                </g>
+                <path d="M10 104 h34" stroke="#1d1d1f" stroke-width="3"/><rect x="0" y="96" width="12" height="16" rx="2" fill="#1d1d1f"/>
+              </svg>
+            </article>
+
+            <!-- Slide 2 — crescimento -->
+            <article class="slide" role="group" aria-roledescription="slide" aria-label="2 de 3: Crescimento dos carros elétricos no Brasil e em Sorocaba">
+              <div>
+                <p class="kicker">Brasil e Sorocaba</p>
+                <h3>Eletrificados: de 19,7 mil para 223,9 mil por ano.</h3>
+                <p class="pequeno">Vendas de veículos leves eletrificados no Brasil cresceram <strong>+26%</strong> em 2025, enquanto o mercado total subiu 2,6%. Em Sorocaba, a frota eletrificada foi de 3.100 para 5.440 veículos entre mar/2025 e mar/2026 (<strong>+75%</strong>).</p>
+                <p class="fonte">Brasil: ABVE, balanços anuais 2020–2025 (inclui híbridos, plug-in e 100% elétricos). <a href="https://abve.org.br/eletrificados-crescem-dez-vezes-mais-do-que-conjunto-do-mercado-em-2025-com-224-mil-veiculos-vendidos/" target="_blank" rel="noopener">abve.org.br</a>.
+                Sorocaba: Detran-SP, citado por Jornal Cruzeiro do Sul, mai/2026 (frota, inclui motos e plug-in; não há série municipal oficial publicada). <a href="https://www.jornalcruzeiro.com.br/suplementos/motor/2026/05/760548-frota-eletrificada-cresce-755-em-um-ano-em-sorocaba.html" target="_blank" rel="noopener">jornalcruzeiro.com.br</a>. Acesso em 29/10/2026.</p>
+              </div>
+              <div>
+                <svg class="grafico" viewBox="0 0 440 260" role="img" aria-labelledby="grafTit grafDesc">
+                  <title id="grafTit">Vendas anuais de eletrificados leves no Brasil</title>
+                  <desc id="grafDesc">2020: 19.745; 2021: 34.990; 2022: 49.245; 2023: 93.927; 2024: 177.358; 2025: 223.912.</desc>
+                  <g id="barras"></g>
+                  <line x1="20" y1="226" x2="420" y2="226" stroke="#d6d6d6"/>
+                </svg>
+                <div class="legenda"><span><i style="background:#0a7f4f"></i>Brasil — vendas por ano (mil unidades)</span></div>
+                <svg class="grafico" viewBox="0 0 440 120" role="img" aria-label="Frota eletrificada de Sorocaba: set/2023 1.383; set/2024 2.476; mar/2025 3.100; mar/2026 5.440." style="margin-top:16px">
+                  <g id="barrasSoro"></g>
+                </svg>
+                <div class="legenda"><span><i style="background:#a84b00"></i>Sorocaba — frota eletrificada (veículos)</span></div>
+              </div>
+            </article>
+
+            <!-- Slide 3 — limpeza -->
+            <article class="slide" role="group" aria-roledescription="slide" aria-label="3 de 3: Como lavar a placa solar com segurança">
+              <div>
+                <p class="kicker">Manutenção</p>
+                <h3>Placa limpa gera mais. Sem riscos.</h3>
+                <ol class="pequeno">
+                  <li>Desligue o sistema e inspecione trincas e conexões antes.</li>
+                  <li>Limpe no início da manhã ou no fim da tarde, com o vidro frio.</li>
+                  <li>Use só água e escova macia. Nada de sabão, abrasivo ou lavadora de alta pressão.</li>
+                  <li>Respeite a pressão máxima do manual (ex.: JA Solar &lt; 690 kPa).</li>
+                  <li>Não pise nem se apoie nos módulos. Em telhado acima de 2 m, chame um profissional com NR-35.</li>
+                </ol>
+                <p class="fonte">Fontes: Canal Solar, “Como deve ser realizada a limpeza dos painéis solares” (manuais JA Solar, LONGi, BYD e outros), 2026. <a href="https://canalsolar.com.br/como-deve-ser-realizada-a-limpeza-dos-paineis-solares/" target="_blank" rel="noopener">canalsolar.com.br</a>. NR-35 — Ministério do Trabalho e Emprego. <a href="https://www.gov.br/trabalho-e-emprego/pt-br/acesso-a-informacao/participacao-social/conselhos-e-orgaos-colegiados/comissao-tripartite-partitaria-permanente/normas-regulamentadora/normas-regulamentadoras-vigentes/norma-regulamentadora-no-35-nr-35" target="_blank" rel="noopener">gov.br</a>. Acesso em 29/10/2026.</p>
+              </div>
+              <svg viewBox="0 0 440 300" role="img" aria-label="Ilustração: escova macia limpando um módulo solar com água em baixa pressão, ao amanhecer.">
+                <rect x="0" y="0" width="440" height="300" rx="28" fill="#f5f5f7"/>
+                <circle cx="370" cy="70" r="30" fill="#f5c46b"/>
+                <g transform="translate(70 120) skewX(-20)">
+                  <rect width="260" height="140" rx="8" fill="#1d3b5c"/>
+                  <g stroke="#3c6a96" stroke-width="1.4"><path d="M65 0v140M130 0v140M195 0v140M0 47h260M0 94h260"/></g>
+                  <rect x="0" y="0" width="120" height="140" fill="#fff" opacity=".12"/>
+                </g>
+                <g transform="translate(220 80) rotate(25)">
+                  <rect x="-6" y="0" width="12" height="90" rx="6" fill="#86868b"/>
+                  <rect x="-40" y="88" width="80" height="22" rx="8" fill="#0a7f4f"/>
+                  <g stroke="#0a7f4f" stroke-width="2"><path d="M-34 110v10M-22 110v10M-10 110v10M2 110v10M14 110v10M26 110v10"/></g>
+                </g>
+                <g fill="#7fb3e0"><circle cx="150" cy="110" r="4"/><circle cx="168" cy="96" r="3"/><circle cx="140" cy="92" r="3"/></g>
+              </svg>
+            </article>
+          </div>
+        </div>
+
+        <div class="car-controles">
+          <div class="car-pilula">
+            <button type="button" id="carAnt" aria-label="Slide anterior"><svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="M10 3 5 8l5 5" fill="none" stroke="currentColor" stroke-width="1.8"/></svg></button>
+            <div class="car-pontos" id="carPontos"></div>
+            <button type="button" id="carProx" aria-label="Próximo slide"><svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="m6 3 5 5-5 5" fill="none" stroke="currentColor" stroke-width="1.8"/></svg></button>
+            <button type="button" id="carPausa" aria-label="Pausar apresentação automática"><svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true" id="carPausaIco"><path d="M5 3v10M11 3v10" stroke="currentColor" stroke-width="2"/></svg></button>
+          </div>
+        </div>
+        <p class="sr" id="carStatus" aria-live="polite"></p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Como funciona -->
+  <section class="faixa" aria-labelledby="como-titulo">
+    <div class="container">
+      <h2 class="titulo-secao" id="como-titulo" style="margin-bottom:40px">Como funciona.</h2>
+      <div class="grade grade-3">
+        <div class="card"><p class="rotulo-novo">Grátis, sem conta</p><h3 class="titulo-card" style="margin-top:8px">Analise sua conta</h3><p class="corpo mudo" style="margin-top:12px">Envie de 2 a 6 contas em PDF. Mostramos o que é consumo, bandeira e imposto, e quanto a energia solar cobriria.</p></div>
+        <div class="card"><h3 class="titulo-card">Encontre um profissional</h3><p class="corpo mudo" style="margin-top:12px">Busque engenheiros e instaladores por cidade, com CREA e NR-10 ou NR-35 verificados.</p></div>
+        <div class="card"><h3 class="titulo-card">Acompanhe o histórico</h3><p class="corpo mudo" style="margin-top:12px">Com conta, cada análise fica salva no seu perfil para comparar mês a mês.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Profissionais -->
+  <section class="faixa faixa--nevoa" id="inicio-profissionais" aria-labelledby="pro-titulo">
+    <div class="container grade grade-2" style="align-items:center;gap:40px">
+      <div>
+        <p class="kicker" style="color:var(--verde-link);margin-bottom:14px">Para profissionais</p>
+        <h2 class="titulo-secao" id="pro-titulo">Sua certificação vira confiança.</h2>
+        <p class="corpo mudo" style="margin-top:20px">Engenheiros e projetistas validam o CREA. Instaladores comprovam ao menos uma NR — NR-10 ou NR-35. Quem contrata vê o selo antes de chamar.</p>
+        <div class="hero-acoes" style="justify-content:flex-start">
+          <a class="btn btn--primario" href="#criar-conta">Criar conta profissional</a>
+          <a class="btn btn--texto link-seta" href="#entrar">Já tenho conta</a>
+        </div>
+      </div>
+      <div class="card" style="background:var(--branco)">
+        <div class="cabecalho-perfil"><span class="avatar" style="width:48px;height:48px;cursor:default">MS</span><div><p class="pequeno" style="font-weight:600">Profissional de exemplo</p><p class="pequeno mudo">Instalador · Sorocaba, SP</p></div></div>
+        <ul class="pequeno" style="list-style:none;padding:0;margin:20px 0 0;display:grid;gap:10px">
+          <li>✓ NR-10 verificada</li><li>✓ NR-35 verificada</li><li class="mudo">CREA — não se aplica</li>
+        </ul>
+        <p class="selo-ficticio" style="margin-top:16px">Perfil fictício, apenas ilustração</p>
+      </div>
+    </div>
+  </section>
+</section>
+
+<!-- =============================== ENTRAR =============================== -->
+<section class="tela auth" id="tela-entrar" data-tela="entrar">
+  <div class="card">
+    <h1>Entrar</h1>
+    <p class="pequeno mudo">Acesse seu histórico de análises e o painel profissional.</p>
+    <button class="btn btn--secundario btn--bloco" type="button" style="margin-top:24px" data-google>
+      <svg width="18" height="18" viewBox="0 0 48 48" aria-hidden="true"><path fill="#4285F4" d="M45 24.5c0-1.6-.1-3.1-.4-4.5H24v8.5h11.8c-.5 2.7-2.1 5-4.4 6.6v5.5h7.1c4.2-3.9 6.5-9.6 6.5-16.1z"/><path fill="#34A853" d="M24 46c5.9 0 10.9-2 14.5-5.4l-7.1-5.5c-2 1.3-4.5 2.1-7.4 2.1-5.7 0-10.5-3.8-12.2-9H4.5v5.7C8.1 41 15.5 46 24 46z"/><path fill="#FBBC05" d="M11.8 28.2c-.4-1.3-.7-2.7-.7-4.2s.3-2.9.7-4.2v-5.7H4.5C3 17.1 2 20.4 2 24s1 6.9 2.5 9.9z"/><path fill="#EA4335" d="M24 10.8c3.2 0 6.1 1.1 8.4 3.3l6.3-6.3C34.9 4.2 29.9 2 24 2 15.5 2 8.1 7 4.5 14.1l7.3 5.7c1.7-5.2 6.5-9 12.2-9z"/></svg>
+      Continuar com Google
+    </button>
+    <div class="divisor">ou com e-mail</div>
+    <form data-form="entrar" novalidate>
+      <div class="campo"><label for="e-email">E-mail</label><input class="input" id="e-email" type="email" autocomplete="email" placeholder="voce@exemplo.com" required></div>
+      <div class="campo">
+        <div style="display:flex;justify-content:space-between;align-items:baseline"><label for="e-senha">Senha</label><a class="pequeno" href="#recuperar">Esqueceu a senha?</a></div>
+        <input class="input" id="e-senha" type="password" autocomplete="current-password" required>
+      </div>
+      <div class="alerta alerta--erro" role="alert" hidden data-erro>E-mail ou senha incorretos. Confira e tente de novo.</div>
+      <button class="btn btn--primario btn--bloco" type="submit" style="margin-top:24px">Entrar</button>
+    </form>
+    <p class="pequeno mudo" style="margin-top:20px;text-align:center">Ainda não tem conta? <a href="#criar-conta">Criar conta</a></p>
+    <p class="pequeno mudo" style="margin-top:8px;text-align:center">Para testar o erro, use a senha <code>errada</code>.</p>
+  </div>
+</section>
+
+<!-- ============================= CRIAR CONTA ============================ -->
+<section class="tela auth" id="tela-criar-conta" data-tela="criar-conta">
+  <div class="card" style="width:min(520px,100%)">
+    <h1>Criar conta</h1>
+    <p class="pequeno mudo">Leva um minuto. Os dados profissionais podem ser completados depois.</p>
+    <div class="segmento" role="group" aria-label="Tipo de conta">
+      <button type="button" aria-pressed="true" data-tipo="cliente">Quero analisar contas</button>
+      <button type="button" aria-pressed="false" data-tipo="pro">Sou profissional</button>
+    </div>
+    <div id="tipoPro" hidden>
+      <div class="segmento" role="group" aria-label="Área de atuação" style="margin-top:12px">
+        <button type="button" aria-pressed="true">Engenheiro/Projetista</button>
+        <button type="button" aria-pressed="false">Instalador</button>
+      </div>
+      <p class="pequeno mudo" style="margin-top:10px">Instaladores precisam comprovar ao menos uma NR (NR-10 ou NR-35) na etapa de validação.</p>
+    </div>
+    <button class="btn btn--secundario btn--bloco" type="button" style="margin-top:20px" data-google>Continuar com Google</button>
+    <div class="divisor">ou com e-mail</div>
+    <form data-form="criar" novalidate>
+      <div class="campo"><label for="c-nome">Nome completo</label><input class="input" id="c-nome" autocomplete="name" required></div>
+      <div class="campo"><label for="c-email">E-mail</label><input class="input" id="c-email" type="email" autocomplete="email" required></div>
+      <div class="linha-2">
+        <div class="campo"><label for="c-senha">Senha</label><input class="input" id="c-senha" type="password" autocomplete="new-password" minlength="8" required aria-describedby="c-senha-ajuda"><span class="ajuda" id="c-senha-ajuda">Mínimo de 8 caracteres.</span></div>
+        <div class="campo"><label for="c-senha2">Confirmar senha</label><input class="input" id="c-senha2" type="password" autocomplete="new-password" required><span class="erro-campo" hidden id="c-senha2-erro">As senhas não coincidem.</span></div>
+      </div>
+      <div class="linha-2">
+        <div class="campo"><label for="c-cidade">Cidade</label><input class="input" id="c-cidade" autocomplete="address-level2"></div>
+        <div class="campo"><label for="c-uf">Estado</label><select class="input" id="c-uf"><option value="">Selecione</option><option>SP</option><option>RJ</option><option>MG</option><option>PR</option><option>Outros…</option></select></div>
+      </div>
+      <label class="check"><input type="checkbox" id="c-lgpd" required><span>Li e aceito a <a href="#">Política de Privacidade</a> e autorizo o tratamento dos meus dados pessoais.</span></label>
+      <div class="alerta alerta--erro" role="alert" hidden data-erro>Para criar a conta, aceite a Política de Privacidade.</div>
+      <button class="btn btn--primario btn--bloco" type="submit" style="margin-top:24px">Criar conta</button>
+    </form>
+    <p class="pequeno mudo" style="margin-top:20px;text-align:center">Já tem conta? <a href="#entrar">Entrar</a></p>
+  </div>
+</section>
+
+<!-- =========================== RECUPERAR SENHA ========================== -->
+<section class="tela auth" id="tela-recuperar" data-tela="recuperar">
+  <div class="card">
+    <h1>Recuperar senha</h1>
+    <p class="pequeno mudo">Enviaremos um link para você criar uma nova senha.</p>
+    <form data-form="recuperar" novalidate>
+      <div class="campo"><label for="r-email">E-mail da conta</label><input class="input" id="r-email" type="email" autocomplete="email" required></div>
+      <div class="alerta alerta--ok" role="status" hidden data-ok>Se houver uma conta com esse e-mail, você vai receber o link em alguns minutos. Confira também a caixa de spam.</div>
+      <button class="btn btn--primario btn--bloco" type="submit" style="margin-top:24px">Enviar link</button>
+    </form>
+    <p class="pequeno" style="margin-top:20px;text-align:center"><a href="#entrar">Voltar para entrar</a></p>
+  </div>
+</section>
+
+<!-- =============================== ANALISAR ============================= -->
+<section class="tela" id="tela-analisar" data-tela="analisar">
+  <div class="faixa faixa--nevoa">
+    <div class="estreito">
+      <p class="kicker" style="color:var(--verde-link);margin-bottom:14px">Análise de conta</p>
+      <h1 class="titulo-secao">Entenda sua conta de energia.</h1>
+      <p class="corpo mudo" style="margin-top:16px">Envie pelo menos duas contas em PDF. Comparando meses diferentes, separamos o que é consumo real do que é bandeira, imposto ou reajuste.</p>
+
+      <div id="anaForm">
+        <div class="dropzone" id="dropzone" role="button" tabindex="0" aria-describedby="dropDica" style="margin-top:32px">
+          <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#0a7f4f" stroke-width="1.5" style="margin:0 auto 12px" aria-hidden="true"><path d="M12 16V4m0 0-4 4m4-4 4 4M4 16v3a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-3"/></svg>
+          <p style="font-weight:600">Arraste as contas em PDF ou clique para escolher</p>
+          <p class="pequeno mudo" id="dropDica" style="margin-top:6px">Mínimo de 2 contas · até 6 · 10 MB cada</p>
+        </div>
+        <ul class="arquivos" id="listaArq"></ul>
+        <p class="pequeno mudo" style="margin-top:16px">🔒 O PDF é lido no seu navegador. Só o texto extraído é enviado para análise; o arquivo não é gravado.</p>
+        <div style="display:flex;gap:14px;flex-wrap:wrap;margin-top:24px;align-items:center">
+          <button class="btn btn--primario" id="btnAnalisar" disabled>Analisar contas</button>
+          <button class="btn btn--texto" id="btnExemplo" type="button">Adicionar contas de exemplo</button>
+        </div>
+      </div>
+
+      <div id="anaProg" hidden style="margin-top:32px" class="card">
+        <p style="font-weight:600" id="anaProgTit">Analisando suas contas…</p>
+        <div class="barra-prog" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" aria-label="Progresso da análise"><span id="anaBarra"></span></div>
+        <ol class="etapas" id="anaEtapas">
+          <li><span class="bolinha"></span>Lendo os PDFs</li>
+          <li><span class="bolinha"></span>Identificando consumo e tarifas</li>
+          <li><span class="bolinha"></span>Comparando os meses</li>
+          <li><span class="bolinha"></span>Gerando recomendações</li>
+        </ol>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- =============================== RESULTADO ============================ -->
+<section class="tela" id="tela-resultado" data-tela="resultado">
+  <div class="faixa">
+    <div class="container">
+      <p class="selo-ficticio">Dados fictícios de exemplo</p>
+      <h1 class="titulo-secao" style="margin-top:8px">Sua conta subiu 18% — e não foi só consumo.</h1>
+      <p class="corpo mudo" style="margin-top:16px">Comparamos 3 contas de jul a set. Veja o que pesou e quanto a energia solar cobriria.</p>
+      <div class="grade grade-3" style="margin-top:40px">
+        <div class="card metrica"><p class="rotulo">Consumo médio</p><p class="valor num">312 kWh</p><p class="delta sobe">▲ 6% no período</p></div>
+        <div class="card metrica"><p class="rotulo">Valor médio</p><p class="valor num">R$ 287</p><p class="delta sobe">▲ 18% no período</p></div>
+        <div class="card metrica"><p class="rotulo">Economia solar estimada</p><p class="valor num">até R$ 230/mês</p><p class="delta mudo">Estimativa, não é orçamento</p></div>
+      </div>
+      <div class="card texto-ia" style="margin-top:20px">
+        <h4 style="margin-top:0">O que mudou</h4>
+        <ul class="corpo"><li>A <strong>bandeira vermelha</strong> em setembro somou cerca de R$ 21.</li><li>O consumo subiu 6%, compatível com o uso de ar-condicionado.</li><li>Impostos acompanharam o valor da conta, sem mudança de alíquota.</li></ul>
+        <h4>Recomendações</h4>
+        <ul class="corpo"><li>Um sistema de cerca de 2,4 kWp cobriria a maior parte do consumo médio.</li><li>Peça ao menos dois orçamentos de instaladores com NR-10 verificada.</li></ul>
+      </div>
+      <div class="convite" id="conviteVisitante">
+        <p class="corpo"><strong>Quer guardar esta análise?</strong> <span class="mudo">Crie uma conta grátis e acompanhe suas contas mês a mês.</span></p>
+        <div style="display:flex;gap:12px;flex-wrap:wrap"><a class="btn btn--primario btn--sm" href="#criar-conta">Criar conta</a><a class="btn btn--secundario btn--sm" href="#analisar">Nova análise</a></div>
+      </div>
+      <div class="convite" id="salvoLogado" hidden>
+        <p class="corpo">✓ <strong>Análise salva no seu perfil.</strong></p>
+        <div style="display:flex;gap:12px"><a class="btn btn--primario btn--sm" href="#perfil">Ver histórico</a><a class="btn btn--secundario btn--sm" href="#analisar">Nova análise</a></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================================ PERFIL ============================== -->
+<section class="tela" id="tela-perfil" data-tela="perfil">
+  <div class="faixa faixa--nevoa">
+    <div class="container">
+      <div class="cabecalho-perfil">
+        <span class="avatar" aria-hidden="true">AS</span>
+        <div><h1 class="titulo-secao" style="font-size:32px">Olá, Ana.</h1><p class="pequeno mudo">Conta de exemplo · Sorocaba, SP</p></div>
+        <div class="segmento" role="group" aria-label="Estado da tela (protótipo)" style="margin:0 0 0 auto;width:260px">
+          <button type="button" aria-pressed="false" data-perfil="vazio">Vazio</button>
+          <button type="button" aria-pressed="true" data-perfil="dados">Com dados</button>
+        </div>
+      </div>
+
+      <div id="perfilDados">
+        <p class="selo-ficticio" style="margin-top:32px">Dados fictícios de exemplo</p>
+        <div class="grade grade-4" style="margin-top:12px">
+          <div class="card metrica"><p class="rotulo">Contas analisadas</p><p class="valor num">8</p></div>
+          <div class="card metrica"><p class="rotulo">Consumo médio</p><p class="valor num">298 kWh</p></div>
+          <div class="card metrica"><p class="rotulo">Valor médio</p><p class="valor num">R$ 271</p></div>
+          <div class="card metrica"><p class="rotulo">Última análise</p><p class="valor num" style="font-size:28px">12/10/2026</p></div>
+        </div>
+        <div class="card" style="margin-top:20px">
+          <div style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px"><h2 class="titulo-card">Tendência do valor</h2><p class="pequeno sobe">▲ 9% nos últimos 3 meses</p></div>
+          <svg viewBox="0 0 600 160" width="100%" role="img" aria-label="Valor da conta por mês: mar R$ 248, abr R$ 252, mai R$ 241, jun R$ 259, jul R$ 266, ago R$ 274, set R$ 287, out R$ 290." style="margin-top:20px">
+            <g stroke="#e6e6e8"><line x1="0" y1="30" x2="600" y2="30"/><line x1="0" y1="80" x2="600" y2="80"/><line x1="0" y1="130" x2="600" y2="130"/></g>
+            <polyline fill="none" stroke="#0a7f4f" stroke-width="3" stroke-linejoin="round" stroke-linecap="round" points="20,118 100,112 180,128 260,101 340,91 420,79 500,59 580,55"/>
+            <g fill="#0a7f4f"><circle cx="580" cy="55" r="5"/></g>
+            <g font-family="Inter,Arial" font-size="12" fill="#6e6e73" text-anchor="middle"><text x="20" y="155">mar</text><text x="100" y="155">abr</text><text x="180" y="155">mai</text><text x="260" y="155">jun</text><text x="340" y="155">jul</text><text x="420" y="155">ago</text><text x="500" y="155">set</text><text x="580" y="155">out</text></g>
+          </svg>
+        </div>
+        <div class="card" style="margin-top:20px">
+          <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;margin-bottom:20px"><h2 class="titulo-card">Contas analisadas</h2><a class="btn btn--primario btn--sm" href="#analisar">Nova análise</a></div>
+          <table class="tabela">
+            <thead><tr><th>Data</th><th>Resumo</th><th>Período</th><th>Detalhes</th></tr></thead>
+            <tbody>
+              <tr><td class="num">12/10/2026</td><td>Subiu 18%: bandeira vermelha e mais consumo</td><td class="num">jul–set</td><td><a href="#resultado">Abrir</a></td></tr>
+              <tr><td class="num">03/07/2026</td><td>Estável: variação de 2%</td><td class="num">abr–jun</td><td><a href="#resultado">Abrir</a></td></tr>
+              <tr><td class="num">08/04/2026</td><td>Caiu 7%: fim do horário de maior uso</td><td class="num">jan–mar</td><td><a href="#resultado">Abrir</a></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div id="perfilVazio" hidden>
+        <div class="card vazio" style="margin-top:32px">
+          <svg width="96" height="96" viewBox="0 0 96 96" aria-hidden="true"><rect x="20" y="12" width="56" height="72" rx="10" fill="#e6f4ed"/><path d="M32 34h32M32 46h32M32 58h20" stroke="#0a7f4f" stroke-width="3" stroke-linecap="round"/></svg>
+          <h2 class="titulo-card">Nenhuma conta analisada ainda.</h2>
+          <p class="corpo mudo" style="margin-top:10px;max-width:440px;margin-inline:auto">Envie duas contas de energia e veja, em minutos, o que está pesando no valor. As próximas análises aparecem aqui.</p>
+          <a class="btn btn--primario" href="#analisar" style="margin-top:24px">Analisar minha primeira conta</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================ DESIGN TOKENS =========================== -->
+<section class="tela" id="tela-tokens" data-tela="tokens">
+  <div class="faixa">
+    <div class="container">
+      <p class="kicker" style="color:var(--verde-link);margin-bottom:14px">Sistema visual</p>
+      <h1 class="titulo-secao">Design tokens do EcoNexo.</h1>
+      <p class="corpo mudo" style="margin-top:16px;max-width:680px">Galeria branca, faixas névoa, tipografia grande e compacta, cards de 28px sem sombra e sem gradiente. O verde fotovoltaico é a única cor de ação; o âmbar solar marca dados e rótulos.</p>
+
+      <h2 class="titulo-card" style="margin-top:56px">Cores</h2>
+      <div class="grade grade-4" style="margin-top:20px" id="paleta"></div>
+
+      <h2 class="titulo-card" style="margin-top:56px">Tipografia — Inter (substituta da SF Pro)</h2>
+      <div class="escala" style="margin-top:12px">
+        <div><code>hero · 80/84 · 600 · −1,2px</code><span class="hero-titulo" style="font-size:clamp(40px,7vw,80px)">Energia limpa</span></div>
+        <div><code>seção · 40/43 · 600</code><span class="titulo-secao">Como funciona.</span></div>
+        <div><code>card · 24/28 · 600</code><span class="titulo-card">Analise sua conta</span></div>
+        <div><code>kicker · 21/21 · 600</code><span class="kicker">Energia fotovoltaica</span></div>
+        <div><code>corpo · 17/25 · 400 · −0,374px</code><span class="corpo">Comparando meses diferentes, separamos consumo de bandeira.</span></div>
+        <div><code>pequeno · 14/20 · 400</code><span class="pequeno">Mínimo de 2 contas · até 6</span></div>
+        <div><code>controle · 12/16 · 400</code><span style="font-size:12px">Fonte: ABVE, 2025</span></div>
+      </div>
+
+      <h2 class="titulo-card" style="margin-top:56px">Botões e estados</h2>
+      <div style="display:flex;gap:14px;flex-wrap:wrap;margin-top:20px;align-items:center">
+        <button class="btn btn--primario">Primário</button>
+        <button class="btn btn--primario" style="background:var(--verde-hover)">Hover</button>
+        <button class="btn btn--primario" style="outline:2px solid var(--foco);outline-offset:3px">Foco</button>
+        <button class="btn btn--primario" disabled>Desabilitado</button>
+        <button class="btn btn--primario" aria-busy="true"><span class="giro" aria-hidden="true"></span>Carregando</button>
+        <button class="btn btn--secundario">Secundário</button>
+        <button class="btn btn--primario btn--sm">Compacto</button>
+        <a class="link-seta" href="#tokens">Link textual</a>
+        <span class="rotulo-novo">Novo</span>
+      </div>
+
+      <h2 class="titulo-card" style="margin-top:56px">Forma e espaço</h2>
+      <div class="grade grade-4" style="margin-top:20px">
+        <div class="card"><p class="token-nome" style="margin:0">Card</p><p class="token-info">raio 28px · padding 28px · sem sombra</p></div>
+        <div class="card" style="border-radius:9999px;text-align:center"><p class="token-nome" style="margin:0">Botão</p><p class="token-info">raio 9999px</p></div>
+        <div class="card"><p class="token-nome" style="margin:0">Seções</p><p class="token-info">90px entre seções · 20px entre elementos</p></div>
+        <div class="card"><p class="token-nome" style="margin:0">Separação</p><p class="token-info">#fff contra #f5f5f7 · linha 1px #d6d6d6</p></div>
+      </div>
+    </div>
+  </div>
+</section>
+</main>
+
+<footer class="rodape">
+  <div class="container">
+    <div class="rodape-col">
+      <div><h2>Produto</h2><ul><li><a href="#analisar">Analisar conta</a></li><li><a href="#inicio-aprenda">Aprenda</a></li><li><a href="#inicio-profissionais">Para profissionais</a></li></ul></div>
+      <div><h2>Conta</h2><ul><li><a href="#entrar">Entrar</a></li><li><a href="#criar-conta">Criar conta</a></li><li><a href="#perfil">Meu perfil</a></li></ul></div>
+      <div><h2>Projeto</h2><ul><li>Startup: Project One · Facens</li><li>Equipe Lunitec</li></ul></div>
+      <div><h2>Legal</h2><ul><li><a href="#">Política de Privacidade</a></li><li><a href="#">Termos de uso</a></li></ul></div>
+    </div>
+    <div class="rodape-base"><span>© 2026 EcoNexo. Projeto acadêmico.</span><span>Feito em Sorocaba, SP.</span></div>
+  </div>
+</footer>
+
+<script>
+(() => {
+  const $ = (s, r = document) => r.querySelector(s);
+  const $$ = (s, r = document) => [...r.querySelectorAll(s)];
+  const reduz = matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  /* ---------- Sessão simulada ---------- */
+  let logado = false;
+  const simLogado = $("#simLogado");
+  function desenharNav() {
+    $("#navAcoes").innerHTML = logado
+      ? '<a class="btn btn--primario btn--sm" href="#analisar">Analisar</a><button class="avatar" type="button" aria-label="Sair (Ana, conta de exemplo)" id="sair" title="Sair">AS</button>'
+      : '<a class="btn btn--secundario btn--sm" href="#entrar">Entrar</a><a class="btn btn--primario btn--sm" href="#criar-conta">Criar conta</a>';
+    const s = $("#sair");
+    if (s) s.onclick = () => { definirLogado(false); location.hash = "inicio"; };
+    $("#conviteVisitante").hidden = logado;
+    $("#salvoLogado").hidden = !logado;
+  }
+  function definirLogado(v) { logado = v; simLogado.checked = v; desenharNav(); }
+  simLogado.onchange = () => definirLogado(simLogado.checked);
+
+  /* ---------- Roteamento por hash ---------- */
+  const TELAS = ["inicio","entrar","criar-conta","recuperar","analisar","resultado","perfil","tokens"];
+  function rotear() {
+    let h = location.hash.slice(1) || "inicio";
+    let ancora = null;
+    if (h.startsWith("inicio-")) { ancora = h; h = "inicio"; }
+    if (!TELAS.includes(h)) h = "inicio";
+    // Rota protegida: perfil sem sessão vai para Entrar
+    if (h === "perfil" && !logado) { location.replace("#entrar"); return; }
+    $$(".tela").forEach(t => t.classList.toggle("ativa", t.dataset.tela === h));
+    $$(".proto a, .nav-links a").forEach(a => a.toggleAttribute("aria-current", a.getAttribute("href") === "#" + h));
+    $$(".proto a, .nav-links a").forEach(a => a.hasAttribute("aria-current") && a.setAttribute("aria-current","page"));
+    $("#navLinks").classList.remove("aberto"); $("#menuBtn").setAttribute("aria-expanded","false");
+    if (ancora) document.getElementById(ancora)?.scrollIntoView();
+    else { scrollTo(0, 0); $("#conteudo").focus({preventScroll:true}); }
+    document.title = "EcoNexo — " + ({inicio:"Início",entrar:"Entrar","criar-conta":"Criar conta",recuperar:"Recuperar senha",analisar:"Analisar conta",resultado:"Resultado",perfil:"Perfil",tokens:"Design tokens"})[h];
+  }
+  addEventListener("hashchange", rotear);
+
+  $("#menuBtn").onclick = () => {
+    const ab = $("#navLinks").classList.toggle("aberto");
+    $("#menuBtn").setAttribute("aria-expanded", ab);
+  };
+
+  /* ---------- Botão com estado de carregamento ---------- */
+  function carregando(btn, texto, ms) {
+    return new Promise(res => {
+      const orig = btn.innerHTML;
+      btn.setAttribute("aria-busy","true"); btn.disabled = true;
+      btn.innerHTML = '<span class="giro" aria-hidden="true"></span>' + texto;
+      setTimeout(() => { btn.innerHTML = orig; btn.disabled = false; btn.removeAttribute("aria-busy"); res(); }, ms);
+    });
+  }
+
+  /* ---------- Formulários ---------- */
+  $('[data-form="entrar"]').onsubmit = async e => {
+    e.preventDefault();
+    const f = e.target, err = $("[data-erro]", f);
+    err.hidden = true;
+    if (!f.checkValidity()) { err.textContent = "Preencha e-mail e senha."; err.hidden = false; return; }
+    await carregando($("button[type=submit]", f), "Entrando…", 900);
+    if ($("#e-senha").value === "errada") { err.textContent = "E-mail ou senha incorretos. Confira e tente de novo."; err.hidden = false; return; }
+    definirLogado(true); location.hash = "perfil";
+  };
+  $('[data-form="criar"]').onsubmit = async e => {
+    e.preventDefault();
+    const f = e.target, err = $("[data-erro]", f), e2 = $("#c-senha2-erro");
+    err.hidden = true; e2.hidden = true; $("#c-senha2").removeAttribute("aria-invalid");
+    if ($("#c-senha").value !== $("#c-senha2").value) { e2.hidden = false; $("#c-senha2").setAttribute("aria-invalid","true"); return; }
+    if (!$("#c-lgpd").checked) { err.textContent = "Para criar a conta, aceite a Política de Privacidade."; err.hidden = false; return; }
+    if (!f.checkValidity()) { err.textContent = "Preencha nome, e-mail e uma senha com pelo menos 8 caracteres."; err.hidden = false; return; }
+    await carregando($("button[type=submit]", f), "Criando conta…", 1000);
+    definirLogado(true); location.hash = "perfil";
+  };
+  $('[data-form="recuperar"]').onsubmit = async e => {
+    e.preventDefault();
+    const f = e.target;
+    if (!f.checkValidity()) { $("#r-email").setAttribute("aria-invalid","true"); $("#r-email").focus(); return; }
+    $("#r-email").removeAttribute("aria-invalid");
+    await carregando($("button[type=submit]", f), "Enviando…", 800);
+    $("[data-ok]", f).hidden = false;
+  };
+  $$("[data-google]").forEach(b => b.onclick = async () => { await carregando(b, "Abrindo o Google…", 900); definirLogado(true); location.hash = "perfil"; });
+  $$("[data-tipo]").forEach(b => b.onclick = () => {
+    $$("[data-tipo]").forEach(x => x.setAttribute("aria-pressed", x === b));
+    $("#tipoPro").hidden = b.dataset.tipo !== "pro";
+  });
+  $$("#tipoPro .segmento button").forEach(b => b.onclick = () => $$("#tipoPro .segmento button").forEach(x => x.setAttribute("aria-pressed", x === b)));
+
+  /* ---------- Análise (simulada) ---------- */
+  let arquivos = [];
+  const btnAn = $("#btnAnalisar");
+  function desenharArquivos() {
+    $("#listaArq").innerHTML = arquivos.map((n, i) =>
+      `<li><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#6e6e73" stroke-width="1.6" aria-hidden="true"><path d="M7 3h7l5 5v13H7z"/><path d="M14 3v5h5"/></svg><span>${n}</span><button type="button" data-i="${i}" aria-label="Remover ${n}">Remover</button></li>`).join("");
+    $$("#listaArq button").forEach(b => b.onclick = () => { arquivos.splice(+b.dataset.i, 1); desenharArquivos(); });
+    btnAn.disabled = arquivos.length < 2;
+    btnAn.textContent = arquivos.length < 2 ? `Analisar contas (faltam ${2 - arquivos.length})` : `Analisar ${arquivos.length} contas`;
+  }
+  const dz = $("#dropzone");
+  const inp = Object.assign(document.createElement("input"), {type:"file", accept:".pdf,application/pdf", multiple:true, hidden:true});
+  document.body.append(inp);
+  inp.onchange = () => { arquivos = [...arquivos, ...[...inp.files].map(f => f.name)].slice(0, 6); inp.value = ""; desenharArquivos(); };
+  dz.onclick = () => inp.click();
+  dz.onkeydown = e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); inp.click(); } };
+  ["dragenter","dragover"].forEach(t => dz.addEventListener(t, e => { e.preventDefault(); dz.classList.add("arrastando"); }));
+  ["dragleave","drop"].forEach(t => dz.addEventListener(t, e => { e.preventDefault(); dz.classList.remove("arrastando"); }));
+  dz.addEventListener("drop", e => { arquivos = [...arquivos, ...[...e.dataTransfer.files].map(f => f.name)].slice(0, 6); desenharArquivos(); });
+  $("#btnExemplo").onclick = () => { arquivos = ["conta-julho.pdf","conta-agosto.pdf","conta-setembro.pdf"]; desenharArquivos(); };
+  btnAn.onclick = () => {
+    $("#anaForm").hidden = true; $("#anaProg").hidden = false;
+    const itens = $$("#anaEtapas li"), barra = $("#anaBarra"), pb = $(".barra-prog");
+    let p = 0;
+    const t = setInterval(() => {
+      p = Math.min(100, p + 4);
+      barra.style.width = p + "%"; pb.setAttribute("aria-valuenow", p);
+      const et = Math.min(3, Math.floor(p / 25));
+      itens.forEach((li, i) => { li.className = i < et ? "feita" : i === et ? "atual" : ""; li.querySelector(".bolinha").textContent = i < et ? "✓" : ""; });
+      if (p >= 100) { clearInterval(t); location.hash = "resultado"; $("#anaForm").hidden = false; $("#anaProg").hidden = true; arquivos = []; desenharArquivos(); }
+    }, 90);
+  };
+  desenharArquivos();
+
+  /* ---------- Perfil: vazio x com dados ---------- */
+  $$("[data-perfil]").forEach(b => b.onclick = () => {
+    $$("[data-perfil]").forEach(x => x.setAttribute("aria-pressed", x === b));
+    $("#perfilVazio").hidden = b.dataset.perfil !== "vazio";
+    $("#perfilDados").hidden = b.dataset.perfil === "vazio";
+  });
+
+  /* ---------- Gráficos ---------- */
+  const BR = [[2020,19745],[2021,34990],[2022,49245],[2023,93927],[2024,177358],[2025,223912]];
+  const max = 223912, base = 226, alt = 180, larg = 46, passo = 66;
+  $("#barras").innerHTML = BR.map(([a, v], i) => {
+    const h = v / max * alt, x = 34 + i * passo;
+    const var_ = i ? Math.round((v / BR[i-1][1] - 1) * 100) : null;
+    return `<rect class="barra" style="transition-delay:${i*90}ms" x="${x}" y="${base-h}" width="${larg}" height="${h}" rx="6" fill="#0a7f4f"/>
+      <text class="val" x="${x+larg/2}" y="${base-h-8}" text-anchor="middle">${(v/1000).toLocaleString("pt-BR",{maximumFractionDigits:1})}</text>
+      <text x="${x+larg/2}" y="${base+18}" text-anchor="middle">${a}</text>
+      ${var_ !== null ? `<text x="${x+larg/2}" y="${base+34}" text-anchor="middle" style="fill:#087443">+${var_}%</text>` : ""}`;
+  }).join("");
+  const SO = [["set/23",1383],["set/24",2476],["mar/25",3100],["mar/26",5440]];
+  $("#barrasSoro").innerHTML = SO.map(([r, v], i) => {
+    const w = v / 5440 * 300, y = 6 + i * 28;
+    return `<text x="0" y="${y+15}">${r}</text><rect class="barra" style="transform-origin:left;transform:scaleX(0);transition:transform .9s ${i*90}ms" x="60" y="${y}" width="${w}" height="20" rx="5" fill="#a84b00"/><text class="val" x="${66+w}" y="${y+15}">${v.toLocaleString("pt-BR")}</text>`;
+  }).join("");
+
+  /* ---------- Paleta ---------- */
+  const PALETA = [
+    ["Branco galeria","#ffffff","Canvas principal"],["Névoa","#f5f5f7","Faixas alternadas, rodapé"],["Tinta","#1d1d1f","Títulos e corpo · 16,8:1"],["Tinta 2","#6e6e73","Texto secundário · 5,1:1"],
+    ["Verde fotovoltaico","#0a7f4f","Botões · texto branco 5,05:1"],["Verde link","#087443","Links · 5,85:1"],["Âmbar solar","#a84b00","Dados e rótulos · 5,72:1"],["Linha","#d6d6d6","Divisores 1px"],
+  ];
+  $("#paleta").innerHTML = PALETA.map(([n, c, u]) => `<div><div class="amostra" style="background:${c}"></div><p class="token-nome">${n}</p><p class="token-info">${c} · ${u}</p></div>`).join("");
+
+  /* ---------- Carrossel ---------- */
+  const faixa = $("#carFaixa"), slides = $$(".slide", faixa), pontos = $("#carPontos");
+  const DURACAO = 3000;
+  let atual = 0, inicio = 0, pausadoUsuario = reduz, pausadoHover = false, raf;
+  slides.forEach((s, i) => {
+    const b = document.createElement("button");
+    b.className = "car-ponto"; b.type = "button"; b.innerHTML = "<span></span>";
+    b.setAttribute("aria-label", `Ir para o slide ${i + 1}`);
+    b.onclick = () => ir(i);
+    pontos.append(b);
+  });
+  function ir(i) {
+    atual = (i + slides.length) % slides.length;
+    faixa.style.transform = `translateX(-${atual * 100}%)`;
+    slides.forEach((s, k) => { s.setAttribute("aria-hidden", k !== atual); s.classList.toggle("visivel", k === atual); $$("a,button", s).forEach(el => el.tabIndex = k === atual ? 0 : -1); });
+    $$(".car-ponto").forEach((p, k) => { p.setAttribute("aria-current", k === atual); p.style.setProperty("--p", "0%"); });
+    $("#carStatus").textContent = `Slide ${atual + 1} de ${slides.length}`;
+    inicio = performance.now();
+  }
+  function quadro(t) {
+    const parado = pausadoUsuario || pausadoHover;
+    if (parado) inicio = t - (parseFloat($$(".car-ponto")[atual].style.getPropertyValue("--p")) || 0) / 100 * DURACAO;
+    const f = Math.min(1, (t - inicio) / DURACAO);
+    $$(".car-ponto")[atual].style.setProperty("--p", (f * 100) + "%");
+    if (!parado && f >= 1) ir(atual + 1);
+    raf = requestAnimationFrame(quadro);
+  }
+  function atualizarPausa() {
+    $("#carPausa").setAttribute("aria-label", pausadoUsuario ? "Retomar apresentação automática" : "Pausar apresentação automática");
+    $("#carPausaIco").innerHTML = pausadoUsuario ? '<path d="M5 3l8 5-8 5z" fill="currentColor"/>' : '<path d="M5 3v10M11 3v10" stroke="currentColor" stroke-width="2"/>';
+  }
+  $("#carAnt").onclick = () => ir(atual - 1);
+  $("#carProx").onclick = () => ir(atual + 1);
+  $("#carPausa").onclick = () => { pausadoUsuario = !pausadoUsuario; atualizarPausa(); };
+  const car = $("#carrossel");
+  car.addEventListener("mouseenter", () => pausadoHover = true);
+  car.addEventListener("mouseleave", () => pausadoHover = car.contains(document.activeElement));
+  car.addEventListener("focusin", () => pausadoHover = true);
+  car.addEventListener("focusout", e => { if (!car.contains(e.relatedTarget)) pausadoHover = false; });
+  car.addEventListener("keydown", e => { if (e.key === "ArrowLeft") ir(atual - 1); if (e.key === "ArrowRight") ir(atual + 1); });
+  ir(0); atualizarPausa();
+  if (reduz) { faixa.style.transition = "none"; }
+  raf = requestAnimationFrame(quadro);
+
+  desenharNav(); rotear();
+})();
+</script>
+</body>
+</html>

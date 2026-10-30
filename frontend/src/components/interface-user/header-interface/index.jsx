@@ -1,228 +1,92 @@
 import "./index.css";
-import "/src/variables.css";
 
-import { Link, useNavigate } from "react-router-dom";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
+import { Link, NavLink } from "react-router-dom";
+import { IconBell } from "@tabler/icons-react";
 
-import { logout } from "../../../userSession";
 import { useNotificacoesNaoLidas } from "../../../useNotificacoesNaoLidas";
 import PerfilMenu from "../../shared/perfil-menu";
-import {
-  useLogoAoTopo,
-  useRolagemNoTopoAoTrocarDeRota,
-} from "../../../scrollSuave";
+import Marca from "../../shared/marca";
+import { useLogoAoTopo, useRolagemNoTopoAoTrocarDeRota } from "../../../scrollSuave";
+import { DESTINOS_PRINCIPAIS } from "../../layout/destinos";
 
-import { BsLightning } from "react-icons/bs";
-import { IoIosMenu } from "react-icons/io";
-import { IoClose } from "react-icons/io5";
-import { CiSearch } from "react-icons/ci";
-import { GoProjectRoadmap } from "react-icons/go";
-import { TbMessageCircle } from "react-icons/tb";
-import { IoIosNotificationsOutline } from "react-icons/io";
-import { FaArrowTrendUp } from "react-icons/fa6";
-import { FiLogOut } from "react-icons/fi";
-import { MdSpaceDashboard } from "react-icons/md";
-import { FiCheckCircle, FiTrendingUp } from "react-icons/fi";
-import { MdEvStation } from "react-icons/md";
-
+/**
+ * Barra superior da área logada.
+ *
+ * Antes eram 10 links lado a lado (Início ... Minhas análises), todos com o
+ * mesmo peso, e no celular viravam uma lista comprida atrás do botão de menu.
+ * Agora:
+ *  - só os 5 destinos de uso diário ficam na barra (DESTINOS_PRINCIPAIS);
+ *  - notificações viram o sino, com o contador;
+ *  - o resto (portfólio, validação, reputação, recarga EV, configurações,
+ *    administração, sair) fica no menu do avatar, agrupado por assunto;
+ *  - no celular, os 5 destinos vão para a barra inferior (BarraInferior)
+ *    e aqui ficam só o logo, o sino e o avatar.
+ *
+ * O cabeçalho é desenhado UMA vez, pelo layout AreaLogada — as telas não o
+ * importam mais (cada uma desenhava o seu, e por isso ele aparecia com
+ * larguras e distâncias do topo diferentes de tela para tela).
+ */
 export default function HeaderInterface() {
-  const navigate = useNavigate();
-
-  const [menuOpen, setMenuOpen] = useState(false);
   const naoLidas = useNotificacoesNaoLidas();
 
   useRolagemNoTopoAoTrocarDeRota();
-  // Na area logada o logo aponta para a home social (/menu-user), nao para
-  // a landing publica: quem esta logado quase nunca quer sair do produto.
+  // Na área logada o logo aponta para a home social (/menu-user).
   const aoClicarLogo = useLogoAoTopo("/menu-user");
 
   useEffect(() => {
-    document.body.style.backgroundColor = "var(--whitesmoke)";
+    document.body.style.backgroundColor = "var(--eco-bg)";
     return () => {
       document.body.style.backgroundColor = "";
     };
   }, []);
 
-  // Mesmo destino do "Sair" do PerfilMenu: a home. Dois botões de sair que
-  // levam a lugares diferentes é o tipo de divergência que essa consolidação
-  // veio resolver.
-  const handleLogout = () => {
-    logout();
-    navigate("/", { replace: true });
-  };
-
   return (
-    <>
-      <header className="header-interface">
-        {/*
-          PERFIL — canto superior esquerdo.
+    <header className="header-interface">
+      <div className="header-interface-in">
+        <Link
+          to="/menu-user"
+          className="site-marca"
+          onClick={aoClicarLogo}
+          aria-label="EcoNexo, ir para o início da comunidade"
+        >
+          <Marca />
+          EcoNexo
+        </Link>
 
-          Era uma segunda implementação do mesmo menu que existe na home:
-          chip, dropdown, overlay e logout duplicados. As duas já tinham
-          divergido (esta não listava a Timeline). Agora é o componente
-          compartilhado, ancorado à esquerda porque o chip fica desse lado.
-        */}
-        <div className="header-left-profile">
-          <PerfilMenu ancora="esquerda" />
-
-          <Link
-            to="/menu-user"
-            className="logos-menu-interface"
-            onClick={aoClicarLogo}
-            title="Ir para o topo do inicio"
-          >
-            <span className="logo-title-menu-interface">
-              <BsLightning />
-            </span>
-            <span className="title-menu-interface">EcoNexo</span>
-          </Link>
-        </div>
-
-        {/* MENU DESKTOP */}
-        <nav className="links-menu-interface">
-          <Link to="/menu-user">
-            <span>
-              <IoIosMenu /> Início
-            </span>
-          </Link>
-
-          <Link to="/menu-user/buscar">
-            <span>
-              <CiSearch /> Buscar
-            </span>
-          </Link>
-
-          <Link to="/menu-user/projects">
-            <span>
-              <GoProjectRoadmap /> Projetos
-            </span>
-          </Link>
-
-          <Link to="/menu-user/messages">
-            <span>
-              <TbMessageCircle /> Mensagens
-            </span>
-          </Link>
-
-          <Link to="/menu-user/notifications">
-            <span>
-              <IoIosNotificationsOutline /> Notificações
-              {naoLidas > 0 && (
-                <b
-                  className="notif-selo"
-                  aria-label={`${naoLidas} não lidas`}
-                >
-                  {naoLidas > 99 ? "99+" : naoLidas}
-                </b>
-              )}
-            </span>
-          </Link>
-
-          <Link to="/menu-user/portfolio">
-            <span>
-              <FaArrowTrendUp /> Portfólio
-            </span>
-          </Link>
-
-          <Link to="/menu-user/validacao">
-            <span>
-              <FiCheckCircle /> Validação
-            </span>
-          </Link>
-
-          <Link to="/menu-user/reputacao">
-            <span>
-              <FiTrendingUp /> Reputação
-            </span>
-          </Link>
-
-          <Link to="/menu-user/pontos-recarga">
-            <span>
-              <MdEvStation /> Recarga EV
-            </span>
-          </Link>
+        <nav aria-label="Área logada" className="header-interface-nav">
+          <ul className="header-interface-links">
+            {DESTINOS_PRINCIPAIS.map((d) => (
+              <li key={d.to}>
+                <NavLink to={d.to} end={d.fim}>
+                  {d.rotulo}
+                </NavLink>
+              </li>
+            ))}
+          </ul>
         </nav>
 
-        {/* RIGHT SIDE — só o botão mobile */}
-        <div className="header-right">
-          <button
-            className="mobile-menu-btn"
-            onClick={() => setMenuOpen(!menuOpen)}
+        <div className="header-interface-acoes">
+          <NavLink
+            to="/menu-user/notifications"
+            className="header-interface-sino"
+            aria-label={
+              naoLidas > 0
+                ? `Notificações, ${naoLidas} não lidas`
+                : "Notificações"
+            }
           >
-            {menuOpen ? <IoClose /> : <IoIosMenu />}
-          </button>
+            <IconBell size={20} stroke={1.6} aria-hidden="true" />
+            {naoLidas > 0 && (
+              <b className="notif-selo" aria-hidden="true">
+                {naoLidas > 99 ? "99+" : naoLidas}
+              </b>
+            )}
+          </NavLink>
+
+          <PerfilMenu />
         </div>
-      </header>
-
-      {/* OVERLAY */}
-      {menuOpen && (
-        <div
-          className="menu-overlay"
-          onClick={() => setMenuOpen(false)}
-        ></div>
-      )}
-
-      {/* MENU MOBILE */}
-      <nav className={`mobile-menu ${menuOpen ? "open" : ""}`}>
-        <Link to="/menu-user" onClick={() => setMenuOpen(false)}>
-          <IoIosMenu /> Início
-        </Link>
-
-        <Link to="/menu-user/painel" onClick={() => setMenuOpen(false)}>
-          <MdSpaceDashboard /> Painel
-        </Link>
-
-        <Link to="/menu-user/buscar" onClick={() => setMenuOpen(false)}>
-          <CiSearch /> Buscar
-        </Link>
-
-        <Link to="/menu-user/projects" onClick={() => setMenuOpen(false)}>
-          <GoProjectRoadmap /> Projetos
-        </Link>
-
-        <Link to="/menu-user/messages" onClick={() => setMenuOpen(false)}>
-          <TbMessageCircle /> Mensagens
-        </Link>
-
-        <Link
-          to="/menu-user/notifications"
-          onClick={() => setMenuOpen(false)}
-        >
-          <IoIosNotificationsOutline /> Notificações
-          {naoLidas > 0 && (
-            <b className="notif-selo" aria-label={`${naoLidas} não lidas`}>
-              {naoLidas > 99 ? "99+" : naoLidas}
-            </b>
-          )}
-        </Link>
-
-        <Link to="/menu-user/portfolio" onClick={() => setMenuOpen(false)}>
-          <FaArrowTrendUp /> Portfólio
-        </Link>
-
-        <Link to="/menu-user/validacao" onClick={() => setMenuOpen(false)}>
-          <FiCheckCircle /> Validação
-        </Link>
-
-        <Link to="/menu-user/reputacao" onClick={() => setMenuOpen(false)}>
-          <FiTrendingUp /> Reputação
-        </Link>
-
-        <Link to="/menu-user/pontos-recarga" onClick={() => setMenuOpen(false)}>
-          <MdEvStation /> Recarga EV
-        </Link>
-
-        <button
-          type="button"
-          className="mobile-logout"
-          onClick={() => {
-            setMenuOpen(false);
-            handleLogout();
-          }}
-        >
-          <FiLogOut /> Sair
-        </button>
-      </nav>
-    </>
+      </div>
+    </header>
   );
 }

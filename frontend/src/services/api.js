@@ -1,6 +1,6 @@
 // Em dev: proxy do Vite encaminha /api para localhost:8080
 // Em prod: VITE_API_URL aponta para a API no Render (domínio separado da Hostinger)
-import { getToken, logout } from "../userSession";
+import { obterIdToken, sair } from "../auth/sessao";
 
 const API_HOST = (import.meta.env.VITE_API_URL || "").replace(/\/$/, "");
 const BASE_URL = `${API_HOST}/api`;
@@ -8,7 +8,8 @@ const BASE_URL = `${API_HOST}/api`;
 // Rotas públicas: um 401 aqui significa "credencial errada", não "sessão
 // expirada" — não faz sentido deslogar e redirecionar quem está tentando entrar.
 function ehRotaPublica(path, method) {
-  if (path.startsWith("/auth/login")) return true;
+  if (path.startsWith("/auth/")) return true;
+  if (path === "/economia/analisar") return true;
   return path === "/usuarios" && method === "POST";
 }
 
@@ -42,7 +43,9 @@ async function request(path, { method = "GET", body, params, headers } = {}) {
 
   const fetchUrl = API_HOST ? url.toString() : url.pathname + url.search;
 
-  const token = getToken();
+  // ID token do Firebase. O SDK renova sozinho quando está perto de
+  // expirar (1 h), então pedir a cada chamada não custa rede à toa.
+  const token = await obterIdToken();
 
   const response = await fetch(fetchUrl, {
     method,
@@ -50,7 +53,7 @@ async function request(path, { method = "GET", body, params, headers } = {}) {
       "Content-Type": "application/json",
       Accept: "application/json",
       // O backend exige "Authorization: Bearer <token>" em tudo que não seja
-      // login ou cadastro.
+      // cadastro ou a análise pública.
       ...(token ? { Authorization: `Bearer ${token}` } : {}),
       ...headers,
     },
@@ -66,8 +69,8 @@ async function request(path, { method = "GET", body, params, headers } = {}) {
     // caiu" — é "entre para usar", e quem trata isso é a própria tela. Antes
     // qualquer 401 jogava o visitante no /login sem explicação.
     if (response.status === 401 && !ehRotaPublica(path, method)) {
-      logout();
-      if (window.location.pathname.startsWith("/menu-user")) {
+      await sair();
+      if (/^\/(menu-user|perfil)/.test(window.location.pathname)) {
         window.location.assign("/login");
       }
     }

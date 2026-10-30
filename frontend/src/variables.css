@@ -1,181 +1,165 @@
 /* =====================================================================
-   ECONEXO — Design tokens
-   ---------------------------------------------------------------------
-   UMA paleta só. Antes existiam duas: a "legada" da landing (--blue
-   #1f24a0) e a da área logada (--eco-blue #2a26c7). A marca literalmente
-   mudava de azul quando o usuário fazia login.
-
-   Agora tudo deriva da MESMA rampa (--eco-blue-*). Os nomes legados
-   continuam existindo como ALIAS apontando para a rampa nova — é o que
-   permite trocar a paleta num lugar só sem varrer as ~180 cores cravadas
-   à mão espalhadas pelos index.css.
-
-   Ao criar tela nova: use os tokens eco-*. Os legados são ponte, não API.
+   ECONEXO — Design tokens (redesign out/2026)
+   Ver o protótipo aprovado em /prototipo.html (tela "Design tokens").
    ===================================================================== */
 
 :root {
     /* ---------------------------------------------------------------
-       RAMPA PRIMÁRIA — 9 degraus derivados de #2a26c7
-       Personalização pedida: a paleta é a mesma, mas agora tem degraus
-       suficientes para hierarquia (fundo, borda, hover, texto, pressed)
-       sem ninguém precisar inventar um hex no meio do caminho.
+       REDESIGN out/2026 — sistema "galeria branca"
+       Canvas branco alternando com faixas névoa (#f5f5f7), tipografia
+       grande e compacta, cards de 28px SEM sombra e SEM gradiente, botões
+       pill. Uma única cor de ação: o Verde Fotovoltaico. O Âmbar Solar é
+       só para dados e rótulos.
+
+       Os NOMES dos tokens antigos foram mantidos de propósito: as ~30
+       folhas de estilo das telas leem --eco-blue-*, --eco-shadow etc.
+       Trocar os VALORES aqui redesenha o sistema inteiro de uma vez.
+       A rampa continua chamada "blue" só por compatibilidade — ela é
+       verde. Em código novo, prefira --eco-brand-*.
        --------------------------------------------------------------- */
-    --eco-blue-50: #f2f2fe;
-    /* Grafia antiga com tres digitos, ainda referenciada em telas
-       legadas. Alias, nao token novo. */
-    --eco-blue-050: #eeeefc;
-    --eco-blue-100: #e4e3fb;
-    --eco-blue-200: #cbc9f7;
-    --eco-blue-300: #a9a5f0;
-    --eco-blue-400: #8079e6;
-    --eco-blue-500: #5b64ea;
-    --eco-blue-600: #2a26c7;
-    --eco-blue-700: #211ea3;
-    --eco-blue-800: #191880;
-    --eco-blue-900: #12125e;
 
-    /* Azul da marca — o ponto fixo de onde a rampa sai. */
-    --eco-blue: var(--eco-blue-600);
+    /* RAMPA DA MARCA — Verde Fotovoltaico, ponto fixo em #0a7f4f
+       (texto branco sobre ele: 5,05:1, AA). */
+    --eco-brand-50: #f0f8f4;
+    --eco-brand-100: #e6f4ed;
+    --eco-brand-200: #c4e5d4;
+    --eco-brand-300: #8fcdb0;
+    --eco-brand-400: #3fa877;
+    --eco-brand-500: #13915c;
+    --eco-brand-600: #0a7f4f;
+    --eco-brand-700: #086b42;
+    --eco-brand-800: #065535;
+    --eco-brand-900: #043d26;
+    /* Links: 5,85:1 sobre branco, 5,37:1 sobre névoa. */
+    --eco-link: #087443;
 
-    /* ---------------------------------------------------------------
-       APOIO QUENTE — o produto é SOLAR e a paleta era 100% fria.
-       Dois tons quentes dão o acento de "energia/sol" sem virar outra
-       marca: aparecem em selo de economia, estrelas e destaque solar.
-       --------------------------------------------------------------- */
-    --eco-solar-100: #fff2d9;
-    --eco-solar-300: #f7c86a;
-    --eco-solar-500: #e8911b;
-    --eco-solar-700: #b06a09;
+    --eco-blue-50: var(--eco-brand-50);
+    --eco-blue-050: var(--eco-brand-50);
+    --eco-blue-100: var(--eco-brand-100);
+    --eco-blue-200: var(--eco-brand-200);
+    --eco-blue-300: var(--eco-brand-300);
+    --eco-blue-400: var(--eco-brand-400);
+    --eco-blue-500: var(--eco-brand-500);
+    --eco-blue-600: var(--eco-brand-600);
+    --eco-blue-700: var(--eco-brand-700);
+    --eco-blue-800: var(--eco-brand-800);
+    --eco-blue-900: var(--eco-brand-900);
+    --eco-blue: var(--eco-brand-600);
 
-    /* Céu — herdado da identidade original, agora com degraus. */
-    --eco-sky-100: #eaf4fd;
-    --eco-sky: #d8eafa;
-    --eco-sky-deep: #bcd9f5;
+    /* ÂMBAR SOLAR — dados, rótulos "Novo", série secundária de gráfico.
+       --eco-solar-ink #a84b00: 5,72:1 sobre branco. */
+    --eco-solar-100: #fbeee3;
+    --eco-solar-300: #f5c46b;
+    --eco-solar-500: #d9760f;
+    --eco-solar-700: #a84b00;
+    --eco-solar-ink: #a84b00;
 
-    /* ---------------------------------------------------------------
-       SEMÂNTICAS
-       --------------------------------------------------------------- */
-    --eco-green: #0e8f5a;
-    --eco-green-soft: #e3f5ec;
-    --eco-amber: #d19524;
-    --eco-amber-soft: #fff6e6;
-    --eco-red: #c2453f;
-    --eco-red-soft: #fdf1f1;
+    /* "Céu" virou névoa: não há mais tons azulados de fundo. */
+    --eco-sky-100: #fafafc;
+    --eco-sky: #f5f5f7;
+    --eco-sky-deep: #e6e6e8;
 
-    /* Versões escuras das semânticas, para TEXTO e ÍCONE sobre os fundos
-       -soft. Medido: --eco-green sobre --eco-green-soft dá 3,64:1 e
-       --eco-amber sobre --eco-amber-soft dá 2,44:1 — os dois reprovam no
-       mínimo de 4,5:1 do WCAG AA. As cores de cima continuam valendo para
-       preenchimento e borda, onde contraste de texto não se aplica. */
-    --eco-green-ink: #0a6b45; /* 5,79:1 sobre green-soft */
-    --eco-amber-ink: #8a6210; /* 5,10:1 sobre amber-soft */
-    --eco-solar-ink: #8a5a08; /* estrelas e destaques sobre branco */
+    /* SEMÂNTICAS */
+    --eco-green: #0a7f4f;
+    --eco-green-soft: #e6f4ed;
+    --eco-green-ink: #086b42; /* 6,6:1 sobre green-soft */
+    --eco-amber: #c77700;
+    --eco-amber-soft: #fbeee3;
+    --eco-amber-ink: #8a4a00; /* 6,4:1 sobre amber-soft */
+    --eco-red: #b3261e;
+    --eco-red-soft: #fdecea;
 
-    /* ---------------------------------------------------------------
-       TEXTO E SUPERFÍCIE (tema claro — área logada)
-       --------------------------------------------------------------- */
-    --eco-ink: #12141c;
-    --eco-ink-2: #3a3f4e;
-    --eco-ink-3: #5f6675; /* era #6b7180 */
-    /* --eco-ink-4 era #9aa0ae: 2,6:1 sobre branco, reprovado no WCAG AA.
-       A primeira correção para #767d8c ainda dava 4,13:1 — passava a
-       impressão de resolvido sem estar. Medido de novo: #686f7e dá 5,04:1
-       sobre branco, 4,79:1 sobre --eco-surface e 4,63:1 sobre --eco-bg,
-       ou seja, acima de 4,5:1 em todas as superfícies claras do projeto. */
-    --eco-ink-4: #686f7e;
+    /* TEXTO E SUPERFÍCIE */
+    --eco-ink: #1d1d1f; /* 16,8:1 */
+    --eco-ink-2: #3a3a3c;
+    --eco-ink-3: #6e6e73; /* 5,07:1 sobre branco, 4,66:1 sobre névoa */
+    --eco-ink-4: #6e6e73; /* o antigo ink-4 reprovava no AA; agora = ink-3 */
 
-    --eco-line: #e7e9f1;
-    --eco-line-2: #eef0f6;
+    --eco-line: #d6d6d6;
+    --eco-line-2: #e6e6e8;
     --eco-card: #ffffff;
-    --eco-surface: #f8f9fd;
-    --eco-bg: #f3f5fb;
-    --eco-bg-2: #eef1f9;
+    --eco-surface: #fafafc;
+    --eco-bg: #f5f5f7;
+    --eco-bg-2: #ececf0;
 
-    /* ---------------------------------------------------------------
-       TEMA ESCURO DA HOME
-       Estrutura emprestada da referência (fundo chapado near-black,
-       um único acento, elevação por cor de superfície e não por sombra),
-       mas em cima do NOSSO azul — não do marrom/laranja da referência.
-       --------------------------------------------------------------- */
-    --eco-dark-bg: #0b0c1a;
-    --eco-dark-surface: #171a2e;
-    --eco-dark-surface-2: #1f233b;
-    --eco-dark-line: #2a2e45;
-    --eco-dark-line-soft: #21253a;
-    --eco-dark-ink: #eef0ff;
-    --eco-dark-ink-2: #b9bdd6;
-    --eco-dark-ink-3: #878cab;
-    --eco-dark-accent: var(--eco-blue-500);
-    --eco-dark-accent-soft: rgba(91, 100, 234, 0.16);
+    /* A home deixou de ser escura. Os tokens "dark" seguem existindo para
+       não quebrar quem ainda os lê, mas agora apontam para o tema claro. */
+    --eco-dark-bg: #ffffff;
+    --eco-dark-surface: #f5f5f7;
+    --eco-dark-surface-2: #ececf0;
+    --eco-dark-line: #d6d6d6;
+    --eco-dark-line-soft: #e6e6e8;
+    --eco-dark-ink: #1d1d1f;
+    --eco-dark-ink-2: #3a3a3c;
+    --eco-dark-ink-3: #6e6e73;
+    --eco-dark-accent: var(--eco-brand-600);
+    --eco-dark-accent-soft: var(--eco-brand-100);
 
-    /* ---------------------------------------------------------------
-       TIPOGRAFIA — escala fluida de 7 passos
-       Substitui a bagunça de 12 tamanhos px cravados + rem soltos.
-       clamp() dispensa media query para tamanho de texto.
-       --------------------------------------------------------------- */
-    --eco-text-xs: 1.1rem; /* 11px — selo, legenda legal */
-    --eco-text-sm: 1.25rem; /* 12.5px — meta, auxiliar */
-    --eco-text-base: 1.4rem; /* 14px — corpo de interface */
-    --eco-text-md: 1.6rem; /* 16px — corpo de leitura */
-    --eco-text-lg: clamp(1.8rem, 0.4vw + 1.7rem, 2.1rem);
-    --eco-text-xl: clamp(2.4rem, 1.2vw + 2rem, 3.2rem);
-    --eco-text-2xl: clamp(3.2rem, 2.6vw + 2.2rem, 5rem);
-    --eco-text-3xl: clamp(4rem, 5vw + 1.8rem, 7.2rem);
+    /* TIPOGRAFIA — Inter (substituta da SF Pro). 1rem = 10px (reset.css).
+       Escala da referência: 12 / 14 / 17 / 21 / 24 / 40 / 80. */
+    --eco-font: "Inter", "Helvetica Neue", Arial, system-ui, sans-serif;
+    --eco-text-xs: 1.2rem; /* 12 — controle compacto, legenda, fonte */
+    --eco-text-sm: 1.4rem; /* 14 — texto pequeno */
+    --eco-text-base: 1.5rem; /* 15 — corpo de interface densa */
+    --eco-text-md: 1.7rem; /* 17 — corpo de leitura */
+    --eco-text-lg: clamp(1.9rem, 0.4vw + 1.8rem, 2.4rem); /* 19–24 card */
+    --eco-text-xl: clamp(2.8rem, 1.6vw + 2.2rem, 4rem); /* 28–40 seção */
+    --eco-text-2xl: clamp(3.4rem, 3vw + 2.4rem, 5.6rem);
+    --eco-text-3xl: clamp(4.4rem, 6vw + 1.6rem, 8rem); /* hero 80 */
 
-    --eco-leading-tight: 1.1;
-    --eco-leading-snug: 1.3;
-    --eco-leading: 1.55;
+    --eco-tracking-tight: -0.015em;
+    --eco-tracking-body: -0.022em; /* -0,374px a 17px */
 
-    /* ---------------------------------------------------------------
-       ESPAÇAMENTO — escala de 4px
-       --------------------------------------------------------------- */
+    --eco-leading-tight: 1.07;
+    --eco-leading-snug: 1.24;
+    --eco-leading: 1.47;
+
+    /* ESPAÇAMENTO — base 4px; 20px entre elementos, 90px entre seções */
     --eco-sp-1: 0.4rem;
     --eco-sp-2: 0.8rem;
     --eco-sp-3: 1.2rem;
     --eco-sp-4: 1.6rem;
-    --eco-sp-5: 2.4rem;
-    --eco-sp-6: 3.2rem;
+    --eco-sp-5: 2rem;
+    --eco-sp-6: 2.8rem;
     --eco-sp-7: 4.8rem;
     --eco-sp-8: 6.4rem;
-    --eco-sp-9: 9.6rem;
+    --eco-sp-9: 9rem;
+    --eco-gap: 2rem;
+    --eco-section-gap: 9rem;
+    --eco-card-pad: 2.8rem;
 
-    /* ---------------------------------------------------------------
-       FORMA
-       --------------------------------------------------------------- */
-    --eco-r-sm: 10px;
-    --eco-r: 16px;
-    --eco-r-md: 18px;
-    --eco-r-lg: 22px;
-    --eco-r-pill: 999px;
+    /* FORMA — cards 28, controles pill, inputs 12 */
+    --eco-r-sm: 12px;
+    --eco-r: 20px;
+    --eco-r-md: 24px;
+    --eco-r-lg: 28px;
+    --eco-r-card: 28px;
+    --eco-r-pill: 9999px;
 
-    --eco-shadow-sm: 0 1px 2px rgba(18, 20, 28, 0.05),
-        0 1px 3px rgba(18, 20, 28, 0.04);
-    --eco-shadow: 0 2px 6px rgba(18, 20, 28, 0.05),
-        0 10px 28px rgba(33, 30, 163, 0.06);
-    --eco-shadow-lg: 0 18px 48px rgba(12, 16, 28, 0.16);
+    /* SEM SOMBRAS. Separação = branco contra névoa + linha de 1px.
+       Os tokens viram contornos de 1px para quem ainda os usa. */
+    --eco-shadow-sm: 0 0 0 1px var(--eco-line-2);
+    --eco-shadow: 0 0 0 1px var(--eco-line-2);
+    --eco-shadow-lg: 0 0 0 1px var(--eco-line);
 
-    --eco-ring: 0 0 0 3px var(--eco-blue-100);
-    --eco-ring-dark: 0 0 0 3px rgba(91, 100, 234, 0.32);
+    --eco-ring: 0 0 0 2px var(--eco-brand-600);
+    --eco-ring-dark: 0 0 0 2px var(--eco-brand-600);
 
-    --eco-ease: cubic-bezier(0.2, 0.8, 0.2, 1);
+    --eco-ease: cubic-bezier(0.2, 0.7, 0.2, 1);
 
-    --eco-maxw: 1240px;
-    --eco-maxw-wide: 1460px;
+    --eco-maxw: 1180px;
+    --eco-maxw-wide: 1280px;
+    --eco-nav-h: 52px;
 
-    /* ---------------------------------------------------------------
-       ALIASES LEGADOS
-       Mantidos para as ~156 referências espalhadas nos index.css antigos.
-       Todos apontam para a rampa acima: mudar a marca agora é mudar UM
-       hex. Não use estes em código novo.
-       --------------------------------------------------------------- */
+    /* ALIASES LEGADOS — ponte para os index.css antigos. */
     --white: #ffffff;
     --whitesmoke: var(--eco-bg);
     --black: var(--eco-ink);
-    --darkblue: var(--eco-blue-900);
-    --blue: var(--eco-blue-600);
-    --lightblue: var(--eco-sky);
+    --darkblue: var(--eco-brand-900);
+    --blue: var(--eco-brand-600);
+    --lightblue: var(--eco-bg);
     --gray: var(--eco-ink-3);
-    --graybutton: #d2d2d2;
+    --graybutton: #e6e6e8;
 }
 
 /* Breakpoints canônicos — três, e só três.

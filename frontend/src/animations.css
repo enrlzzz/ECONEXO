@@ -78,10 +78,10 @@
 
 @keyframes eco-soft-pulse {
     0% {
-        box-shadow: 0 0 0 0 rgba(42, 38, 199, 0.45);
+        box-shadow: 0 0 0 0 rgba(10, 127, 79, 0.45);
     }
     100% {
-        box-shadow: 0 0 0 10px rgba(42, 38, 199, 0);
+        box-shadow: 0 0 0 10px rgba(10, 127, 79, 0);
     }
 }
 

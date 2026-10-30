@@ -1,17 +1,20 @@
 import "./index.css";
-import "/src/variables.css";
 
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import {
+  IconAdjustmentsHorizontal,
+  IconBolt,
+  IconMapPin,
+  IconRosetteDiscountCheck,
+  IconSearch,
+  IconStarFilled,
+} from "@tabler/icons-react";
 
-import HeaderInterface from "../header-interface";
 import ReputacaoProfissional from "./ReputacaoProfissional";
 import { profissionaisService } from "../../../services/profissionais";
 import { projetosService } from "../../../services/projetos";
 import { avatarDe, regiaoDe, tipoProfissionalLabel } from "../../../format";
-
-import { LuFilter } from "react-icons/lu";
-import { CiSearch } from "react-icons/ci";
 
 const ESTADOS = [
   "AC", "AL", "AP", "AM", "BA", "CE", "DF", "ES", "GO",
@@ -33,91 +36,6 @@ const ORDENS = [
 ];
 
 const FORM_VAZIO = { nome: "", estado: "", cidade: "", tipo: "" };
-
-function Filtros({ form, ordem, onChange, onOrdem, onLimpar, mostrarProfissional }) {
-  return (
-    <div className="search-filter">
-      <div className="box-title-filter-search">
-        <span className="filter-icon">
-          <LuFilter />
-        </span>
-        <h3>Filtros de Busca</h3>
-      </div>
-
-      <form className="form-search" onSubmit={(e) => e.preventDefault()}>
-        <label htmlFor="nome" className="label-nome">
-          Buscar
-        </label>
-        <input
-          type="text"
-          placeholder="Nome"
-          id="nome"
-          name="nome"
-          value={form.nome}
-          onChange={onChange}
-        />
-
-        {mostrarProfissional && (
-          <>
-            <label htmlFor="tipo" className="label-name">
-              Perfil
-            </label>
-            <select id="tipo" name="tipo" value={form.tipo} onChange={onChange}>
-              {TIPOS.map(([valor, rotulo]) => (
-                <option key={valor} value={valor}>
-                  {rotulo}
-                </option>
-              ))}
-            </select>
-          </>
-        )}
-
-        <label htmlFor="estado" className="label-name">
-          Estado
-        </label>
-        <select id="estado" name="estado" value={form.estado} onChange={onChange}>
-          <option value="">Todos os estados</option>
-          {ESTADOS.map((uf) => (
-            <option key={uf} value={uf}>
-              {uf}
-            </option>
-          ))}
-        </select>
-
-        <label htmlFor="cidade" className="label-name">
-          Cidade
-        </label>
-        <input
-          type="text"
-          placeholder="Nome da cidade"
-          id="cidade"
-          name="cidade"
-          value={form.cidade}
-          onChange={onChange}
-        />
-
-        {mostrarProfissional && (
-          <>
-            <label htmlFor="ordem" className="label-name">
-              Ordenar por
-            </label>
-            <select id="ordem" value={ordem} onChange={(e) => onOrdem(e.target.value)}>
-              {ORDENS.map(([valor, rotulo]) => (
-                <option key={valor} value={valor}>
-                  {rotulo}
-                </option>
-              ))}
-            </select>
-          </>
-        )}
-
-        <button type="button" className="btn-limpar-filtros" onClick={onLimpar}>
-          Limpar filtros
-        </button>
-      </form>
-    </div>
-  );
-}
 
 /**
  * Filtro de projetos feito no cliente sobre a lista real. A API de projetos
@@ -151,18 +69,68 @@ function ordenar(lista, ordem) {
   return copia;
 }
 
-function Reputacao({ p }) {
-  if (!p.totalAvaliacoes) {
-    return <p className="instalador-reputacao instalador-reputacao--vazia">Sem avaliações</p>;
-  }
+/**
+ * Filtros da lateral. No computador ficam fixos ao lado dos resultados; no
+ * celular abrem pelo botão "Filtros" (o campo de busca por nome fica sempre
+ * visível, em cima — é o filtro mais usado).
+ */
+function Filtros({ form, ordem, onChange, onOrdem, onLimpar, mostrarProfissional }) {
   return (
-    <p className="instalador-reputacao">
-      <span className="stars-icon">★</span>{" "}
-      <strong>{p.mediaAvaliacoes.toFixed(1).replace(".", ",")}</strong>{" "}
+    <form className="bus-filtros" onSubmit={(e) => e.preventDefault()}>
+      {mostrarProfissional && (
+        <div className="eco-field">
+          <label htmlFor="tipo">Perfil</label>
+          <select id="tipo" name="tipo" value={form.tipo} onChange={onChange}>
+            {TIPOS.map(([valor, rotulo]) => (
+              <option key={valor} value={valor}>{rotulo}</option>
+            ))}
+          </select>
+        </div>
+      )}
+
+      <div className="eco-field">
+        <label htmlFor="estado">Estado</label>
+        <select id="estado" name="estado" value={form.estado} onChange={onChange}>
+          <option value="">Todos os estados</option>
+          {ESTADOS.map((uf) => (
+            <option key={uf} value={uf}>{uf}</option>
+          ))}
+        </select>
+      </div>
+
+      <div className="eco-field">
+        <label htmlFor="cidade">Cidade</label>
+        <input id="cidade" name="cidade" value={form.cidade} onChange={onChange} placeholder="Ex.: Sorocaba" />
+      </div>
+
+      {mostrarProfissional && (
+        <div className="eco-field">
+          <label htmlFor="ordem">Ordenar por</label>
+          <select id="ordem" value={ordem} onChange={(e) => onOrdem(e.target.value)}>
+            {ORDENS.map(([valor, rotulo]) => (
+              <option key={valor} value={valor}>{rotulo}</option>
+            ))}
+          </select>
+        </div>
+      )}
+
+      <button type="button" className="eco-btn eco-btn--texto bus-limpar" onClick={onLimpar}>
+        Limpar filtros
+      </button>
+    </form>
+  );
+}
+
+function Nota({ p }) {
+  if (!p.totalAvaliacoes) return <span className="bus-nota bus-nota--vazia">Sem avaliações</span>;
+  return (
+    <span className="bus-nota">
+      <IconStarFilled size={14} aria-hidden="true" />
+      <strong>{p.mediaAvaliacoes.toFixed(1).replace(".", ",")}</strong>
       <span>
         ({p.totalAvaliacoes} avaliaç{p.totalAvaliacoes === 1 ? "ão" : "ões"})
       </span>
-    </p>
+    </span>
   );
 }
 
@@ -176,6 +144,7 @@ export default function Search() {
   const [projetos, setProjetos] = useState([]);
   const [carregando, setCarregando] = useState(true);
   const [erro, setErro] = useState("");
+  const [filtrosAbertos, setFiltrosAbertos] = useState(false); // só no celular
   const [reputacaoDe, setReputacaoDe] = useState(null); // profissional aberto no painel
 
   const handleChange = (event) => {
@@ -209,227 +178,201 @@ export default function Search() {
     let ativo = true;
     projetosService
       .listar()
-      .then((lista) => {
-        if (!ativo) return;
-        setProjetos(Array.isArray(lista) ? lista : []);
-      })
+      .then((lista) => ativo && setProjetos(Array.isArray(lista) ? lista : []))
       .catch((e) => {
         if (!ativo) return;
         setErro(e.message || "Não foi possível carregar os projetos.");
         setProjetos([]);
       })
-      .finally(() => {
-        if (ativo) setCarregando(false);
-      });
+      .finally(() => ativo && setCarregando(false));
     return () => {
       ativo = false;
     };
   }, [tipoBusca]);
 
+  function trocarTipo(tipo) {
+    if (tipo === tipoBusca) return;
+    setCarregando(true);
+    setErro("");
+    setTipoBusca(tipo);
+  }
+
   const temFiltro = Object.values(form).some((v) => v);
+  // Filtros da lateral em uso (o nome tem campo próprio, não conta aqui).
+  const filtrosEmUso = ["estado", "cidade", "tipo"].filter((k) => form[k]).length;
   const projetosFiltrados = filtrarProjetos(projetos, form);
   const profissionais = useMemo(() => ordenar(resultados, ordem), [resultados, ordem]);
+  const ehProf = tipoBusca === "profissionais";
+  const total = ehProf ? profissionais.length : projetosFiltrados.length;
 
   return (
-    <div className="search-container">
-      <HeaderInterface />
+    <div className="pg">
+      <header className="pg-cabeca">
+        <div>
+          <h1 className="pg-titulo">Buscar</h1>
+          <p className="pg-sub">Encontre profissionais certificados e projetos abertos.</p>
+        </div>
 
-      <div className="search-header">
-        <h2>Buscar</h2>
-        <p>Encontre profissionais e projetos cadastrados na plataforma</p>
-
-        <div className="buttons-search-preference">
-          <button
-            type="button"
-            className={tipoBusca === "profissionais" ? "ativo" : ""}
-            onClick={() => {
-              setCarregando(true);
-              setErro("");
-              setTipoBusca("profissionais");
-            }}
-          >
+        <div className="eco-segmento bus-tipo" role="group" aria-label="O que buscar">
+          <button type="button" aria-pressed={ehProf} onClick={() => trocarTipo("profissionais")}>
             Profissionais
           </button>
-          <button
-            type="button"
-            className={tipoBusca === "projetos" ? "ativo" : ""}
-            onClick={() => {
-              setCarregando(true);
-              setErro("");
-              setTipoBusca("projetos");
-            }}
-          >
+          <button type="button" aria-pressed={!ehProf} onClick={() => trocarTipo("projetos")}>
             Projetos
           </button>
         </div>
+      </header>
 
-        <Filtros
-          form={form}
-          ordem={ordem}
-          onChange={handleChange}
-          onOrdem={setOrdem}
-          onLimpar={() => setForm(FORM_VAZIO)}
-          mostrarProfissional={tipoBusca === "profissionais"}
-        />
+      <div className="bus-barra">
+        <label className="bus-campo">
+          <IconSearch size={18} stroke={1.8} aria-hidden="true" />
+          <span className="eco-sr-only">{ehProf ? "Buscar por nome" : "Buscar por título"}</span>
+          <input
+            type="search"
+            name="nome"
+            value={form.nome}
+            onChange={handleChange}
+            placeholder={ehProf ? "Buscar por nome" : "Buscar por título do projeto"}
+          />
+        </label>
 
-        {erro && <div className="search-erro">{erro}</div>}
+        <button
+          type="button"
+          className="eco-btn eco-btn--ghost bus-abrir-filtros"
+          aria-expanded={filtrosAbertos}
+          aria-controls="bus-lateral"
+          onClick={() => setFiltrosAbertos((v) => !v)}
+        >
+          <IconAdjustmentsHorizontal size={18} stroke={1.8} aria-hidden="true" />
+          Filtros{filtrosEmUso > 0 ? ` (${filtrosEmUso})` : ""}
+        </button>
+      </div>
 
-        {tipoBusca === "projetos" && (
-          <div className="search-results">
-            {carregando ? (
-              <p className="search-status">Buscando…</p>
-            ) : projetosFiltrados.length === 0 ? (
-              <div className="search-empty">
-                <CiSearch />
-                {projetos.length > 0 ? (
-                  <>
-                    <h3>Nenhum projeto encontrado</h3>
-                    <p>Nenhum projeto corresponde a esses filtros.</p>
-                  </>
-                ) : (
-                  <>
-                    <h3>Ainda não há projetos publicados</h3>
-                    <p>
-                      Assim que alguém publicar um projeto em <strong>Projetos</strong>,
-                      ele aparece aqui.
-                    </p>
-                  </>
-                )}
-              </div>
-            ) : (
-              <>
-                <p className="search-status">
-                  {projetosFiltrados.length} projeto
-                  {projetosFiltrados.length === 1 ? "" : "s"} encontrado
-                  {projetosFiltrados.length === 1 ? "" : "s"}
-                </p>
-                <div className="projetos-list">
-                  {projetosFiltrados.map((proj) => (
-                    <div className="card-projeto-search" key={proj.idProjeto}>
-                      <div className="card-projeo-header">
-                        <h3>{proj.titulo}</h3>
-                        {proj.status && <span className="status-badge">{proj.status}</span>}
-                      </div>
-                      <p className="projeto-desc">{proj.descricao}</p>
-                      <div className="projeto-info">
-                        <div>
-                          <p className="info-label">Localização</p>
-                          <p className="info-value">
-                            {[proj.cidade, proj.estado].filter(Boolean).join(", ") ||
-                              "Não informada"}
-                          </p>
-                        </div>
-                        <div>
-                          <p className="info-label">Potência</p>
-                          <p className="info-value">
-                            {proj.potenciaKwp != null
-                              ? `${proj.potenciaKwp} kWp`
-                              : "Não informada"}
-                          </p>
-                        </div>
-                      </div>
-                      {proj.criador && (
-                        <div className="card-projeto-btns">
-                          <button
-                            className="btn-contatar"
-                            onClick={() =>
-                              navigate(`/menu-user/messages?com=${proj.criador.idUsuario}`)
-                            }
-                          >
-                            Contatar {proj.criador.nome.split(" ")[0]}
-                          </button>
-                        </div>
-                      )}
-                    </div>
-                  ))}
-                </div>
-              </>
-            )}
-          </div>
-        )}
+      <div className="bus-corpo">
+        <aside id="bus-lateral" className={`bus-lateral${filtrosAbertos ? " is-aberta" : ""}`} aria-label="Filtros">
+          <Filtros
+            form={form}
+            ordem={ordem}
+            onChange={handleChange}
+            onOrdem={setOrdem}
+            onLimpar={() => setForm(FORM_VAZIO)}
+            mostrarProfissional={ehProf}
+          />
+        </aside>
 
-        {tipoBusca === "profissionais" && (
-          <div className="search-results">
-            {carregando ? (
-              <p className="search-status">Buscando…</p>
-            ) : profissionais.length === 0 ? (
-              <div className="search-empty">
-                <CiSearch />
-                {temFiltro ? (
-                  <>
-                    <h3>Nenhum profissional encontrado</h3>
-                    <p>
-                      Nenhum cadastro corresponde a esses filtros. Tente ampliar a
-                      busca ou limpar os campos.
-                    </p>
-                  </>
-                ) : (
-                  <>
-                    <h3>Ainda não há outros profissionais cadastrados</h3>
-                    <p>
-                      Assim que outras pessoas criarem conta e preencherem cidade,
-                      estado e perfil profissional, elas aparecem aqui.
-                    </p>
-                  </>
-                )}
-              </div>
-            ) : (
-              <>
-                <p className="search-status">
-                  {profissionais.length} profissiona{profissionais.length === 1 ? "l" : "is"}{" "}
-                  encontrado{profissionais.length === 1 ? "" : "s"}
-                </p>
+        <section className="bus-resultados" aria-live="polite" aria-busy={carregando}>
+          {erro && <p className="eco-alerta eco-alerta--erro" role="alert">{erro}</p>}
 
-                <div className="instaladores-grid">
+          {carregando ? (
+            <p className="eco-mudo">Buscando…</p>
+          ) : total === 0 ? (
+            <div className="pg-vazio">
+              <h2>
+                {ehProf
+                  ? temFiltro ? "Nenhum profissional encontrado" : "Ainda não há outros profissionais"
+                  : projetos.length ? "Nenhum projeto encontrado" : "Ainda não há projetos publicados"}
+              </h2>
+              <p>
+                {temFiltro
+                  ? "Nada corresponde a esses filtros. Tente ampliar a busca."
+                  : ehProf
+                    ? "Quem criar conta e preencher cidade, estado e perfil aparece aqui."
+                    : "Quando alguém publicar um projeto, ele aparece aqui."}
+              </p>
+              {temFiltro && (
+                <button type="button" className="eco-btn eco-btn--ghost" onClick={() => setForm(FORM_VAZIO)}>
+                  Limpar filtros
+                </button>
+              )}
+            </div>
+          ) : (
+            <>
+              <p className="bus-total">
+                {total} {ehProf ? (total === 1 ? "profissional" : "profissionais") : total === 1 ? "projeto" : "projetos"}
+              </p>
+
+              {ehProf ? (
+                <ul className="bus-grade">
                   {profissionais.map((p) => {
                     const a = avatarDe(p);
                     const regiao = regiaoDe(p);
                     const cargo = tipoProfissionalLabel(p.tipoProfissional);
                     return (
-                      <div className="card-instalador" key={p.idUsuario}>
-                        <div className="card-instalador-header">
-                          <span className="avatar" style={{ background: a.color }}>
-                            {a.initials}
-                          </span>
-                          <div>
-                            <h3>{a.nome}</h3>
-                            {cargo && <p className="instalador-tipo">{cargo}</p>}
+                      <li key={p.idUsuario} className="bus-card">
+                        <div className="bus-card-topo">
+                          <span className="avatar" style={{ background: a.color }}>{a.initials}</span>
+                          <div className="bus-card-nome">
+                            <h2>{a.nome}</h2>
+                            <p>{[cargo, regiao].filter(Boolean).join(" · ") || "Região não informada"}</p>
                           </div>
                         </div>
 
-                        <p className="instalador-cidade">{regiao || "Região não informada"}</p>
+                        <div className="bus-card-sinais">
+                          <Nota p={p} />
+                          {p.creaVerificado && (
+                            <span className="eco-badge eco-badge--ok">
+                              <IconRosetteDiscountCheck size={14} stroke={1.8} aria-hidden="true" />
+                              CREA verificado
+                            </span>
+                          )}
+                        </div>
 
-                        <Reputacao p={p} />
-
-                        {p.creaVerificado && <span className="selo-crea">CREA verificado</span>}
-
-                        <div className="card-instalador-btns">
+                        {/* Ação principal embaixo, larga; as secundárias como links. */}
+                        <div className="bus-card-acoes">
                           <button
-                            className="btn-perfil"
-                            onClick={() => navigate(`/menu-user/profile?id=${p.idUsuario}`)}
-                          >
-                            Ver Perfil
-                          </button>
-
-                          <button className="btn-perfil" onClick={() => setReputacaoDe(p)}>
-                            Reputação
-                          </button>
-
-                          <button
-                            className="btn-mensagen"
+                            type="button"
+                            className="eco-btn eco-btn--primary eco-btn--sm"
                             onClick={() => navigate(`/menu-user/messages?com=${p.idUsuario}`)}
                           >
-                            Mensagem
+                            Enviar mensagem
                           </button>
+                          <div className="bus-card-links">
+                            <button type="button" onClick={() => navigate(`/menu-user/profile?id=${p.idUsuario}`)}>
+                              Ver perfil
+                            </button>
+                            <button type="button" onClick={() => setReputacaoDe(p)}>
+                              Avaliações
+                            </button>
+                          </div>
                         </div>
-                      </div>
+                      </li>
                     );
                   })}
-                </div>
-              </>
-            )}
-          </div>
-        )}
+                </ul>
+              ) : (
+                <ul className="bus-lista">
+                  {projetosFiltrados.map((proj) => (
+                    <li key={proj.idProjeto} className="bus-card bus-card--projeto">
+                      <div className="bus-card-nome">
+                        <h2>{proj.titulo}</h2>
+                        {proj.descricao && <p className="bus-desc">{proj.descricao}</p>}
+                      </div>
+                      <ul className="bus-meta">
+                        <li>
+                          <IconMapPin size={16} stroke={1.6} aria-hidden="true" />
+                          {[proj.cidade, proj.estado].filter(Boolean).join(", ") || "Local não informado"}
+                        </li>
+                        {proj.potenciaKwp != null && (
+                          <li><IconBolt size={16} stroke={1.6} aria-hidden="true" />{proj.potenciaKwp} kWp</li>
+                        )}
+                        {proj.status && <li>{proj.status}</li>}
+                      </ul>
+                      {proj.criador && (
+                        <button
+                          type="button"
+                          className="eco-btn eco-btn--ghost eco-btn--sm"
+                          onClick={() => navigate(`/menu-user/messages?com=${proj.criador.idUsuario}`)}
+                        >
+                          Conversar com {proj.criador.nome.split(" ")[0]}
+                        </button>
+                      )}
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </>
+          )}
+        </section>
       </div>
 
       {reputacaoDe && (

@@ -41,7 +41,11 @@ create TABLE usuario (
     -- INSTALADOR | PROJETISTA | TECNICO
     tipo_profissional VARCHAR(20),
     -- acesso ao painel administrativo; so muda por SQL direto, nunca por API
-    admin BOOLEAN NOT NULL DEFAULT FALSE
+    admin BOOLEAN NOT NULL DEFAULT FALSE,
+    -- UID do Firebase Authentication (migração V7). Quem autentica é o
+    -- Firebase; este campo liga a identidade dele ao cadastro daqui.
+    firebase_uid VARCHAR(128) NULL,
+    UNIQUE KEY uk_usuario_firebase_uid (firebase_uid)
 );
 
 CREATE TABLE skill (
@@ -234,4 +238,20 @@ CREATE TABLE credencial_crea (
     UNIQUE KEY uk_credencial_crea_usuario (fk_usuario),
     FOREIGN KEY (fk_usuario) REFERENCES usuario(id_usuario) ON DELETE CASCADE,
     INDEX idx_credencial_crea_status (status, criado_em)
+);
+
+-- Histórico de contas de energia analisadas (migração V7). Só usuário logado
+-- grava; visitante analisa sem salvar.
+CREATE TABLE analise_conta (
+    id_analise INT AUTO_INCREMENT PRIMARY KEY,
+    fk_usuario INT NOT NULL,
+    criada_em DATETIME NOT NULL,
+    resumo VARCHAR(200) NOT NULL,
+    analise TEXT NOT NULL,
+    meses_json TEXT NULL,
+    consumo_medio_kwh DECIMAL(10,2) NULL,
+    valor_medio DECIMAL(10,2) NULL,
+    economia_solar_mensal DECIMAL(10,2) NULL,
+    FOREIGN KEY (fk_usuario) REFERENCES usuario(id_usuario) ON DELETE CASCADE,
+    INDEX idx_analise_conta_usuario (fk_usuario, criada_em)
 );
