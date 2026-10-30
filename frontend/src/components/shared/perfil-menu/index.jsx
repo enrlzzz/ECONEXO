@@ -79,10 +79,21 @@ export default function PerfilMenu({ mostrarAuth = false, ancora = "direita" }) 
             <strong>{nome || "Sua conta"}</strong>
             {localizacao && <small>{localizacao}</small>}
           </div>
-          <Link role="menuitem" to="/perfil" onClick={fechar}>Minhas análises</Link>
-          <Link role="menuitem" to="/menu-user" onClick={fechar}>Comunidade</Link>
-          <Link role="menuitem" to="/menu-user/painel" onClick={fechar}>Painel profissional</Link>
+          <p className="perfil-menu-grupo">Seu perfil</p>
           <Link role="menuitem" to="/menu-user/profile" onClick={fechar}>Perfil profissional</Link>
+          <Link role="menuitem" to="/menu-user/portfolio" onClick={fechar}>Portfólio</Link>
+          <Link role="menuitem" to="/menu-user/painel" onClick={fechar}>Painel profissional</Link>
+
+          <p className="perfil-menu-grupo">Confiança</p>
+          <Link role="menuitem" to="/menu-user/validacao" onClick={fechar}>Validação de credenciais</Link>
+          <Link role="menuitem" to="/menu-user/reputacao" onClick={fechar}>Reputação</Link>
+
+          <p className="perfil-menu-grupo">Ferramentas</p>
+          <Link role="menuitem" to="/perfil" onClick={fechar}>Minhas análises</Link>
+          <Link role="menuitem" to="/menu-user/pontos-recarga" onClick={fechar}>Recarga EV</Link>
+
+          <hr className="perfil-menu-divisor" />
+          <Link role="menuitem" to="/menu-user" onClick={fechar}>Comunidade</Link>
           <Link role="menuitem" to="/menu-user/settings" onClick={fechar}>Configurações</Link>
           {/* Esconder o item é conveniência: quem autoriza é o backend. */}
           {isAdmin() && (

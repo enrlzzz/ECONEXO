@@ -11,7 +11,6 @@ import {
 } from "react";
 import { useSearchParams } from "react-router-dom";
 
-import HeaderInterface from "../header-interface";
 import { useUserData } from "../../../useUserData";
 import { mensagensService } from "../../../services/mensagens";
 import { profissionaisService } from "../../../services/profissionais";
@@ -406,7 +405,6 @@ export default function MessageInterface() {
 
   return (
     <div className="dm-shell">
-      <HeaderInterface />
       {erro && <div className="dm-erro">{erro}</div>}
       <div className="dm-grid eco-anim-fade-up">
         <ConvList

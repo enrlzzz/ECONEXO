@@ -4,7 +4,6 @@ import "/src/variables.css";
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-import HeaderInterface from "../header-interface";
 import { useUserData } from "../../../useUserData";
 import { postsService } from "../../../services/posts";
 import { profissionaisService } from "../../../services/profissionais";
@@ -500,7 +499,6 @@ export default function TimelineInterface() {
 
   return (
     <div className="eco-shell">
-      <HeaderInterface />
 
       <div className="eco-timeline-grid eco-anim-fade-up">
         <aside className="eco-col-left">

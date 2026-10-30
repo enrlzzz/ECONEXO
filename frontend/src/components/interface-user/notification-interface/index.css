@@ -20,7 +20,7 @@
     margin-inline: auto;
 
     /* O cabeçalho é fixo: o respiro de cima compensa a altura dele. */
-    padding: 10rem 4rem 4rem;
+    padding: var(--eco-pagina-topo) 4rem 4rem;
 }
 
 .notifications-title {
@@ -241,7 +241,7 @@
 
 @media (max-width: 500px) {
     .notifications-container {
-        padding: 13rem 1.5rem 3rem;
+        padding: var(--eco-pagina-topo) 1.5rem 3rem;
     }
 
     .notifications-title {

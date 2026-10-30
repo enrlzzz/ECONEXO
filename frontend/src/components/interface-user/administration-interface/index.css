@@ -6,7 +6,7 @@
 .admin-content {
     width: 82%;
     margin: 0 auto;
-    padding-top: 8rem;
+    padding-top: var(--eco-pagina-topo);
     display: flex;
     flex-direction: column;
     gap: 2rem;
@@ -522,7 +522,7 @@
 
     .admin-content {
         width: 95%;
-        padding-top: 7rem;
+        padding-top: var(--eco-pagina-topo);
         gap: 1.5rem;
     }
 

@@ -3,7 +3,6 @@ import "/src/variables.css";
 
 import { useState, useEffect } from "react";
 
-import HeaderInterface from "../header-interface";
 
 import { FiPlus } from "react-icons/fi";
 import { GiRibbonMedal } from "react-icons/gi";
@@ -113,7 +112,6 @@ export default function PortfolioInterface() {
 
   return (
     <div className="portfolio-interface">
-      <HeaderInterface />
 
       {/* =========================
           HEADER

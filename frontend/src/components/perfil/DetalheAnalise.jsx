@@ -3,7 +3,6 @@ import "./index.css";
 import { useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 
-import PaginaPublica from "../layout/PaginaPublica";
 import Resultado from "../main/economia-analise/Resultado";
 import "../main/economia-analise/index.css";
 import { economiaService } from "../../services/economia";
@@ -41,7 +40,7 @@ export default function DetalheAnalise() {
   const { carregando, erro, analise } = estado;
 
   return (
-    <PaginaPublica>
+    <>
       <section className="eco-faixa eco-faixa--nevoa">
         <div className="eco-container perfil-detalhe">
           <Link className="eco-link eco-pequeno" to="/perfil">‹ Voltar ao histórico</Link>
@@ -65,6 +64,6 @@ export default function DetalheAnalise() {
           )}
         </div>
       </section>
-    </PaginaPublica>
+    </>
   );
 }

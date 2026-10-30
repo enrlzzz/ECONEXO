@@ -2,7 +2,6 @@ import "./index.css";
 import "/src/variables.css";
 
 import { useEffect, useRef, useState, useCallback } from "react";
-import HeaderInterface from "../header-interface";
 import { buscarPontosRecarga } from "../../../services/pontosRecarga";
 
 import { MdEvStation } from "react-icons/md";
@@ -18,7 +17,7 @@ export default function PontosRecarga() {
   const leafletMapRef = useRef(null);
   const marcadoresRef = useRef([]);
 
-  const [carregando, setCarregando] = useState(false);
+  const [carregando, setCarregando] = useState(true); // a primeira busca começa ao montar
   const [erro, setErro] = useState(null);
   const [pontos, setPontos] = useState([]);
   const [centro, setCentro] = useState(SOROCABA);
@@ -105,10 +104,17 @@ export default function PontosRecarga() {
     [raio],
   );
 
-  // Carrega os pontos de Sorocaba ao montar.
+  // Carrega os pontos de Sorocaba ao montar. Não reaproveita buscar() porque
+  // ela liga o "carregando" de forma síncrona — aqui ele já nasce ligado.
   useEffect(() => {
-    buscar(centro.lat, centro.lng);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    let ativo = true;
+    buscarPontosRecarga(SOROCABA.lat, SOROCABA.lng, 30)
+      .then((resultado) => ativo && setPontos(resultado))
+      .catch((ex) => ativo && setErro(ex.message || "Não foi possível carregar os pontos agora."))
+      .finally(() => ativo && setCarregando(false));
+    return () => {
+      ativo = false;
+    };
   }, []);
 
   function usarMinhaLocalizacao() {
@@ -136,7 +142,6 @@ export default function PontosRecarga() {
 
   return (
     <div className="pontos-recarga-page">
-      <HeaderInterface />
 
       <main className="pontos-recarga-main">
         <div className="pontos-recarga-cabecalho">
@@ -232,7 +237,8 @@ function popupHTML(ponto) {
   const conectores = ponto.conectores
     .map(
       (c) =>
-        `<li>${c.tipo} — Nível ${c.nivel} (${c.quantidade}x)</li>`,
+        // Dado do Open Charge Map (terceiro): escapado como o resto do popup.
+        `<li>${escHtml(c.tipo)} — Nível ${escHtml(c.nivel)} (${escHtml(c.quantidade)}x)</li>`,
     )
     .join("");
 

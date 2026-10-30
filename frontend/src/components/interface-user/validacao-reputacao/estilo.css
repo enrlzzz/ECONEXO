@@ -19,10 +19,9 @@
 .vr-pagina {
     min-height: 100vh;
     background: var(--eco-bg);
-    /* .header-interface é position:fixed (10rem de altura) — sem essa
-       folga as abas de módulo nasciam por baixo do header, cortadas.
-       Mesma convenção usada em main-interface, project-interface etc. */
-    padding-top: 10rem;
+    /* O cabeçalho agora é sticky e desenhado pelo layout AreaLogada: a
+       folga antiga de 10rem (para o header fixo) virou o respiro padrão. */
+    padding-top: var(--eco-pagina-topo);
 }
 
 /* ---------------------------------------------------------------------

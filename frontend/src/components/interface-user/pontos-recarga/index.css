@@ -11,7 +11,7 @@
 .pontos-recarga-main {
     max-width: 1200px;
     margin: 0 auto;
-    padding: 8rem 1.5rem 3rem;
+    padding: var(--eco-pagina-topo) 1.5rem 3rem;
 }
 
 /* ---------- Cabeçalho ---------- */
@@ -218,7 +218,7 @@
 
 @media (max-width: 640px) {
     .pontos-recarga-main {
-        padding: 7rem 1rem 2rem;
+        padding: var(--eco-pagina-topo) 1rem 2rem;
     }
 
     .pontos-recarga-cabecalho h1 {

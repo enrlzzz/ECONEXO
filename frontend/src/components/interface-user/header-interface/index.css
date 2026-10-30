@@ -1,4 +1,4 @@
-/* Navegação da área logada — mesma linguagem da barra pública. */
+/* Barra superior da área logada — mesma linguagem da barra pública. */
 .header-interface {
     position: sticky;
     top: 0;
@@ -10,44 +10,71 @@
 }
 
 .header-interface-in {
-    width: min(var(--eco-maxw-wide), 100% - 3.2rem);
+    width: min(var(--eco-maxw), 100% - 3.2rem);
     margin-inline: auto;
     height: var(--eco-nav-h);
     display: flex;
     align-items: center;
-    gap: 2rem;
-}
-
-.header-interface-nav {
-    margin-left: auto;
+    gap: 3.2rem;
 }
 
 .header-interface-links {
     display: flex;
-    gap: 1.8rem;
+    gap: 0.4rem;
     list-style: none;
     align-items: center;
 }
 
 .header-interface-links a {
-    position: relative;
     display: inline-flex;
     align-items: center;
-    gap: 0.4rem;
-    font-size: var(--eco-text-xs);
+    height: 3.2rem;
+    padding-inline: 1.2rem;
+    border-radius: var(--eco-r-pill);
+    font-size: var(--eco-text-sm);
     letter-spacing: -0.01em;
-    color: rgba(0, 0, 0, 0.8);
-    border-radius: 6px;
+    color: var(--eco-ink-2);
     white-space: nowrap;
 }
 
 .header-interface-links a:hover {
     color: var(--eco-ink);
+    background: var(--eco-bg);
 }
 
 .header-interface-links a.active {
     color: var(--eco-ink);
+    background: var(--eco-bg-2);
     font-weight: 600;
+}
+
+.header-interface-acoes {
+    margin-left: auto;
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+}
+
+.header-interface-sino {
+    position: relative;
+    display: grid;
+    place-items: center;
+    width: 3.6rem;
+    height: 3.6rem;
+    border-radius: 50%;
+    color: var(--eco-ink-2);
+}
+
+.header-interface-sino:hover,
+.header-interface-sino.active {
+    background: var(--eco-bg);
+    color: var(--eco-ink);
+}
+
+.header-interface-sino .notif-selo {
+    position: absolute;
+    top: 2px;
+    right: 0;
 }
 
 .notif-selo {
@@ -59,70 +86,14 @@
     color: #fff;
     font-size: 1rem;
     font-weight: 600;
+    line-height: 1;
     display: inline-grid;
     place-items: center;
 }
 
-.header-interface-sair {
-    display: none;
-}
-
-.header-interface-sair button {
-    background: none;
-    border: 0;
-    padding: 1.2rem 0;
-    color: var(--eco-red);
-    font-size: var(--eco-text-md);
-}
-
-.header-interface-menu {
-    display: none;
-    background: none;
-    border: 0;
-    padding: 0.8rem;
-    color: var(--eco-ink);
-    border-radius: var(--eco-r-sm);
-}
-
-@media (max-width: 1100px) {
-    .header-interface-menu {
-        display: block;
-        margin-left: auto;
-    }
-
+/* No celular os destinos vão para a barra inferior (BarraInferior). */
+@media (max-width: 860px) {
     .header-interface-nav {
-        margin-left: 0;
-    }
-
-    .header-interface-links {
         display: none;
-        position: absolute;
-        left: 0;
-        right: 0;
-        top: var(--eco-nav-h);
-        flex-direction: column;
-        align-items: stretch;
-        gap: 0;
-        padding: 0.8rem 1.6rem 1.6rem;
-        background: #fafafc;
-        border-bottom: 1px solid var(--eco-line-2);
-        max-height: calc(100vh - var(--eco-nav-h));
-        overflow: auto;
-    }
-
-    .header-interface-links.is-aberto {
-        display: flex;
-    }
-
-    .header-interface-links a {
-        display: flex;
-        padding: 1.2rem 0;
-        font-size: var(--eco-text-md);
-    }
-
-    .header-interface-sair {
-        display: block;
-        border-top: 1px solid var(--eco-line-2);
-        margin-top: 0.8rem;
     }
 }

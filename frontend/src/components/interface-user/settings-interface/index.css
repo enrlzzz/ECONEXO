@@ -1,7 +1,7 @@
 .container-settings {
     display: flex;
     flex-direction: column;
-    padding-top: 8rem;
+    padding-top: var(--eco-pagina-topo);
 }
 
 .settings-header {
@@ -331,7 +331,7 @@
 @media (max-width: 768px) {
 
     .container-settings {
-        padding-top: 7rem;
+        padding-top: var(--eco-pagina-topo);
     }
 
     .settings-header,

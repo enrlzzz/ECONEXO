@@ -5,7 +5,7 @@
 .dm-shell {
     background: var(--eco-bg);
     min-height: 100vh;
-    padding-top: 11rem;
+    padding-top: var(--eco-pagina-topo);
 }
 
 .dm-grid {

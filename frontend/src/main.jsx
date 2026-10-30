@@ -30,8 +30,8 @@ import ConcluirCadastro from "./components/concluir-cadastro/index.jsx";
 import { observarSessao } from "./auth/sessao";
 import ProtectedRoute from "./components/auth/ProtectedRoute.jsx";
 import AdminRoute from "./components/auth/AdminRoute.jsx";
+import AreaLogada from "./components/layout/AreaLogada.jsx";
 
-const protect = (element) => <ProtectedRoute>{element}</ProtectedRoute>;
 
 const router = createBrowserRouter([
   {
@@ -66,17 +66,6 @@ const router = createBrowserRouter([
     element: <Analisar />,
   },
 
-  {
-    // Painel das contas analisadas — a única rota nova que exige login.
-    path: "/perfil",
-    element: protect(<Perfil />),
-  },
-
-  {
-    path: "/perfil/analise/:id",
-    element: protect(<DetalheAnalise />),
-  },
-
   // Pública de propósito: a LGPD (Art. 9º) exige acesso facilitado à
   // informação sobre o tratamento — não dá para exigir login para lê-la.
   {
@@ -84,78 +73,33 @@ const router = createBrowserRouter([
     element: <PoliticaPrivacidade />,
   },
 
+  // Área logada. O layout AreaLogada desenha cabeçalho e barra inferior uma
+  // vez só para todas as telas, e o ProtectedRoute protege o grupo inteiro.
+  // /menu-user/painel é o dashboard antigo (cards, progresso, projetos);
+  // /menu-user/administration exige a flag admin (antes bastava estar logado).
   {
-    // Home social — timeline da comunidade
-    path: "/menu-user",
-    element: protect(<TimelineInterface />),
-  },
-
-  {
-    // Dashboard antigo (cards, progresso, projetos recentes)
-    path: "/menu-user/painel",
-    element: protect(<InterfaceUser />),
-  },
-
-  {
-    path: "/menu-user/projects",
-    element: protect(<ProjectInterface />),
-  },
-
-  {
-    path: "/menu-user/messages",
-    element: protect(<MessageInterface />),
-  },
-
-  {
-    path: "/menu-user/notifications",
-    element: protect(<NotificationInterface />),
-  },
-
-  {
-    path: "/menu-user/portfolio",
-    element: protect(<PortfolioInterface />),
-  },
-
-  {
-    path: "/menu-user/buscar",
-    element: protect(<Search />),
-  },
-
-  // Os dois modulos de confianca. Rotas separadas em vez das abas locais
-  // do prototipo: o link vira compartilhavel e o botao "voltar" funciona.
-  {
-    path: "/menu-user/validacao",
-    element: protect(<ValidacaoInterface />),
-  },
-
-  {
-    path: "/menu-user/reputacao",
-    element: protect(<ReputacaoInterface />),
-  },
-
-  {
-    path: "/menu-user/profile",
-    element: protect(<Profile />),
-  },
-
-  {
-    path: "/menu-user/settings",
-    element: protect(<Settings />),
-  },
-
-  {
-    path: "/menu-user/pontos-recarga",
-    element: protect(<PontosRecarga />),
-  },
-
-  {
-    // Exige a flag `admin`. Antes bastava estar logado e digitar a URL.
-    path: "/menu-user/administration",
     element: (
-      <AdminRoute>
-        <Administration />
-      </AdminRoute>
+      <ProtectedRoute>
+        <AreaLogada />
+      </ProtectedRoute>
     ),
+    children: [
+      { path: "/perfil", element: <Perfil /> },
+      { path: "/perfil/analise/:id", element: <DetalheAnalise /> },
+      { path: "/menu-user", element: <TimelineInterface /> },
+      { path: "/menu-user/painel", element: <InterfaceUser /> },
+      { path: "/menu-user/projects", element: <ProjectInterface /> },
+      { path: "/menu-user/messages", element: <MessageInterface /> },
+      { path: "/menu-user/notifications", element: <NotificationInterface /> },
+      { path: "/menu-user/portfolio", element: <PortfolioInterface /> },
+      { path: "/menu-user/buscar", element: <Search /> },
+      { path: "/menu-user/validacao", element: <ValidacaoInterface /> },
+      { path: "/menu-user/reputacao", element: <ReputacaoInterface /> },
+      { path: "/menu-user/profile", element: <Profile /> },
+      { path: "/menu-user/settings", element: <Settings /> },
+      { path: "/menu-user/pontos-recarga", element: <PontosRecarga /> },
+      { path: "/menu-user/administration", element: <AdminRoute><Administration /></AdminRoute> },
+    ],
   },
 ]);
 

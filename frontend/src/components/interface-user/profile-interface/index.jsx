@@ -1,7 +1,6 @@
 import "./index.css";
 import "/src/variables.css";
 
-import HeaderInterface from "../header-interface";
 
 import { TbMessageCircle } from "react-icons/tb";
 import { IoStarSharp } from "react-icons/io5";
@@ -53,7 +52,6 @@ export default function Profile() {
 
   return (
     <div className="container-profile">
-      <HeaderInterface />
 
       <div className="box-info-profile">
         <div className="profile-left">

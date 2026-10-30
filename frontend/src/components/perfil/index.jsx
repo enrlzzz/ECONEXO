@@ -3,7 +3,6 @@ import "./index.css";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 
-import PaginaPublica from "../layout/PaginaPublica";
 import { economiaService } from "../../services/economia";
 import { useUserData } from "../../useUserData";
 
@@ -91,7 +90,7 @@ export default function Perfil() {
       : null;
 
   return (
-    <PaginaPublica>
+    <>
       <section className="eco-faixa eco-faixa--nevoa perfil">
         <div className="eco-container">
           <header className="perfil-cabecalho">
@@ -207,6 +206,6 @@ export default function Perfil() {
           </p>
         </div>
       </section>
-    </PaginaPublica>
+    </>
   );
 }

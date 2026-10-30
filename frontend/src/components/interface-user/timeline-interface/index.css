@@ -6,7 +6,7 @@
     background: var(--eco-bg);
     min-height: 100vh;
 
-    padding-top: 12rem;
+    padding-top: var(--eco-pagina-topo);
     padding-bottom: 8rem;
 }
 
@@ -930,7 +930,7 @@
 
     /* header continua com 10rem até 500px — precisa de folga >= 10rem */
     .eco-shell {
-        padding-top: 11rem;
+        padding-top: var(--eco-pagina-topo);
     }
 }
 
@@ -941,7 +941,7 @@
 
     /* aqui o header encolhe para 6.5rem, então reduzimos a folga do topo */
     .eco-shell {
-        padding-top: 8rem;
+        padding-top: var(--eco-pagina-topo);
     }
 
     .eco-post {
