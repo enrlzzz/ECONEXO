@@ -1,185 +1,165 @@
 import "./index.css";
-import "/src/variables.css";
 
+import { useEffect, useState } from "react";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
+import { IconMapPin, IconMessageCircle, IconStarFilled } from "@tabler/icons-react";
 
-import { TbMessageCircle } from "react-icons/tb";
-import { IoStarSharp } from "react-icons/io5";
-import { IoLocation } from "react-icons/io5";
-import { GoProjectRoadmap } from "react-icons/go";
-import { GiRibbonMedal } from "react-icons/gi";
+import ReputacaoProfissional from "../search-interface/ReputacaoProfissional";
+import { usuariosService } from "../../../services/usuarios";
+import { reputacaoService } from "../../../services/validacao";
+import { avatarDe, regiaoDe, tipoProfissionalLabel } from "../../../format";
+import { getUser } from "../../../userSession";
 
-import { Link, useNavigate } from "react-router-dom";
+function Estrelas({ n }) {
+  return (
+    <span className="perf-estrelas" aria-label={`${n} de 5 estrelas`}>
+      {"★".repeat(n)}
+      <span>{"★".repeat(5 - n)}</span>
+    </span>
+  );
+}
 
-import { useState } from "react";
-import { useLocation } from "react-router-dom";
-
-import { mensagensService } from "../../../services/mensagens";
-import { colorFor, getInitials } from "../../../userSession";
-
+/**
+ * Perfil profissional — o seu (/menu-user/profile) ou o de outra pessoa
+ * (/menu-user/profile?id=12, aberto a partir da busca).
+ *
+ * Antes a tela lia o profissional do "state" da navegação, que a busca não
+ * enviava: abria sempre como "Instalador", com números fixos ("2 Projetos,
+ * 1 verificado") e selos NR-10/NR-35 que ninguém tinha conferido. Agora tudo
+ * vem da API: o cartão público (GET /usuarios/{id}) e as avaliações.
+ */
 export default function Profile() {
   const navigate = useNavigate();
-  const [abaAtiva, setAbaAtiva] = useState("portfolio");
-  const { state: instalador } = useLocation();
-  const portfolio = instalador?.portfolio || [];
+  const [params] = useSearchParams();
+  const meuId = getUser()?.id;
+  const id = params.get("id") || meuId;
+  const ehMeu = String(id) === String(meuId);
 
-  // se não vier nenhum instalador, use valores padrão
-  const nome = instalador?.nome || "Instalador";
-  const avaliacao = instalador?.avaliacao || 0;
-  const avaliacoes = instalador?.avaliacoes || 0;
-  const cidade = instalador?.cidade || "";
-  const estado = instalador?.estado || "";
+  const [pessoa, setPessoa] = useState(null);
+  const [avaliacoes, setAvaliacoes] = useState([]);
+  const [carregando, setCarregando] = useState(true);
+  const [erro, setErro] = useState("");
+  const [avaliando, setAvaliando] = useState(false);
 
-  const abrirMensagem = () => {
-    if (!instalador || !nome || nome === "Instalador") {
-      navigate("/menu-user/messages");
-      return;
-    }
-    const idAlvo =
-      instalador.idUsuario != null
-        ? String(instalador.idUsuario)
-        : `prof_${nome.replace(/\s+/g, "_").toLowerCase()}`;
-    const conv = mensagensService.encontrarOuCriarConversaCom({
-      id: idAlvo,
-      nome,
-      initials: getInitials(nome),
-      color: colorFor(idAlvo),
-      role: "Instalador Fotovoltaico",
-      regiao: [cidade, estado].filter(Boolean).join(" · "),
-      verificado: true,
-    });
-    navigate(`/menu-user/messages?conversa=${conv.id}`);
-  };
+  useEffect(() => {
+    let ativo = true;
+    Promise.all([usuariosService.buscarPorId(id), reputacaoService.listar(id).catch(() => [])])
+      .then(([p, lista]) => {
+        if (!ativo) return;
+        setPessoa(p);
+        setAvaliacoes(Array.isArray(lista) ? lista : []);
+      })
+      .catch((e) => ativo && setErro(e.status === 404 ? "Perfil não encontrado." : e.message || "Não foi possível abrir o perfil."))
+      .finally(() => ativo && setCarregando(false));
+    return () => {
+      ativo = false;
+    };
+  }, [id]);
+
+  if (carregando) {
+    return <div className="pg pg--estreita"><p className="eco-mudo">Carregando perfil…</p></div>;
+  }
+
+  if (erro || !pessoa) {
+    return (
+      <div className="pg pg--estreita">
+        <div className="pg-vazio">
+          <h2>{erro || "Perfil não encontrado."}</h2>
+          <Link to="/menu-user/buscar" className="eco-btn eco-btn--ghost">Voltar para a busca</Link>
+        </div>
+      </div>
+    );
+  }
+
+  const a = avatarDe(pessoa);
+  const cargo = tipoProfissionalLabel(pessoa.tipoProfissional);
+  const regiao = regiaoDe(pessoa);
+  const media = avaliacoes.length
+    ? avaliacoes.reduce((s, x) => s + (x.estrelas || 0), 0) / avaliacoes.length
+    : null;
 
   return (
-    <div className="container-profile">
+    <div className="pg pg--estreita">
+      <section className="perf-cartao">
+        <span className="perf-avatar" style={{ background: a.color }} aria-hidden="true">
+          {a.initials}
+        </span>
 
-      <div className="box-info-profile">
-        <div className="profile-left">
-          <span className="avatar-profile">{nome.charAt(0)}</span>
-
-          <div className="profile-details">
-            <div className="profile-name-row">
-              <h2>{nome}</h2>
-            </div>
-            <p className="profile-role">Instalador Fotovoltaico</p>
-
-            <div className="profile-stats">
-              <div className="stat">
-                <span className="stat-icon star">
-                  <IoStarSharp />
-                </span>
-                <div>
-                  <h3>{avaliacao}</h3>
-                  <p>{avaliacoes} avaliações</p>
-                </div>
-              </div>
-
-              <div className="stat">
-                <span className="stat-icon">
-                  <IoLocation />
-                </span>
-                <div>
-                  {/* Sem cidade/estado (acesso direto à rota, sem vir da
-                      busca), a interpolação virava ", " pendurado. */}
-                  <h3>
-                    {cidade && estado
-                      ? `${cidade}, ${estado}`
-                      : cidade || estado || "Não informada"}
-                  </h3>
-                  <p>Localização</p>
-                </div>
-              </div>
-
-              <div className="stat">
-                <span className="stat-icon">
-                  <GoProjectRoadmap />
-                </span>
-                <div>
-                  <h3>2 Projetos</h3>
-                  <p>1 verificados</p>
-                </div>
-              </div>
-            </div>
-
-            <div className="profile-badges">
-              <span className="badge">NR-10 Certificado</span>
-              <span className="badge">NR-35 Certificado</span>
-              <span className="badge">Instalador Qualificado</span>
-            </div>
-          </div>
+        <div className="perf-info">
+          <h1>{pessoa.nome}</h1>
+          {cargo && <p className="perf-cargo">{cargo}</p>}
+          <ul className="perf-dados">
+            <li>
+              <IconMapPin size={16} stroke={1.6} aria-hidden="true" />
+              {regiao || "Região não informada"}
+            </li>
+            <li>
+              <IconStarFilled size={14} aria-hidden="true" className="perf-estrela" />
+              {media === null
+                ? "Sem avaliações"
+                : `${media.toFixed(1).replace(".", ",")} · ${avaliacoes.length} avaliaç${avaliacoes.length === 1 ? "ão" : "ões"}`}
+            </li>
+          </ul>
         </div>
 
-        <div className="profile-right">
-          <button
-            type="button"
-            className="btn-contatar-profile"
-            onClick={abrirMensagem}
-          >
-            <TbMessageCircle /> Mensagem
-          </button>
-          <button className="btn-conectar-profile">Conectar</button>
+        {/* Ações sempre à direita do cartão (embaixo, no celular). */}
+        <div className="perf-acoes">
+          {ehMeu ? (
+            <>
+              <Link to="/menu-user/settings" className="eco-btn eco-btn--primary eco-btn--sm">Editar perfil</Link>
+              <Link to="/menu-user/portfolio" className="eco-btn eco-btn--ghost eco-btn--sm">Meu portfólio</Link>
+            </>
+          ) : (
+            <>
+              <button type="button" className="eco-btn eco-btn--primary eco-btn--sm"
+                onClick={() => navigate(`/menu-user/messages?com=${pessoa.idUsuario}`)}>
+                <IconMessageCircle size={16} stroke={1.8} aria-hidden="true" />
+                Enviar mensagem
+              </button>
+              <button type="button" className="eco-btn eco-btn--ghost eco-btn--sm" onClick={() => setAvaliando(true)}>
+                Avaliar
+              </button>
+            </>
+          )}
         </div>
-      </div>
+      </section>
 
-      {/* abas */}
-      <div className="profile-tabs">
-        <button
-          className={abaAtiva === "portfolio" ? "tab ativo" : "tab"}
-          onClick={() => setAbaAtiva("portfolio")}
-        >
-          Portfólio
-        </button>
-        <button
-          className={abaAtiva === "avaliacoes" ? "tab ativo" : "tab"}
-          onClick={() => setAbaAtiva("avaliacoes")}
-        >
-          Avaliações
-        </button>
-        <button
-          className={abaAtiva === "sobre" ? "tab ativo" : "tab"}
-          onClick={() => setAbaAtiva("sobre")}
-        >
-          Sobre
-        </button>
-      </div>
-
-      {/* conteúdo por aba */}
-      {abaAtiva === "portfolio" &&
-        (portfolio.length === 0 ? (
-          <div className="portfolio-vazio">
-            <GiRibbonMedal className="portfolio-vazio-icon" />
-            <p>Nenhum projeto no portfólio ainda</p>
-          </div>
-        ) : (
-          <div className="portfolio-grid">
-            {portfolio.map((proj) => (
-              <div className="portfolio-card" key={proj.id}>
-                <div className="portfolio-card-img">
-                  <GiRibbonMedal className="portfolio-placeholder-icon" />
-                  {proj.verificado && (
-                    <span className="verified-badge">✓ Verificado</span>
-                  )}
-                </div>
-                <div className="portfolio-card-info">
-                  <h3>{proj.titulo}</h3>
-                  <p>{proj.descricao}</p>
-                  <span>{proj.data}</span>
-                </div>
-              </div>
-            ))}
-          </div>
-        ))}
-
-      {abaAtiva === "avaliacoes" && (
-        <div className="avaliacoes-section">
-          <p>Nenhuma avaliação ainda.</p>
-        </div>
+      {ehMeu && !pessoa.cidade && (
+        <p className="eco-alerta eco-alerta--info">
+          Seu perfil não aparece nas buscas por região enquanto cidade e estado estiverem vazios.{" "}
+          <Link to="/menu-user/settings" className="eco-link">Completar agora</Link>
+        </p>
       )}
 
-      {abaAtiva === "sobre" && (
-        <div className="sobre-section">
-          <p>Informações sobre o profissional.</p>
-        </div>
+      <section className="perf-secao" aria-labelledby="titulo-avaliacoes">
+        <h2 id="titulo-avaliacoes">Avaliações</h2>
+        {avaliacoes.length === 0 ? (
+          <p className="eco-mudo">
+            {ehMeu
+              ? "Você ainda não recebeu avaliações. Elas aparecem aqui quando alguém avaliar seu trabalho."
+              : "Ninguém avaliou este profissional ainda."}
+          </p>
+        ) : (
+          <ul className="perf-avaliacoes">
+            {avaliacoes.map((av) => (
+              <li key={av.idAvaliacao}>
+                <div className="perf-av-topo">
+                  <strong>{av.avaliador?.nome || "Usuário"}</strong>
+                  <Estrelas n={av.estrelas || 0} />
+                </div>
+                {av.comentario && <p>{av.comentario}</p>}
+              </li>
+            ))}
+          </ul>
+        )}
+      </section>
+
+      {avaliando && (
+        <ReputacaoProfissional
+          profissional={{ ...pessoa, creaVerificado: false }}
+          aoFechar={() => setAvaliando(false)}
+          aoAvaliar={() => reputacaoService.listar(id).then(setAvaliacoes).catch(() => {})}
+        />
       )}
     </div>
   );

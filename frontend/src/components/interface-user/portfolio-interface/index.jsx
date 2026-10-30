@@ -1,283 +1,193 @@
 import "./index.css";
-import "/src/variables.css";
 
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
+import { IconPhoto, IconPlus, IconX } from "@tabler/icons-react";
 
+const CHAVE = "portfolio";
+const FORM_VAZIO = { titulo: "", descricao: "", foto: "" };
 
-import { FiPlus } from "react-icons/fi";
-import { GiRibbonMedal } from "react-icons/gi";
+// A foto fica no navegador (localStorage, ~5 MB no total): acima disso o
+// salvamento falharia em silêncio e o projeto sumiria ao recarregar.
+const FOTO_MAX_BYTES = 1.5 * 1024 * 1024;
 
+/**
+ * Portfólio.
+ *
+ * Ainda não existe endpoint de portfólio no backend: os projetos ficam só
+ * neste navegador. Por isso nada aqui conta como "verificado" — a tela diz
+ * isso em vez de mostrar uma "taxa de verificação" sempre zerada.
+ */
 export default function PortfolioInterface() {
-  const [mostrarModal, setMostrarModal] = useState(false);
-
-  const [form, setForm] = useState({
-    titulo: "",
-    descricao: "",
-    foto: "",
-  });
-
-  // Lazy init em vez de setState num efeito: evita a renderização em
-  // cascata ([] -> dados salvos) e o erro de lint react-hooks/set-state-in-effect.
+  // Lazy init em vez de setState num efeito (evita render em cascata).
   const [projetos, setProjetos] = useState(() => {
-    const dados = localStorage.getItem("portfolio");
-
-    if (!dados) return [];
-
     try {
-      return JSON.parse(dados);
+      const dados = JSON.parse(localStorage.getItem(CHAVE) || "[]");
+      return Array.isArray(dados) ? dados : [];
     } catch {
-      // JSON corrompido não deve derrubar a tela inteira.
-      return [];
+      return []; // JSON corrompido não derruba a tela
     }
   });
+  const [dialogo, setDialogo] = useState(false);
+  const [form, setForm] = useState(FORM_VAZIO);
+  const [erroForm, setErroForm] = useState("");
+  const [erroSalvar, setErroSalvar] = useState("");
 
-  /* =========================
-     SALVAR LOCAL STORAGE
-  ========================= */
+  /** Grava a lista; se não couber no navegador, não troca o que está na tela. */
+  function salvar(lista) {
+    try {
+      localStorage.setItem(CHAVE, JSON.stringify(lista));
+      setProjetos(lista);
+      setErroSalvar("");
+      return true;
+    } catch {
+      setErroSalvar("Não coube no armazenamento do navegador. Remova um projeto ou use uma foto menor.");
+      return false;
+    }
+  }
 
   useEffect(() => {
-    localStorage.setItem("portfolio", JSON.stringify(projetos));
-  }, [projetos]);
+    if (!dialogo) return undefined;
+    const aoTeclar = (e) => e.key === "Escape" && setDialogo(false);
+    window.addEventListener("keydown", aoTeclar);
+    return () => window.removeEventListener("keydown", aoTeclar);
+  }, [dialogo]);
 
-  /* =========================
-     HANDLE INPUTS
-  ========================= */
-
-  const handleChange = (event) => {
-    const { name, value, files, type } = event.target;
-
-    if (type === "file") {
-      const file = files[0];
-
-      const reader = new FileReader();
-
-      reader.onloadend = () => {
-        setForm((prev) => ({
-          ...prev,
-          foto: reader.result,
-        }));
-      };
-
-      if (file) {
-        reader.readAsDataURL(file);
-      }
-    } else {
-      setForm({
-        ...form,
-        [name]: value,
-      });
+  function aoEscolherFoto(e) {
+    const arquivo = e.target.files?.[0];
+    setErroForm("");
+    if (!arquivo) return;
+    if (!arquivo.type.startsWith("image/")) {
+      setErroForm("Escolha um arquivo de imagem (JPG, PNG ou WebP).");
+      return;
     }
+    if (arquivo.size > FOTO_MAX_BYTES) {
+      setErroForm("A foto passa de 1,5 MB. Escolha uma menor.");
+      return;
+    }
+    const leitor = new FileReader();
+    leitor.onloadend = () => setForm((f) => ({ ...f, foto: leitor.result }));
+    leitor.readAsDataURL(arquivo);
+  }
+
+  function adicionar(e) {
+    e.preventDefault();
+    // Date.now() e não "tamanho + 1": depois de excluir um item, o
+    // tamanho+1 repetia um id existente.
+    if (!salvar([{ id: Date.now(), ...form }, ...projetos])) return;
+    setForm(FORM_VAZIO);
+    setDialogo(false);
+  }
+
+  function remover(projeto) {
+    if (!window.confirm(`Remover "${projeto.titulo}" do portfólio?`)) return;
+    salvar(projetos.filter((p) => p.id !== projeto.id));
+  }
+
+  const abrir = () => {
+    setErroForm("");
+    setDialogo(true);
   };
-
-  /* =========================
-     ADICIONAR PROJETO
-  ========================= */
-
-  const handlePublicar = (event) => {
-    event.preventDefault();
-
-    const novoProjeto = {
-      id: projetos.length + 1,
-      titulo: form.titulo,
-      descricao: form.descricao,
-      foto: form.foto,
-      verificado: false,
-    };
-
-    setProjetos([...projetos, novoProjeto]);
-
-    setMostrarModal(false);
-
-    setForm({
-      titulo: "",
-      descricao: "",
-      foto: "",
-    });
-  };
-
-  /* =========================
-     DADOS
-  ========================= */
-
-  const totalProjetos = projetos.length;
-
-  const projetosVerificados = projetos.filter(
-    (projeto) => projeto.verificado,
-  ).length;
-
-  const taxaVerificacao =
-    totalProjetos > 0
-      ? Math.round((projetosVerificados / totalProjetos) * 100)
-      : 0;
 
   return (
-    <div className="portfolio-interface">
-
-      {/* =========================
-          HEADER
-      ========================= */}
-
-      <div className="portfolio-header">
-        <h2>Meu Portfólio</h2>
-
-        <p>Mostre seus projetos e construa sua reputação</p>
-      </div>
-
-      {/* =========================
-          CARDS
-      ========================= */}
-
-      <div className="cards-portfolio">
-        <div className="card-total-projects">
-          <p className="card-title-portfolio">Total de Projetos</p>
-
-          <p className="card-number-portfolio">
-            {totalProjetos}
-          </p>
+    <div className="pg">
+      <header className="pg-cabeca">
+        <div>
+          <h1 className="pg-titulo">Portfólio</h1>
+          <p className="pg-sub">Mostre as instalações que você já fez. Quem te procura vê isso primeiro.</p>
         </div>
-
-        <div className="card-projects-checked">
-          <p className="card-title-portfolio">
-            Projetos Verificados
-          </p>
-
-          <p className="card-number-portfolio">
-            {projetosVerificados}
-          </p>
-        </div>
-
-        <div className="card-verification-fee">
-          <p className="card-title-portfolio">
-            Taxa de Verificação
-          </p>
-
-          <p className="card-number-portfolio">
-            {taxaVerificacao}%
-          </p>
-        </div>
-      </div>
-
-      {/* =========================
-          LISTA
-      ========================= */}
-
-      <div className="portfolio-list">
-        {projetos.length === 0 ? (
-          <>
-            <span className="span-item">
-              <GiRibbonMedal />
-            </span>
-
-            <p className="title-1">
-              Seu portfólio está vazio
-            </p>
-
-            <p className="title-2">
-              Comece adicionando seus projetos de energia
-              fotovoltaica
-            </p>
-          </>
-        ) : (
-          <div className="portfolio-projects">
-            {projetos.map((projeto) => (
-              <div
-                className="portfolio-card"
-                key={projeto.id}
-              >
-                {projeto.foto && (
-                  <img
-                    src={projeto.foto}
-                    alt={projeto.titulo}
-                  />
-                )}
-
-                <h3>{projeto.titulo}</h3>
-
-                <p>{projeto.descricao}</p>
-              </div>
-            ))}
-          </div>
+        {projetos.length > 0 && (
+          <button type="button" className="eco-btn eco-btn--primary" onClick={abrir}>
+            <IconPlus size={18} stroke={2} aria-hidden="true" />
+            Adicionar projeto
+          </button>
         )}
+      </header>
 
-        {/* =========================
-            BOTÃO
-        ========================= */}
+      <p className="eco-alerta eco-alerta--info">
+        Por enquanto o portfólio fica salvo só neste navegador. Em outro aparelho ele aparece vazio.
+      </p>
 
-        <button
-          className="btn-add-project"
-          onClick={() => setMostrarModal(true)}
-        >
-          <span className="span-btn">
-            <FiPlus />
-          </span>
+      {erroSalvar && <p className="eco-alerta eco-alerta--erro" role="alert">{erroSalvar}</p>}
 
-          Adicionar Projeto
-        </button>
-
-        {/* =========================
-            MODAL
-        ========================= */}
-
-        {mostrarModal && (
-          <div className="modal-portfolio-overlay">
-            <div className="modal-portfolio">
-              <span
-                className="close-modal"
-                onClick={() => setMostrarModal(false)}
-              >
-                X
-              </span>
-
-              <h3>
-                Adicionar Projeto ao Portfólio
-              </h3>
-
-              <p>
-                Preencha os detalhes do projeto que você
-                realizou
-              </p>
-
-              <form onSubmit={handlePublicar}>
-                <label>Título do Projeto</label>
-
-                <input
-                  type="text"
-                  name="titulo"
-                  placeholder="Ex: Instalação Residencial 10kWp"
-                  value={form.titulo}
-                  onChange={handleChange}
-                  required
-                />
-
-                <label>Descrição</label>
-
-                <input
-                  type="text"
-                  name="descricao"
-                  placeholder="Descreva o projeto..."
-                  value={form.descricao}
-                  onChange={handleChange}
-                  required
-                />
-
-                <label>Foto do Projeto</label>
-
-                <input
-                  type="file"
-                  name="foto"
-                  accept=".jpg,.jpeg,.png"
-                  onChange={handleChange}
-                  required
-                />
-
-                <button type="submit">
-                  Adicionar
+      {projetos.length === 0 ? (
+        <div className="pg-vazio">
+          <IconPhoto size={36} stroke={1.4} aria-hidden="true" className="port-vazio-icone" />
+          <h2>Seu portfólio está vazio</h2>
+          <p>Adicione uma instalação com foto e descrição. Projetos com foto passam mais confiança.</p>
+          <button type="button" className="eco-btn eco-btn--primary" onClick={abrir}>
+            <IconPlus size={18} stroke={2} aria-hidden="true" />
+            Adicionar primeiro projeto
+          </button>
+        </div>
+      ) : (
+        <ul className="port-grade">
+          {projetos.map((p) => (
+            <li key={p.id} className="port-card">
+              {p.foto ? (
+                <img src={p.foto} alt={`Foto do projeto ${p.titulo}`} />
+              ) : (
+                <div className="port-sem-foto" aria-hidden="true">
+                  <IconPhoto size={28} stroke={1.4} />
+                </div>
+              )}
+              <div className="port-card-corpo">
+                <h2>{p.titulo}</h2>
+                {p.descricao && <p>{p.descricao}</p>}
+                <button type="button" className="eco-btn eco-btn--texto port-remover" onClick={() => remover(p)}>
+                  Remover
                 </button>
-              </form>
+              </div>
+            </li>
+          ))}
+        </ul>
+      )}
+
+      {dialogo && (
+        <div className="pg-dialogo-fundo" onClick={(e) => e.target === e.currentTarget && setDialogo(false)}>
+          <div className="pg-dialogo" role="dialog" aria-modal="true" aria-labelledby="titulo-portfolio">
+            <div className="pg-dialogo-cabeca">
+              <div>
+                <h2 id="titulo-portfolio">Adicionar ao portfólio</h2>
+                <p>Uma instalação que você já concluiu.</p>
+              </div>
+              <button type="button" className="pg-fechar" onClick={() => setDialogo(false)} aria-label="Fechar">
+                <IconX size={18} aria-hidden="true" />
+              </button>
             </div>
+
+            <form className="pg-form" onSubmit={adicionar}>
+              <div className="eco-field pg-form-inteiro">
+                <label htmlFor="port-titulo">Título</label>
+                <input id="port-titulo" value={form.titulo} autoFocus required
+                  onChange={(e) => setForm((f) => ({ ...f, titulo: e.target.value }))}
+                  placeholder="Ex.: Residencial 10 kWp em Votorantim" />
+              </div>
+
+              <div className="eco-field pg-form-inteiro">
+                <label htmlFor="port-descricao">Descrição</label>
+                <textarea id="port-descricao" rows={3} value={form.descricao} required
+                  onChange={(e) => setForm((f) => ({ ...f, descricao: e.target.value }))}
+                  placeholder="Potência, equipamentos, tipo de telhado, prazo…" />
+              </div>
+
+              <div className="eco-field pg-form-inteiro">
+                <label htmlFor="port-foto">Foto (opcional, até 1,5 MB)</label>
+                <input id="port-foto" type="file" accept="image/*" onChange={aoEscolherFoto} className="port-arquivo" />
+                {form.foto && <img src={form.foto} alt="Pré-visualização da foto" className="port-previa" />}
+              </div>
+
+              {erroForm && <p className="eco-alerta eco-alerta--erro pg-form-inteiro" role="alert">{erroForm}</p>}
+
+              <div className="pg-dialogo-acoes">
+                <button type="button" className="eco-btn eco-btn--ghost" onClick={() => setDialogo(false)}>
+                  Cancelar
+                </button>
+                <button type="submit" className="eco-btn eco-btn--primary">Adicionar</button>
+              </div>
+            </form>
           </div>
-        )}
-      </div>
+        </div>
+      )}
     </div>
   );
 }
