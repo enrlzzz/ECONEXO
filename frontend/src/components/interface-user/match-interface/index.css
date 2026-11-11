@@ -1,0 +1,9 @@
+.match-filtros { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1.6rem; padding: 2rem; background: #fff; border-radius: var(--eco-r-card); }
+.match-lista { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 290px), 1fr)); gap: 1.6rem; list-style: none; }
+.match-cartao { display: flex; flex-direction: column; gap: 1.6rem; padding: 2rem; border-radius: var(--eco-r-card); background: #fff; min-width: 0; }
+.match-pessoa { display: flex; align-items: center; gap: 1.2rem; min-width: 0; }
+.match-pessoa h2 { font-size: var(--eco-text-base); font-weight: 600; overflow-wrap: anywhere; }
+.match-pessoa p, .match-cartao > p { color: var(--eco-ink-3); font-size: var(--eco-text-sm); }
+.match-avatar { display: grid; place-items: center; flex: none; width: 48px; height: 48px; border-radius: 50%; color: white; font-weight: 600; }
+.match-acoes { display: flex; flex-wrap: wrap; gap: .8rem; margin-top: auto; }
+@media (max-width: 600px) { .match-filtros { grid-template-columns: 1fr; } .match-acoes > * { flex: 1; } }

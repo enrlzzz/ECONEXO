@@ -29,21 +29,25 @@ function Estrelas({ n }) {
  * vem da API: o cartão público (GET /usuarios/{id}) e as avaliações.
  */
 export default function Profile() {
-  const navigate = useNavigate();
   const [params] = useSearchParams();
   const meuId = getUser()?.id;
   const id = params.get("id") || meuId;
-  const ehMeu = String(id) === String(meuId);
+  return <PerfilCarregado key={id} id={id} ehMeu={String(id) === String(meuId)} />;
+}
+
+function PerfilCarregado({ id, ehMeu }) {
+  const navigate = useNavigate();
 
   const [pessoa, setPessoa] = useState(null);
   const [avaliacoes, setAvaliacoes] = useState([]);
   const [carregando, setCarregando] = useState(true);
   const [erro, setErro] = useState("");
+  const [erroAvaliacoes, setErroAvaliacoes] = useState(false);
   const [avaliando, setAvaliando] = useState(false);
 
   useEffect(() => {
     let ativo = true;
-    Promise.all([usuariosService.buscarPorId(id), reputacaoService.listar(id).catch(() => [])])
+    Promise.all([usuariosService.buscarPorId(id), reputacaoService.listar(id).catch(() => { if (ativo) setErroAvaliacoes(true); return []; })])
       .then(([p, lista]) => {
         if (!ativo) return;
         setPessoa(p);
@@ -124,16 +128,18 @@ export default function Profile() {
         </div>
       </section>
 
-      {ehMeu && !pessoa.cidade && (
+      {ehMeu && (!pessoa.cidade || !pessoa.estado || !pessoa.tipoProfissional) && (
         <p className="eco-alerta eco-alerta--info">
-          Seu perfil não aparece nas buscas por região enquanto cidade e estado estiverem vazios.{" "}
+          Complete seu tipo profissional, cidade e estado para facilitar que outras pessoas encontrem você.{" "}
           <Link to="/menu-user/settings" className="eco-link">Completar agora</Link>
         </p>
       )}
 
       <section className="perf-secao" aria-labelledby="titulo-avaliacoes">
         <h2 id="titulo-avaliacoes">Avaliações</h2>
-        {avaliacoes.length === 0 ? (
+        {erroAvaliacoes ? (
+          <p className="eco-mudo" role="alert">Não foi possível carregar as avaliações agora.</p>
+        ) : avaliacoes.length === 0 ? (
           <p className="eco-mudo">
             {ehMeu
               ? "Você ainda não recebeu avaliações. Elas aparecem aqui quando alguém avaliar seu trabalho."
@@ -158,7 +164,7 @@ export default function Profile() {
         <ReputacaoProfissional
           profissional={{ ...pessoa, creaVerificado: false }}
           aoFechar={() => setAvaliando(false)}
-          aoAvaliar={() => reputacaoService.listar(id).then(setAvaliacoes).catch(() => {})}
+          aoAvaliar={() => reputacaoService.listar(id).then((lista) => { setAvaliacoes(lista); setErroAvaliacoes(false); }).catch(() => setErroAvaliacoes(true))}
         />
       )}
     </div>

@@ -557,3 +557,10 @@
     margin-top: 0.3rem;
     color: var(--eco-blue-500, #2a5fd6);
 }
+
+/* Alinha configurações às demais páginas da área autenticada. */
+.container-settings { padding-top: 2rem; }
+.settings-header, .settings-content { width: min(var(--eco-maxw), 100% - 3.2rem); }
+.settings-header { margin: 0 auto 2rem; }
+.settings-header h2 { margin-top: 0; }
+@media (max-width: 860px) { .container-settings { padding-top: 1.6rem; } .settings-header h2 { margin-top: 0; } }

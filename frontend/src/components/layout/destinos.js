@@ -5,6 +5,7 @@ import {
   IconCertificate,
   IconChartLine,
   IconHome,
+  IconUsers,
   IconLayoutDashboard,
   IconMessageCircle,
   IconPlugConnected,
@@ -48,6 +49,7 @@ export const GRUPOS_DO_MENU = [
     rotulo: "Profissionais",
     itens: [
       { to: "/menu-user/buscar", rotulo: "Buscar", Icone: IconSearch },
+      { to: "/menu-user/match", rotulo: "Match", Icone: IconUsers },
       { to: "/menu-user/projects", rotulo: "Projetos", Icone: IconSolarPanel },
       { to: "/menu-user/portfolio", rotulo: "Portfólio", Icone: IconBriefcase },
     ],

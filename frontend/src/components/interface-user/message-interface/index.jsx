@@ -13,7 +13,8 @@ import { useSearchParams } from "react-router-dom";
 
 import { useUserData } from "../../../useUserData";
 import { mensagensService } from "../../../services/mensagens";
-import { profissionaisService } from "../../../services/profissionais";
+import { usuariosService } from "../../../services/usuarios";
+import { localizarParticipante } from "./participante";
 import {
   avatarDe,
   regiaoDe,
@@ -303,8 +304,7 @@ export default function MessageInterface() {
 
       if (alvo && !conversas.some((c) => c.participante.idUsuario === alvo)) {
         try {
-          const encontrados = await profissionaisService.buscar();
-          const p = (encontrados || []).find((x) => x.idUsuario === alvo);
+          const p = await localizarParticipante(alvo, usuariosService.buscarPorId);
           if (p) {
             conversas.unshift({
               participante: p,
@@ -317,7 +317,10 @@ export default function MessageInterface() {
             alvo = null;
           }
         } catch {
-          alvo = null;
+          setErro("Não foi possível abrir o perfil solicitado. Tente novamente.");
+          setConvos(conversas);
+          setAtivoId(null);
+          return;
         }
       }
 

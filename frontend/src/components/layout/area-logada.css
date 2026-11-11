@@ -726,3 +726,22 @@
         flex: 1;
     }
 }
+
+/* Navegação compartilhada e espaçamento uniforme após a trilha. */
+.trilha { width: min(var(--eco-maxw), 100% - 3.2rem); margin: 2rem auto 0; display: flex; align-items: center; justify-content: space-between; gap: 1rem; font-size: var(--eco-text-sm); color: var(--eco-ink-3); }
+.trilha ol { display: flex; flex-wrap: wrap; align-items: center; gap: .8rem; list-style: none; min-width: 0; }
+.trilha li + li::before { content: "/"; margin-right: .8rem; color: var(--eco-ink-3); }
+.trilha a { color: var(--eco-brand-700); text-decoration: underline; text-underline-offset: .2em; }
+.trilha [aria-current="page"] { color: var(--eco-ink-2); }
+.trilha-voltar { white-space: nowrap; }
+.area-logada > .pg { padding-top: 2rem; }
+.area-logada > .eco-faixa { padding-top: 2rem; }
+@media (max-width: 860px) { .trilha { margin-top: 1.4rem; } .area-logada > .pg { padding-top: 1.6rem; } }
+
+/* Os módulos legados também começam junto da trilha e não adicionam uma
+   segunda altura de tela inteira abaixo dela. */
+.area-logada > .eco-shell, .area-logada > .dm-shell, .area-logada > .vr-pagina { min-height: 0; padding-top: 2rem; }
+.area-logada > .admin-panel .admin-content { padding-top: 2rem; }
+@media (max-width: 860px) {
+    .area-logada > .eco-shell, .area-logada > .dm-shell, .area-logada > .vr-pagina, .area-logada > .admin-panel .admin-content { padding-top: 1.6rem; }
+}

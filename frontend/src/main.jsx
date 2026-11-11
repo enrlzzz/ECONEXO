@@ -6,6 +6,8 @@ import "./variables.css";
 import "./animations.css";
 import "./components.css";
 import App from "./App.jsx";
+import PaginaPublica from "./components/layout/PaginaPublica.jsx";
+import { Link } from "react-router-dom";
 import Cadastro from "./components/cadastro/index.jsx";
 import Login from "./components/login/index.jsx";
 import InterfaceUser from "./components/interface-user/index.jsx";
@@ -17,6 +19,7 @@ import PortfolioInterface from "./components/interface-user/portfolio-interface/
 import ValidacaoInterface from "./components/interface-user/validacao-interface/index.jsx";
 import ReputacaoInterface from "./components/interface-user/reputacao-interface/index.jsx";
 import Search from "./components/interface-user/search-interface/index.jsx";
+import Match from "./components/interface-user/match-interface/index.jsx";
 import Profile from "./components/interface-user/profile-interface/index.jsx";
 import Settings from "./components/interface-user/settings-interface/index.jsx";
 import Administration from "./components/interface-user/administration-interface/index.jsx";
@@ -79,6 +82,7 @@ const router = createBrowserRouter([
       { path: "/menu-user/notifications", element: <NotificationInterface /> },
       { path: "/menu-user/portfolio", element: <PortfolioInterface /> },
       { path: "/menu-user/buscar", element: <Search /> },
+      { path: "/menu-user/match", element: <Match /> },
       { path: "/menu-user/validacao", element: <ValidacaoInterface /> },
       { path: "/menu-user/reputacao", element: <ReputacaoInterface /> },
       { path: "/menu-user/profile", element: <Profile /> },
@@ -87,6 +91,7 @@ const router = createBrowserRouter([
       { path: "/menu-user/administration", element: <AdminRoute><Administration /></AdminRoute> },
     ],
   },
+  { path: "*", element: <PaginaPublica><section className="eco-faixa"><div className="eco-container"><h1 className="eco-titulo-secao">Página não encontrada</h1><p className="eco-corpo eco-mudo">Confira o endereço ou volte ao início.</p><Link className="eco-btn eco-btn--primary" to="/">Ir para o início</Link></div></section></PaginaPublica> },
 ]);
 
 createRoot(document.getElementById("root")).render(

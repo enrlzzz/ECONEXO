@@ -1,12 +1,13 @@
 import "./area-logada.css";
 
 import { useCallback, useEffect, useState } from "react";
-import { Link, Outlet } from "react-router-dom";
+import { Link, Outlet, useLocation } from "react-router-dom";
 import { IconMenu2, IconX } from "@tabler/icons-react";
 
 import Marca from "../shared/marca";
 import { useRolagemNoTopoAoTrocarDeRota } from "../../scrollSuave";
 import BarraLateral from "./BarraLateral";
+import { DESTINOS_PRINCIPAIS, GRUPOS_DO_MENU } from "./destinos";
 
 const CHAVE_RECOLHIDA = "econexo:menu-recolhido";
 
@@ -28,6 +29,13 @@ function lerRecolhida() {
  */
 export default function AreaLogada() {
   useRolagemNoTopoAoTrocarDeRota();
+
+  const { pathname, search, state } = useLocation();
+  const destinos = [...DESTINOS_PRINCIPAIS, ...GRUPOS_DO_MENU.flatMap((g) => g.itens)];
+  const detalheAnalise = /^\/perfil\/analise\/[^/]+$/.test(pathname);
+  const perfilOutraPessoa = pathname === "/menu-user/profile" && new URLSearchParams(search).has("id");
+  const atual = detalheAnalise ? "Detalhe da análise" : perfilOutraPessoa ? "Perfil profissional" : destinos.find((d) => d.to === pathname)?.rotulo || "Área logada";
+  const pai = detalheAnalise ? { to: "/perfil", rotulo: "Minhas análises" } : perfilOutraPessoa ? (state?.origem === "match" ? { to: "/menu-user/match", rotulo: "Match" } : { to: "/menu-user/buscar", rotulo: "Buscar profissionais" }) : { to: "/menu-user", rotulo: "Comunidade" };
 
   const [recolhida, setRecolhida] = useState(lerRecolhida);
   const [gaveta, setGaveta] = useState(false);
@@ -88,6 +96,13 @@ export default function AreaLogada() {
       />
 
       <main id="conteudo" tabIndex={-1} className="area-logada">
+        <nav className="trilha" aria-label="Navegação estrutural">
+          <ol>
+            {pathname !== "/menu-user" && <li><Link to={pai.to}>{pai.rotulo}</Link></li>}
+            <li aria-current="page">{atual}</li>
+          </ol>
+          {pathname !== "/menu-user" && <Link className="trilha-voltar" to={pai.to}>← Voltar</Link>}
+        </nav>
         <Outlet />
       </main>
     </div>
